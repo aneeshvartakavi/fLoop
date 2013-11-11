@@ -110,7 +110,7 @@ void MainComponent::buttonClicked (Button* buttonThatWasClicked)
 		readDirectory();
 		if(pathToDirectory.exists())
 		{
-			//featureExtractor->computeFeatures(audioLoops);
+			// featureExtractor->computeFeatures(audioLoops); // Uncomment to run feature extractor here
 			addAndMakeVisible(loopPlayer = new LoopPlayer(deviceManager,pathToDirectory));
 		   //[/UserButtonCode_browseButton]
 		}

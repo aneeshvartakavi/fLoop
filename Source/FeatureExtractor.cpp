@@ -30,13 +30,23 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 	{
 		File loop(audioLoops.getUnchecked(i));
 		ScopedPointer<AudioFormatReader> fileReader = formatManager.createReaderFor(loop);
+		
+		ScopedPointer<AudioSampleBuffer> sampleBuffer = new AudioSampleBuffer(1,blockSize);
+
 		//ScopedPointer<AudioSubsectionReader> subReader = new AudioSubsectionReader(fileReader,0,fileReader->lengthInSamples, true);
 		int numChannels = fileReader->numChannels;
-		ScopedPointer<AudioSampleBuffer> sampleBuffer = new AudioSampleBuffer(numChannels,blockSize);
-		
-		// Clearing buffer, may not be necessary
-		sampleBuffer->clear();
-		
+		if(numChannels==2)
+		{
+			AudioSampleBuffer stereoBuffer(2,blockSize);
+			sampleBuffer->clear();
+			sampleBuffer->addFrom(0,0,stereoBuffer,0,0,blockSize,0.5);
+			sampleBuffer->addFrom(0,0,stereoBuffer,1,0,blockSize,0.5);
+		}
+		else
+		{
+			DBG("More than 2 audio channels!");
+		}
+
 		int64 length = fileReader->lengthInSamples%hopSize;
 		// Accounting for non-integer multiples of blockSize
 		length = (fileReader->lengthInSamples+length)/hopSize;
@@ -46,24 +56,10 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 			// Not sure of the last two arguments, check if blockSize, hopSize implementation is correct
 			fileReader->read(sampleBuffer,0,blockSize,j*hopSize,true,true);
 			
-			if(numChannels==2)
-			{
-				
-				// There's a bug in here somewhere
-				//// Create a new sample buffer to convert from stereo to mono
-				//AudioSampleBuffer monoBuffer(1,blockSize);
-				//// Important to clear, since we are adding from other buffers
-				//monoBuffer.clear();
-				//monoBuffer.addFrom(0,0,*sampleBuffer,0,0,blockSize,0.5);
-				//monoBuffer.addFrom(0,0,*sampleBuffer,1,0,blockSize,0.5);
-				//sampleBuffer = new AudioSampleBuffer(monoBuffer);
-			}
-
-
-			//Send the sampleBuffer to feature functions
-			// 
-			//float* sampleData = audioSamples->getSampleData(0);
-			//float minum = findMaximum(sampleData,blockSize);
+			// sampleBuffer now has the audio samples, do something with them
+			 
+			float* sampleData = sampleBuffer->getSampleData(0);
+			DBG(String(sampleData[0]));
 			
 		}
 
