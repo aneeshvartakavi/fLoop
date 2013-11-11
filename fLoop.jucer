@@ -57,17 +57,21 @@
                        isDebug="0" optimisation="2" targetName="fLoop"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_audio_utils" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
-        <MODULEPATH id="dRowAudio" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
-        <MODULEPATH id="juce_audio_processors"/>
-        <MODULEPATH id="juce_audio_basics"/>
-        <MODULEPATH id="juce_audio_devices"/>
-        <MODULEPATH id="juce_audio_formats"/>
-        <MODULEPATH id="juce_cryptography"/>
-        <MODULEPATH id="juce_video"/>
-        <MODULEPATH id="juce_opengl"/>
-        <MODULEPATH id="juce_data_structures"/>
-        <MODULEPATH id="juce_gui_extra"/>
+        <MODULEPATH id="juce_audio_utils" path=".\JuceLibraryCode\modules"/>
+        <MODULEPATH id="dRowAudio" path=".\JuceLibraryCode\modules"/>
+        <MODULEPATH id="juce_audio_processors" path=".\JuceLibraryCode\modules"/>
+        <MODULEPATH id="juce_audio_basics" path=".\JuceLibraryCode\modules"/>
+        <MODULEPATH id="juce_audio_devices" path=".\JuceLibraryCode\modules"/>
+        <MODULEPATH id="juce_audio_formats" path=".\JuceLibraryCode\modules"/>
+        <MODULEPATH id="juce_cryptography" path=".\JuceLibraryCode\modules"/>
+        <MODULEPATH id="juce_video" path=".\JuceLibraryCode\modules"/>
+        <MODULEPATH id="juce_opengl" path=".\JuceLibraryCode\modules"/>
+        <MODULEPATH id="juce_data_structures" path=".\JuceLibraryCode\modules"/>
+        <MODULEPATH id="juce_gui_extra" path=".\JuceLibraryCode\modules"/>
+        <MODULEPATH id="juce_core" path=".\JuceLibraryCode\modules"/>
+        <MODULEPATH id="juce_events" path=".\JuceLibraryCode\modules"/>
+        <MODULEPATH id="juce_graphics" path=".\JuceLibraryCode\modules"/>
+        <MODULEPATH id="juce_gui_basics" path=".\JuceLibraryCode\modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
   </EXPORTFORMATS>
