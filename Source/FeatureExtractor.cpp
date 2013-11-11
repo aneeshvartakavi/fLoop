@@ -48,13 +48,15 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 			
 			if(numChannels==2)
 			{
-				// Create a new sample buffer to convert from stereo to mono
-				AudioSampleBuffer monoBuffer(1,blockSize);
-				// Important to clear, since we are adding from other buffers
-				monoBuffer.clear();
-				monoBuffer.addFrom(0,0,*sampleBuffer,0,0,blockSize,0.5);
-				monoBuffer.addFrom(0,0,*sampleBuffer,1,0,blockSize,0.5);
-				sampleBuffer = new AudioSampleBuffer(monoBuffer);
+				
+				// There's a bug in here somewhere
+				//// Create a new sample buffer to convert from stereo to mono
+				//AudioSampleBuffer monoBuffer(1,blockSize);
+				//// Important to clear, since we are adding from other buffers
+				//monoBuffer.clear();
+				//monoBuffer.addFrom(0,0,*sampleBuffer,0,0,blockSize,0.5);
+				//monoBuffer.addFrom(0,0,*sampleBuffer,1,0,blockSize,0.5);
+				//sampleBuffer = new AudioSampleBuffer(monoBuffer);
 			}
 
 

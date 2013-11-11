@@ -46,7 +46,20 @@ MainComponent::MainComponent ()
 
 
     //[Constructor] You can add your own custom stuff here..
+	// 
 	deviceManager.initialise(2, 2, 0, true, String::empty, 0);
+	
+	AudioIODeviceType* const audioDeviceType = deviceManager.getCurrentDeviceTypeObject();
+	StringArray audioInputDevices (audioDeviceType->getDeviceNames(true));
+    StringArray audioOutputDevices (audioDeviceType->getDeviceNames(false));
+	AudioDeviceManager::AudioDeviceSetup deviceConfig;
+    deviceManager.getAudioDeviceSetup(deviceConfig);
+	
+	deviceConfig.inputDeviceName = audioInputDevices[0];
+	deviceConfig.outputDeviceName= audioOutputDevices[0];
+    String result = deviceManager.setAudioDeviceSetup (deviceConfig, true);
+	DBG(result);
+	
 	featureExtractor = new FeatureExtractor(2048,1024);
     //[/Constructor]
 }
@@ -95,14 +108,17 @@ void MainComponent::buttonClicked (Button* buttonThatWasClicked)
     {
         //[UserButtonCode_browseButton] -- add your button handler code here..
 		readDirectory();
-		featureExtractor->computeFeatures(audioLoops);
-		addAndMakeVisible(loopPlayer = new LoopPlayer(deviceManager,pathToDirectory));
-        //[/UserButtonCode_browseButton]
+		if(pathToDirectory.exists())
+		{
+			//featureExtractor->computeFeatures(audioLoops);
+			addAndMakeVisible(loopPlayer = new LoopPlayer(deviceManager,pathToDirectory));
+		   //[/UserButtonCode_browseButton]
+		}
     }
     else if (buttonThatWasClicked == setupButton)
     {
         //[UserButtonCode_setupButton] -- add your button handler code here..
-        addAndMakeVisible(audioSetup = new AudioSetup(deviceManager));
+		addAndMakeVisible(audioSetup = new AudioSetup(deviceManager));
         //[/UserButtonCode_setupButton]
     }
 
@@ -118,25 +134,33 @@ void MainComponent::readDirectory()
 	FileChooser fileChooser ("Select directory to load...", File::getSpecialLocation (File::userHomeDirectory));
 		if(fileChooser.browseForDirectory())
 		{
+			
 			pathToDirectory = fileChooser.getResult();
-			Array<File> wavFiles;
-			pathToDirectory.findChildFiles(wavFiles,3,true,"*.wav");
-			audioLoops.addArray(wavFiles);
+			if(pathToDirectory.exists())
+			{
+				Array<File> wavFiles;
+				pathToDirectory.findChildFiles(wavFiles,3,true,"*.wav");
+				audioLoops.addArray(wavFiles);
 
-			Array<File> mp3Files;
-			pathToDirectory.findChildFiles(mp3Files,3,true,"*.mp3");
-			audioLoops.addArray(mp3Files);
+				Array<File> mp3Files;
+				pathToDirectory.findChildFiles(mp3Files,3,true,"*.mp3");
+				audioLoops.addArray(mp3Files);
 
-			/*File directories = fileChooser.getResult();
-			Array<File> wavFiles;
-			directories.findChildFiles(wavFiles,3,true,"*.wav");
-			audioLoops.addArray(wavFiles);
+				/*File directories = fileChooser.getResult();
+				Array<File> wavFiles;
+				directories.findChildFiles(wavFiles,3,true,"*.wav");
+				audioLoops.addArray(wavFiles);
 
-			Array<File> mp3Files;
-			directories.findChildFiles(mp3Files,3,true,"*.mp3");
-			audioLoops.addArray(mp3Files);
-			pathToDirectory = directories;*/
-
+				Array<File> mp3Files;
+				directories.findChildFiles(mp3Files,3,true,"*.mp3");
+				audioLoops.addArray(mp3Files);
+				pathToDirectory = directories;*/
+			}
+			
+		}
+		else
+		{
+			pathToDirectory = File();
 		}
 }
 
