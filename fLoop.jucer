@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="JBoQsE" name="fLoop" projectType="guiapp" version="1.0.0"
+              bundleIdentifier="com.yourcompany.fLoop" includeBinaryInAppConfig="1"
+              jucerVersion="3.1.0">
+  <MAINGROUP id="igV5q7" name="fLoop">
+    <GROUP id="{26EEE55C-A9FA-5E32-656B-A6A94001740C}" name="Source">
+      <FILE id="EimraH" name="FeatureExtractor.cpp" compile="1" resource="0"
+            file="Source/FeatureExtractor.cpp"/>
+      <FILE id="Qel7OB" name="FeatureExtractor.h" compile="0" resource="0"
+            file="Source/FeatureExtractor.h"/>
+      <FILE id="ocjpUJ" name="ThumbnailComponent.cpp" compile="1" resource="0"
+            file="Source/ThumbnailComponent.cpp"/>
+      <FILE id="b44QTQ" name="ThumbnailComponent.h" compile="0" resource="0"
+            file="Source/ThumbnailComponent.h"/>
+      <FILE id="jTjpuY" name="LoopPlayer.cpp" compile="1" resource="0" file="Source/LoopPlayer.cpp"/>
+      <FILE id="yNzx44" name="LoopPlayer.h" compile="0" resource="0" file="Source/LoopPlayer.h"/>
+      <FILE id="APtDI8" name="AudioSetup.cpp" compile="1" resource="0" file="Source/AudioSetup.cpp"/>
+      <FILE id="SJlj8Y" name="AudioSetup.h" compile="0" resource="0" file="Source/AudioSetup.h"/>
+      <FILE id="cFzYOg" name="MainComponent.cpp" compile="1" resource="0"
+            file="Source/MainComponent.cpp"/>
+      <FILE id="DRoUCN" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
+      <FILE id="SUKc54" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
+    </GROUP>
+  </MAINGROUP>
+  <EXPORTFORMATS>
+    <VS2012 targetFolder="Builds/VisualStudio2012">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
+                       isDebug="1" optimisation="1" targetName="fLoop"/>
+        <CONFIGURATION name="Release" winWarningLevel="4" generateManifest="1" winArchitecture="32-bit"
+                       isDebug="0" optimisation="2" targetName="fLoop"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_video" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
+        <MODULEPATH id="juce_opengl" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
+        <MODULEPATH id="juce_gui_extra" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
+        <MODULEPATH id="juce_gui_basics" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
+        <MODULEPATH id="juce_graphics" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
+        <MODULEPATH id="juce_events" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
+        <MODULEPATH id="juce_data_structures" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
+        <MODULEPATH id="juce_cryptography" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
+        <MODULEPATH id="juce_core" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
+        <MODULEPATH id="juce_audio_processors" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
+        <MODULEPATH id="juce_audio_formats" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
+        <MODULEPATH id="juce_audio_devices" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
+        <MODULEPATH id="juce_audio_basics" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
+        <MODULEPATH id="juce_audio_utils" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
+        <MODULEPATH id="dRowAudio" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
+      </MODULEPATHS>
+    </VS2012>
+    <XCODE_MAC targetFolder="Builds/MacOSX">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug" osxSDK="default" osxCompatibility="default" osxArchitecture="default"
+                       isDebug="1" optimisation="1" targetName="fLoop"/>
+        <CONFIGURATION name="Release" osxSDK="default" osxCompatibility="default" osxArchitecture="default"
+                       isDebug="0" optimisation="2" targetName="fLoop"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_utils" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
+        <MODULEPATH id="dRowAudio" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
+        <MODULEPATH id="juce_audio_processors"/>
+        <MODULEPATH id="juce_audio_basics"/>
+        <MODULEPATH id="juce_audio_devices"/>
+        <MODULEPATH id="juce_audio_formats"/>
+        <MODULEPATH id="juce_cryptography"/>
+        <MODULEPATH id="juce_video"/>
+        <MODULEPATH id="juce_opengl"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
+  </EXPORTFORMATS>
+  <MODULES>
+    <MODULES id="dRowAudio" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_audio_basics" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_audio_devices" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_audio_formats" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_audio_processors" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_audio_utils" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_core" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_cryptography" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_data_structures" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_events" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_graphics" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_gui_basics" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_gui_extra" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_opengl" showAllCode="1" useLocalCopy="1"/>
+    <MODULES id="juce_video" showAllCode="1" useLocalCopy="1"/>
+  </MODULES>
+  <JUCEOPTIONS JUCE_USE_FLAC="disabled" JUCE_USE_OGGVORBIS="disabled" JUCE_USE_MP3AUDIOFORMAT="enabled"
+               JUCE_USE_LAME_AUDIO_FORMAT="disabled" JUCE_USE_WINDOWS_MEDIA_FORMAT="disabled"
+               DROWAUDIO_USE_CURL="disabled"/>
+</JUCERPROJECT>
