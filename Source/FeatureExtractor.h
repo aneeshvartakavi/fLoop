@@ -20,12 +20,19 @@ public:
 	FeatureExtractor(int blockSize_,int hopSize_);
 	~FeatureExtractor();
 	void computeFeatures(const Array<File> &audioLoops);
-
+	// Example of feature function
+	float* calculateFFT(const AudioSampleBuffer& sampleBuffer);
+	float* spectralCentroid(float* magSpectrum);
+	
 private:
 	AudioFormatManager formatManager;
 	int blockSize;
 	int hopSize;
-	
+	// feature is a pointer to an array of float pointers
+	// All the feature fuctions should return a float pointer, which can be appended to the array.
+	// The pointer to the array can then effeciently be sent to other classes.
+
+	ScopedPointer<Array<float*>> featureVector;
 	
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FeatureExtractor)
 };

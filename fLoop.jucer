@@ -66,6 +66,8 @@
         <MODULEPATH id="juce_cryptography"/>
         <MODULEPATH id="juce_video"/>
         <MODULEPATH id="juce_opengl"/>
+        <MODULEPATH id="juce_data_structures"/>
+        <MODULEPATH id="juce_gui_extra"/>
       </MODULEPATHS>
     </XCODE_MAC>
   </EXPORTFORMATS>
