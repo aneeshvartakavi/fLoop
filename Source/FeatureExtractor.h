@@ -13,6 +13,11 @@
 
 #include "JuceHeader.h"
 
+#include "dRowAudio.h"
+
+using namespace drow;
+
+
 class FeatureExtractor
 {
 
@@ -33,6 +38,31 @@ private:
 	// The pointer to the array can then effeciently be sent to other classes.
 
 	ScopedPointer<Array<float*>> featureVector;
+    
+    std::vector<float> fileFFTData;
+    int fftBlockSize;
+    int fftHopSize;
+    int numAudioFrames;
+    
+    std::vector<float> fileSCF;
+    
+    AudioSampleBuffer buffer = AudioSampleBuffer(1, 1);  // holds the samples fed to FFTEngine
+    FFTEngine* fftEngine;
+    AudioFormatReader* fileReader;
+    Buffer fftBuffer = Buffer(1); // holds the magnitudes from fft on one block
+    
+    
+    void setReader(AudioFormatReader *reader);
+    void getFileFFT();
+    void extractAllFeaturesFromFile();
+    
+    float getBlockSpectralCrestFactor(float* block);
+    void getFileSpectralCrestFactor();
+    
+    
+    float getFileFeatureAvg(std::vector<float*> feature);
+    float getFileFeatureStd(std::vector<float*> feature);
+
 	
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FeatureExtractor)
 };

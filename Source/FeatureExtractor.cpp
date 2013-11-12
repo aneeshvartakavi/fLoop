@@ -14,6 +14,8 @@ FeatureExtractor::FeatureExtractor(int blockSize_, int hopSize_)
 {
 	blockSize = blockSize_;
 	hopSize = hopSize_;
+    fftEngine = new FFTEngine(blockSize);
+
 }
 
 FeatureExtractor::~FeatureExtractor()
@@ -63,9 +65,106 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 			//float* sampleData = audioSamples->getSampleData(0);
 			//float minum = findMaximum(sampleData,blockSize);
 			
-		}
-
-			
+		}			
 	}
+}
+
+void FeatureExtractor::setReader(AudioFormatReader *reader)
+{
+    buffer.setSize(1, fftBlockSize);  // TODO get channels
+    fftBuffer.setSize(fftBlockSize);
+    fileReader = reader;
+    numAudioFrames = reader->lengthInSamples;
+    
+    fileFFTData.resize(numAudioFrames*fftBlockSize);
+    fileSCF.resize(numAudioFrames);
+}
+
+void FeatureExtractor::extractAllFeaturesFromFile()
+{
+    
+    getFileFFT();
+    getFileSpectralCrestFactor();
+    
+    
+}
+
+void FeatureExtractor::getFileFFT()
+{
+    int n=0;
+    
+    for(int i=0; i<fileReader->lengthInSamples; i += fftHopSize)
+    {
+        
+        int bufferLocation = 0;
+        int sampleLocation = i;
+        
+        fileReader->read(&buffer, bufferLocation, fftBlockSize, sampleLocation, true, false);
+        
+        float* samples = buffer.getSampleData(0);  // TODO just getting one channel, need to handle multiple channels
+        
+        fftEngine->performFFT(samples);
+        fftEngine->findMagnitudes(&fftBuffer);
+        
+        float* fftMags = fftBuffer.getData();
+        
+        for(int j=0; j<fftBlockSize; j++)
+        {
+            std::cout << fftMags[j] << std::endl;
+            fileFFTData.push_back(fftMags[j]);
+        }
+        // TODO store pointer to magnitudes in array for each block
+        n++;
+    }
+}
+
+
+float FeatureExtractor::getBlockSpectralCrestFactor(float* block)
+{
+    float maxFFTVal = block[0];
+    float spectralSum = block[0];
+    
+    for(int i=1; i<(fftBlockSize/2 - 1); i++){
+        
+        if(block[i] > maxFFTVal){
+            maxFFTVal = block[i];
+        }
+        
+        spectralSum += block[i];
+    }
+    
+    return maxFFTVal / spectralSum;
+}
+
+void FeatureExtractor::getFileSpectralCrestFactor()
+{
+    for(int i=0; i<numAudioFrames; i++)
+    {
+        fileSCF[i] = getBlockSpectralCrestFactor(&(fileFFTData[i]));
+    }
+    
+}
+
+float FeatureExtractor::getFileFeatureAvg(std::vector<float*> feature)
+{
+    float avgScf = 0.0;
+    for(int i=0; i<numAudioFrames; i++)
+    {
+        avgScf += *(feature[i]);
+    }
+    avgScf = avgScf/numAudioFrames;
+    
+    return avgScf;
+}
+
+float FeatureExtractor::getFileFeatureStd(std::vector<float*> feature)
+{
+    float stdScf = 0.0;
+    for(int i=0; i<numAudioFrames; i++)
+    {
+        // Std
+    }
+    
+    return stdScf;
 }
 
