@@ -17,17 +17,19 @@ class FeatureExtractor
 {
 
 public:
-	FeatureExtractor(int blockSize_,int hopSize_);
+	FeatureExtractor(int blockSize_,int hopSize_, int fftSizeLog2);
 	~FeatureExtractor();
 	void computeFeatures(const Array<File> &audioLoops);
 	// Example of feature function
-	float* calculateFFT(const AudioSampleBuffer& sampleBuffer);
+	float* calculateFFT(float* sampleData);
 	float* spectralCentroid(float* magSpectrum);
 	
 private:
 	AudioFormatManager formatManager;
 	int blockSize;
 	int hopSize;
+	drow::FFTEngine fftEngine;
+	
 	// feature is a pointer to an array of float pointers
 	// All the feature fuctions should return a float pointer, which can be appended to the array.
 	// The pointer to the array can then effeciently be sent to other classes.

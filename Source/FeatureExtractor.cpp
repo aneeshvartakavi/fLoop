@@ -10,7 +10,7 @@
 
 #include "FeatureExtractor.h"
 
-FeatureExtractor::FeatureExtractor(int blockSize_, int hopSize_)
+FeatureExtractor::FeatureExtractor(int blockSize_, int hopSize_, int fftSizelog2):fftEngine(fftSizelog2)
 {
 	blockSize = blockSize_;
 	hopSize = hopSize_;
@@ -30,42 +30,63 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 	{
 		File loop(audioLoops.getUnchecked(i));
 		ScopedPointer<AudioFormatReader> fileReader = formatManager.createReaderFor(loop);
-		//ScopedPointer<AudioSubsectionReader> subReader = new AudioSubsectionReader(fileReader,0,fileReader->lengthInSamples, true);
-		int numChannels = fileReader->numChannels;
-		ScopedPointer<AudioSampleBuffer> sampleBuffer = new AudioSampleBuffer(numChannels,blockSize);
 		
-		// Clearing buffer, may not be necessary
+		ScopedPointer<AudioSampleBuffer> sampleBuffer = new AudioSampleBuffer(1,blockSize);
 		sampleBuffer->clear();
-		
+
+		if(fileReader->numChannels==2)
+		{
+			// Convert Stereo to mono
+			AudioSampleBuffer stereoBuffer(2,blockSize);
+			stereoBuffer.clear();
+			sampleBuffer->addFrom(0,0,stereoBuffer,0,0,blockSize,0.5);
+			sampleBuffer->addFrom(0,0,stereoBuffer,1,0,blockSize,0.5);
+		}
+		else
+		{
+			DBG("More than 2 audio channels!");
+		}
+
 		int64 length = fileReader->lengthInSamples%hopSize;
 		// Accounting for non-integer multiples of blockSize
 		length = (fileReader->lengthInSamples+length)/hopSize;
 
+		// For FFT
+		
 		for (int j=0;j<length-1;j++)
 		{
 			// Not sure of the last two arguments, check if blockSize, hopSize implementation is correct
 			fileReader->read(sampleBuffer,0,blockSize,j*hopSize,true,true);
 			
-			if(numChannels==2)
-			{
-				// Create a new sample buffer to convert from stereo to mono
-				AudioSampleBuffer monoBuffer(1,blockSize);
-				// Important to clear, since we are adding from other buffers
-				monoBuffer.clear();
-				monoBuffer.addFrom(0,0,*sampleBuffer,0,0,blockSize,0.5);
-				monoBuffer.addFrom(0,0,*sampleBuffer,1,0,blockSize,0.5);
-				sampleBuffer = new AudioSampleBuffer(monoBuffer);
-			}
-
-
-			//Send the sampleBuffer to feature functions
-			// 
-			//float* sampleData = audioSamples->getSampleData(0);
-			//float minum = findMaximum(sampleData,blockSize);
+			// sampleBuffer now has the audio samples, do something with them
+			 
+			float* sampleData = sampleBuffer->getSampleData(0);
 			
+			float *res = calculateFFT(sampleData);
+			
+			// Do a check for nan using std::isnan()
+			// May need to threshold values, the 10^-38 can be considered 0.
+						
+			// Uncomment to debug
+			for(int w=0;w<blockSize;w++)
+			DBG(String(res[w]));
+						
 		}
 
 			
 	}
 }
+
+float* FeatureExtractor::calculateFFT(float* sampleData)
+{
+	// Get the samples
+	
+	// Initialize the FFT stuff
+	fftEngine.setWindowType(drow::Window::Hann);
+	fftEngine.performFFT (sampleData);
+	fftEngine.findMagnitudes();
+	
+	return fftEngine.getMagnitudesBuffer().getData();
+}
+
 
