@@ -22,6 +22,7 @@ public:
 	void computeFeatures(const Array<File> &audioLoops);
 	// Example of feature function
 	float* calculateFFT(float* sampleData);
+	float* calculateMFCC(float* sampleData);
 	float* spectralCentroid(float* magSpectrum);
 	
 private:

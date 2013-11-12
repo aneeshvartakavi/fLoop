@@ -33,11 +33,19 @@ MainComponent::MainComponent ()
     addAndMakeVisible (browseButton = new TextButton ("browseButton"));
     browseButton->setExplicitFocusOrder (20);
     browseButton->setButtonText ("Browse");
+    browseButton->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight);
     browseButton->addListener (this);
+    browseButton->setColour (TextButton::buttonColourId, Colours::grey);
+    browseButton->setColour (TextButton::buttonOnColourId, Colour (0xab000000));
 
     addAndMakeVisible (setupButton = new TextButton ("setupButton"));
     setupButton->setButtonText ("Setup");
+    setupButton->setConnectedEdges (Button::ConnectedOnLeft | Button::ConnectedOnRight);
     setupButton->addListener (this);
+    setupButton->setColour (TextButton::buttonColourId, Colours::grey);
+    setupButton->setColour (TextButton::buttonOnColourId, Colour (0xfb000000));
+    setupButton->setColour (TextButton::textColourOnId, Colours::black);
+    setupButton->setColour (TextButton::textColourOffId, Colours::black);
 
 
     //[UserPreSize]
@@ -86,7 +94,7 @@ void MainComponent::paint (Graphics& g)
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
 
-    g.fillAll (Colour (0xfff0f0f0));
+    g.fillAll (Colour (0xecdfdfdf));
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
@@ -95,7 +103,7 @@ void MainComponent::paint (Graphics& g)
 void MainComponent::resized()
 {
     browseButton->setBounds (200, 688, 150, 24);
-    setupButton->setBounds (680, 688, 150, 24);
+    setupButton->setBounds (696, 688, 150, 24);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -124,7 +132,7 @@ void MainComponent::buttonClicked (Button* buttonThatWasClicked)
 
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
-}
+	}
 }
 
 
@@ -180,13 +188,15 @@ BEGIN_JUCER_METADATA
                  parentClasses="public Component" constructorParams="" variableInitialisers=""
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="0" initialWidth="1024" initialHeight="768">
-  <BACKGROUND backgroundColour="fff0f0f0"/>
+  <BACKGROUND backgroundColour="ecdfdfdf"/>
   <TEXTBUTTON name="browseButton" id="82045a96457e5019" memberName="browseButton"
-              virtualName="" explicitFocusOrder="20" pos="200 688 150 24" buttonText="Browse"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="20" pos="200 688 150 24" bgColOff="ff808080"
+              bgColOn="ab000000" buttonText="Browse" connectedEdges="3" needsCallback="1"
+              radioGroupId="0"/>
   <TEXTBUTTON name="setupButton" id="9321cd912ce2e88b" memberName="setupButton"
-              virtualName="" explicitFocusOrder="0" pos="680 688 150 24" buttonText="Setup"
-              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+              virtualName="" explicitFocusOrder="0" pos="696 688 150 24" bgColOff="ff808080"
+              bgColOn="fb000000" textCol="ff000000" textColOn="ff000000" buttonText="Setup"
+              connectedEdges="3" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
