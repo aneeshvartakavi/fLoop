@@ -63,6 +63,10 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 			float* sampleData = sampleBuffer->getSampleData(0);
 			
 			float *res = calculateFFT(sampleData);
+			
+			// Do a check for nan using std::isnan()
+			// May need to threshold values, the 10^-38 can be considered 0.
+						
 			// Uncomment to debug
 			for(int w=0;w<blockSize;w++)
 			DBG(String(res[w]));
@@ -76,13 +80,13 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 float* FeatureExtractor::calculateFFT(float* sampleData)
 {
 	// Get the samples
-	//float *sampleData = sampleBuffer->getSampleData(0);
+	
 	// Initialize the FFT stuff
 	fftEngine.setWindowType(drow::Window::Hann);
 	fftEngine.performFFT (sampleData);
 	fftEngine.findMagnitudes();
 	
-	return sampleData;
+	return fftEngine.getMagnitudesBuffer().getData();
 }
 
 
