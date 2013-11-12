@@ -10,7 +10,7 @@
 
 #include "FeatureExtractor.h"
 
-FeatureExtractor::FeatureExtractor(int blockSize_, int hopSize_)
+FeatureExtractor::FeatureExtractor(int blockSize_, int hopSize_, int fftSizelog2):fftEngine(fftSizelog2)
 {
 	blockSize = blockSize_;
 	hopSize = hopSize_;
@@ -32,13 +32,13 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 		ScopedPointer<AudioFormatReader> fileReader = formatManager.createReaderFor(loop);
 		
 		ScopedPointer<AudioSampleBuffer> sampleBuffer = new AudioSampleBuffer(1,blockSize);
+		sampleBuffer->clear();
 
-		//ScopedPointer<AudioSubsectionReader> subReader = new AudioSubsectionReader(fileReader,0,fileReader->lengthInSamples, true);
-		int numChannels = fileReader->numChannels;
-		if(numChannels==2)
+		if(fileReader->numChannels==2)
 		{
+			// Convert Stereo to mono
 			AudioSampleBuffer stereoBuffer(2,blockSize);
-			sampleBuffer->clear();
+			stereoBuffer.clear();
 			sampleBuffer->addFrom(0,0,stereoBuffer,0,0,blockSize,0.5);
 			sampleBuffer->addFrom(0,0,stereoBuffer,1,0,blockSize,0.5);
 		}
@@ -51,6 +51,8 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 		// Accounting for non-integer multiples of blockSize
 		length = (fileReader->lengthInSamples+length)/hopSize;
 
+		// For FFT
+		
 		for (int j=0;j<length-1;j++)
 		{
 			// Not sure of the last two arguments, check if blockSize, hopSize implementation is correct
@@ -59,11 +61,28 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 			// sampleBuffer now has the audio samples, do something with them
 			 
 			float* sampleData = sampleBuffer->getSampleData(0);
-			DBG(String(sampleData[0]));
 			
+			float *res = calculateFFT(sampleData);
+			// Uncomment to debug
+			for(int w=0;w<blockSize;w++)
+			DBG(String(res[w]));
+						
 		}
 
 			
 	}
 }
+
+float* FeatureExtractor::calculateFFT(float* sampleData)
+{
+	// Get the samples
+	//float *sampleData = sampleBuffer->getSampleData(0);
+	// Initialize the FFT stuff
+	fftEngine.setWindowType(drow::Window::Hann);
+	fftEngine.performFFT (sampleData);
+	fftEngine.findMagnitudes();
+	
+	return sampleData;
+}
+
 
