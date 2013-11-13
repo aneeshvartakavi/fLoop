@@ -29,34 +29,40 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 	for(int i=0;i<audioLoops.size();i++)
 	{
 		File loop(audioLoops.getUnchecked(i));
-		ScopedPointer<AudioFormatReader> fileReader = formatManager.createReaderFor(loop);
 		
+		// Creating a reader for the file, depending on its format
+		ScopedPointer<AudioFormatReader> fileReader = formatManager.createReaderFor(loop);
+		// Redundant - Creating a source reader that reads from the fileReader
+		//ScopedPointer<AudioFormatReaderSource> sourceReader = new AudioFormatReaderSource(fileReader,true);
+				
 		ScopedPointer<AudioSampleBuffer> sampleBuffer = new AudioSampleBuffer(1,blockSize);
 		sampleBuffer->clear();
+		// Declare another buffer to read stereo audio, will not use if loop is mono
+		ScopedPointer<AudioSampleBuffer> sampleBuffer2 = new AudioSampleBuffer(1,blockSize);
+		sampleBuffer2->clear();
 
-		if(fileReader->numChannels==2)
-		{
-			// Convert Stereo to mono
-			AudioSampleBuffer stereoBuffer(2,blockSize);
-			stereoBuffer.clear();
-			sampleBuffer->addFrom(0,0,stereoBuffer,0,0,blockSize,0.5);
-			sampleBuffer->addFrom(0,0,stereoBuffer,1,0,blockSize,0.5);
-		}
-		else
-		{
-			DBG("More than 2 audio channels!");
-		}
-
+		int numChannels = fileReader->numChannels;
 		int64 length = fileReader->lengthInSamples%hopSize;
+		
 		// Accounting for non-integer multiples of blockSize
 		length = (fileReader->lengthInSamples+length)/hopSize;
-
 		// For FFT
 		
 		for (int j=0;j<length-1;j++)
 		{
-			// Not sure of the last two arguments, check if blockSize, hopSize implementation is correct
-			fileReader->read(sampleBuffer,0,blockSize,j*hopSize,true,true);
+			// Check if blockSize, hopSize implementation is correct
+			fileReader->read(sampleBuffer,0,blockSize,j*hopSize,true,false);
+			
+			if(numChannels == 2)
+			{
+				// Read the right channel into our second buffer
+				fileReader->read(sampleBuffer2,0,blockSize,0,false,true);
+				// Reducing gain so there is no clipping 		
+				sampleBuffer->applyGain(0.5);
+				sampleBuffer2->applyGain(0.5);
+				// Adding the samples to the final buffer
+				sampleBuffer->addFrom(0,0,*sampleBuffer2,0,0,blockSize);
+			}
 			
 			// sampleBuffer now has the audio samples, do something with them
 			 
@@ -89,4 +95,9 @@ float* FeatureExtractor::calculateFFT(float* sampleData)
 	return fftEngine.getMagnitudesBuffer().getData();
 }
 
+
+float* FeatureExtractor::calculateMFCC(float* sampleData)
+{
+	return nullptr;
+}
 
