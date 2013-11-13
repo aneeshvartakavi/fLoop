@@ -12,6 +12,7 @@
 #define FEATUREEXTRACTOR_H_INCLUDED
 
 #include "JuceHeader.h"
+#include "qm_dsp\dsp\mfcc\MFCC.h"
 
 class FeatureExtractor
 {

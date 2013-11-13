@@ -98,6 +98,13 @@ float* FeatureExtractor::calculateFFT(float* sampleData)
 
 float* FeatureExtractor::calculateMFCC(float* sampleData)
 {
+	//MFCCConfig config(44100);
+	//config.fftsize=2048;
+	//config.nceps = 13;
+	//config.logpower = false;
+	//
+	////MFCC a(config);
+
 	return nullptr;
 }
 

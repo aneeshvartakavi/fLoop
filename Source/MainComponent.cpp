@@ -70,6 +70,7 @@ MainComponent::MainComponent ()
 	DBG(result);
 
 	featureExtractor = new FeatureExtractor(2048,1024,10);
+
     //[/Constructor]
 }
 
@@ -119,7 +120,7 @@ void MainComponent::buttonClicked (Button* buttonThatWasClicked)
 		readDirectory();
 		if(pathToDirectory.exists())
 		{
-			featureExtractor->computeFeatures(audioLoops); // Uncomment to run feature extractor here
+			//featureExtractor->computeFeatures(audioLoops); // Uncomment to run feature extractor here
 			addAndMakeVisible(loopPlayer = new LoopPlayer(deviceManager,pathToDirectory));
         //[/UserButtonCode_browseButton]
     }
@@ -132,7 +133,8 @@ void MainComponent::buttonClicked (Button* buttonThatWasClicked)
 
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
-	}
+}
+
 }
 
 

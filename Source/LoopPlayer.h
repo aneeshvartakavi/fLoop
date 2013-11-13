@@ -86,6 +86,8 @@ private:
     ScopedPointer<Label> zoomLabel;
     ScopedPointer<Label> explanation;
     ScopedPointer<TextButton> startStopButton;
+    ScopedPointer<drow::CpuMeter> cpuMeter;
+    ScopedPointer<Label> label;
 
 
     //==============================================================================
