@@ -343,6 +343,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\LoopSimilarity.cpp">
+      <Filter>fLoop\Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\FeatureExtractor.cpp">
       <Filter>fLoop\Source</Filter>
     </ClCompile>
@@ -1719,6 +1722,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\LoopSimilarity.h">
+      <Filter>fLoop\Source</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\FeatureExtractor.h">
       <Filter>fLoop\Source</Filter>
     </ClInclude>

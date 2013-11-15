@@ -133,6 +133,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\LoopSimilarity.cpp"/>
     <ClCompile Include="..\..\Source\FeatureExtractor.cpp"/>
     <ClCompile Include="..\..\Source\ThumbnailComponent.cpp"/>
     <ClCompile Include="..\..\Source\LoopPlayer.cpp"/>
@@ -1383,6 +1384,7 @@
     <ClCompile Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_video\juce_video.cpp"/>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\LoopSimilarity.h"/>
     <ClInclude Include="..\..\Source\FeatureExtractor.h"/>
     <ClInclude Include="..\..\Source\ThumbnailComponent.h"/>
     <ClInclude Include="..\..\Source\LoopPlayer.h"/>

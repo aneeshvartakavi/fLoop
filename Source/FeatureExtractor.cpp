@@ -10,21 +10,50 @@
 
 #include "FeatureExtractor.h"
 
-FeatureExtractor::FeatureExtractor(int blockSize_, int hopSize_, int fftSizelog2):fftEngine(fftSizelog2)
+FeatureExtractor::FeatureExtractor(const Array<File> &audioLoops, int numFeatures_, int blockSize_, int hopSize_, int fftSizelog2):fftEngine(fftSizelog2)
 {
+	
+	// Create an empty var to hold each feature
+	//var tempVar = var();
+	
+	numFeatures = numFeatures_+1; // Num features + path to file
+	
+	//for(int i=0; i<numFeatures; i++) 
+	//{
+	//	tempVar.insert(i,var());
+	//}
+	
+	//DBG(JSON::toString(tempVar));
+	// Create an array of vars for each file
+	featureVector.insertMultiple(0,var(),audioLoops.size());
+	/*for(int i=0; i<audioLoops.size(); i++) 
+		featureVector.insert(i,var());
+	*/
+	
 	blockSize = blockSize_;
 	hopSize = hopSize_;
+	// Register basic formats to read
+	formatManager.registerBasicFormats();
+
+	// Initialize pointer to the list of files
+	fileList = audioLoops;
+	
 }
 
 FeatureExtractor::~FeatureExtractor()
 {
-
+	//fileList = nullptr;
 }
 
 void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 {
-	formatManager.registerBasicFormats();
+	// Will be rewritten
 	
+	
+	// First thing to do is write the filenames to var
+
+		
+		
 	// Iterate through all our loops
 	for(int i=0;i<audioLoops.size();i++)
 	{
@@ -34,7 +63,7 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 		ScopedPointer<AudioFormatReader> fileReader = formatManager.createReaderFor(loop);
 		// Redundant - Creating a source reader that reads from the fileReader
 		//ScopedPointer<AudioFormatReaderSource> sourceReader = new AudioFormatReaderSource(fileReader,true);
-				
+		
 		ScopedPointer<AudioSampleBuffer> sampleBuffer = new AudioSampleBuffer(1,blockSize);
 		sampleBuffer->clear();
 		// Declare another buffer to read stereo audio, will not use if loop is mono
@@ -83,6 +112,22 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 	}
 }
 
+void FeatureExtractor::computeFeatures(int index)
+{
+	// Insert names as the first entry
+	for(int i=0;i<fileList.size();i++)
+	{
+		
+		File tempFile = fileList.getUnchecked(i);
+		var& element = featureVector.getReference(i);
+		element.append(tempFile.getFileNameWithoutExtension());
+	}	
+
+	// Then estimate tempo
+	calculateTempo();
+}
+
+
 float* FeatureExtractor::calculateFFT(float* sampleData)
 {
 	// Get the samples
@@ -108,3 +153,65 @@ float* FeatureExtractor::calculateMFCC(float* sampleData)
 	return nullptr;
 }
 
+void FeatureExtractor::calculateTempo()
+{
+	int numLoops = fileList.size();
+	// Preallocating some temporary variables
+	int len = 0;
+	int Fs = 0;
+	float fbpm;
+	
+	for(int i=0;i<numLoops;i++)
+	{
+		File loop(fileList.getUnchecked(i));
+		// Creating a reader for the file, depending on its format
+		ScopedPointer<AudioFormatReader> fileReader = formatManager.createReaderFor(loop);
+
+		// Perform out calculations
+		len = fileReader->lengthInSamples;
+		Fs = fileReader->sampleRate;
+		fbpm = (60*8*Fs)/len; // 60bpm * number of beats * fs /len
+		
+		// Get reference to the feature vector
+		var& tempVar = featureVector.getReference(i);
+		// Append the tempo
+		tempVar.append(adjustBPM(fbpm));
+	}
+
+	
+}
+
+void FeatureExtractor::writeFile(const File& pathToDirectory)
+{
+	
+	DynamicObject* features = new DynamicObject();
+	
+	Array<var> loopFeatures;
+
+	//var tempFeature;
+	for(int i=0;i<fileList.size();i++)
+	{
+		DynamicObject* loop = new DynamicObject();
+		var tempFeature = featureVector[i];
+		
+		DBG(String(tempFeature[0]));
+		
+		// Add all the properties
+		loop->setProperty("Path",tempFeature[0]);
+		loop->setProperty("Tempo",tempFeature[1]);
+		
+		loopFeatures.add(loop);
+		loop = nullptr;
+	}
+	features->setProperty("LoopFeatures",loopFeatures);
+
+	// Extract a path
+	String tempPath = pathToDirectory.getFullPathName() + String("\\floop_cache.txt");
+	//tempPath = tempPath ;
+	
+	File cache(tempPath);
+	FileOutputStream tempStream(cache);
+	JSON::writeToStream(tempStream,features,false);
+	
+
+}

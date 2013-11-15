@@ -66,7 +66,7 @@ LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDir
     cpuMeter->setName ("cpuMeter");
 
     addAndMakeVisible (label = new Label ("new label",
-                                          "CPU Meter"));
+                                          "CPU Usage"));
     label->setFont (Font (15.00f, Font::plain));
     label->setJustificationType (Justification::centredLeft);
     label->setEditable (false, false, false);
@@ -278,7 +278,7 @@ BEGIN_JUCER_METADATA
                     explicitFocusOrder="0" pos="496 64 64 24" class="Component" params="&amp;deviceManager"/>
   <LABEL name="new label" id="1a1155b3b685297c" memberName="label" virtualName=""
          explicitFocusOrder="0" pos="488 40 150 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="CPU Meter" editableSingleClick="0" editableDoubleClick="0"
+         edBkgCol="0" labelText="CPU Usage" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15"
          bold="0" italic="0" justification="33"/>
 </JUCER_COMPONENT>

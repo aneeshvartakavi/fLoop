@@ -5,6 +5,10 @@
               jucerVersion="3.1.0">
   <MAINGROUP id="igV5q7" name="fLoop">
     <GROUP id="{26EEE55C-A9FA-5E32-656B-A6A94001740C}" name="Source">
+      <FILE id="Fw4tIe" name="LoopSimilarity.cpp" compile="1" resource="0"
+            file="Source/LoopSimilarity.cpp"/>
+      <FILE id="oTosnO" name="LoopSimilarity.h" compile="0" resource="0"
+            file="Source/LoopSimilarity.h"/>
       <FILE id="EimraH" name="FeatureExtractor.cpp" compile="1" resource="0"
             file="Source/FeatureExtractor.cpp"/>
       <FILE id="Qel7OB" name="FeatureExtractor.h" compile="0" resource="0"
