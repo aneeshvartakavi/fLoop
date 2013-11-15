@@ -120,28 +120,34 @@ void MainComponent::buttonClicked (Button* buttonThatWasClicked)
 		if(pathToDirectory.exists())
 		{
 			featureExtractor = new FeatureExtractor(audioLoops,1,1024,512,10);
+			
 			if(featureExtractor->cacheExists(pathToDirectory))
 			{
-				//AlertWindow cacheSelect("Cache Exists","fLoop detected a pre-processed cache for these loops. /n Would you like to use it and save some time?",AlertWindow::AlertIconType::QuestionIcon);
-				//cacheSelect.addButton("Yes",1);
-				//cacheSelect.addButton("No",0);
-
-				bool selected = AlertWindow::showOkCancelBox(AlertWindow::AlertIconType::QuestionIcon,"Cache Found","fLoop detected a pre-processed cache for this directory. Would you like to use it and save some time?",
+				bool cacheSelected = AlertWindow::showOkCancelBox(AlertWindow::AlertIconType::QuestionIcon,"Cache Found","fLoop detected a pre-processed cache for this directory. Would you like to use it and save some time?",
 					"Yes","No",this);
-				if (selected)
+				if (cacheSelected)
 				{
 					featureExtractor->readCache(pathToDirectory);
 				}
-			// Else do the same thing as you do when cache is not found							
+				else
+				{
+					// Else do the same thing as you do when cache is not found
+					featureExtractor->computeFeatures(1);
+					featureExtractor->writeCache(pathToDirectory);
+				}
 			}
-
-			featureExtractor->computeFeatures(1);
-			featureExtractor->writeCache(pathToDirectory);
+			else
+			{
+				// Cache not found
+				featureExtractor->computeFeatures(1);
+				featureExtractor->writeCache(pathToDirectory);
+			}
 			
-
 			addAndMakeVisible(loopPlayer = new LoopPlayer(deviceManager,pathToDirectory));
+						
 		}
         //[/UserButtonCode_browseButton]
+
     }
     else if (buttonThatWasClicked == setupButton)
     {
