@@ -61,4 +61,8 @@ Builds/VisualStudio2012/Debug/
 *.vcxproj.user
 
 
+# Cam's files
+Builds/MacOSX/fLoop.xcodeproj/project.xcworkspace/
+Builds/MacOSX/fLoop.xcodeproj/xcuserdata/
+
 Audio/

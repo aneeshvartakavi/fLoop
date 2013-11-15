@@ -62,6 +62,7 @@ namespace MouseCursorHelpers
             return CustomMouseCursorInfo (im, (int) (hx * im.getWidth()),
                                               (int) (hy * im.getHeight())).create();
 
+        jassertfalse;
         return nullptr;
     }
 }
@@ -94,16 +95,7 @@ void* MouseCursor::createStandardMouseCursor (MouseCursor::StandardCursorType ty
             case LeftEdgeResizeCursor:  c = [NSCursor resizeLeftCursor]; break;
             case RightEdgeResizeCursor: c = [NSCursor resizeRightCursor]; break;
             case CrosshairCursor:       c = [NSCursor crosshairCursor]; break;
-
-            case CopyingCursor:
-            {
-               #if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_6
-                if (void* m = MouseCursorHelpers::fromWebKitFile ("copyCursor.png", 0, 0))
-                    return m;
-               #endif
-                c = [NSCursor dragCopyCursor]; // added in 10.6
-                break;
-            }
+            case CopyingCursor:         return MouseCursorHelpers::fromWebKitFile ("copyCursor.png", 0, 0);
 
             case UpDownResizeCursor:
             case TopEdgeResizeCursor:

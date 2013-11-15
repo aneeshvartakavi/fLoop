@@ -69,45 +69,48 @@ bool PathFlatteningIterator::next()
     float y3 = 0;
     float x4 = 0;
     float y4 = 0;
+    float type;
 
     for (;;)
     {
-        float type;
-
         if (stackPos == stackBase)
         {
             if (index >= path.numElements)
-                return false;
-
-            type = points [index++];
-
-            if (type != Path::closeSubPathMarker)
             {
-                x2 = points [index++];
-                y2 = points [index++];
+                return false;
+            }
+            else
+            {
+                type = points [index++];
 
-                if (type == Path::quadMarker)
+                if (type != Path::closeSubPathMarker)
                 {
-                    x3 = points [index++];
-                    y3 = points [index++];
+                    x2 = points [index++];
+                    y2 = points [index++];
 
-                    if (! isIdentityTransform)
-                        transform.transformPoints (x2, y2, x3, y3);
-                }
-                else if (type == Path::cubicMarker)
-                {
-                    x3 = points [index++];
-                    y3 = points [index++];
-                    x4 = points [index++];
-                    y4 = points [index++];
+                    if (type == Path::quadMarker)
+                    {
+                        x3 = points [index++];
+                        y3 = points [index++];
 
-                    if (! isIdentityTransform)
-                        transform.transformPoints (x2, y2, x3, y3, x4, y4);
-                }
-                else
-                {
-                    if (! isIdentityTransform)
-                        transform.transformPoint (x2, y2);
+                        if (! isIdentityTransform)
+                            transform.transformPoints (x2, y2, x3, y3);
+                    }
+                    else if (type == Path::cubicMarker)
+                    {
+                        x3 = points [index++];
+                        y3 = points [index++];
+                        x4 = points [index++];
+                        y4 = points [index++];
+
+                        if (! isIdentityTransform)
+                            transform.transformPoints (x2, y2, x3, y3, x4, y4);
+                    }
+                    else
+                    {
+                        if (! isIdentityTransform)
+                            transform.transformPoint (x2, y2);
+                    }
                 }
             }
         }
@@ -147,8 +150,7 @@ bool PathFlatteningIterator::next()
 
             return true;
         }
-
-        if (type == Path::quadMarker)
+        else if (type == Path::quadMarker)
         {
             const size_t offset = (size_t) (stackPos - stackBase);
 
