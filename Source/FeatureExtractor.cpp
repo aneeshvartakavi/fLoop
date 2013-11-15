@@ -194,7 +194,7 @@ void FeatureExtractor::writeFile(const File& pathToDirectory)
 		DynamicObject* loop = new DynamicObject();
 		var tempFeature = featureVector[i];
 		
-		DBG(String(tempFeature[0]));
+//		DBG(String(tempFeature[0]));
 		
 		// Add all the properties
 		loop->setProperty("Path",tempFeature[0]);

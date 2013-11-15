@@ -333,18 +333,6 @@ void MessageManager::broadcastMessage (const String& message)
 void repostCurrentNSEvent();
 void repostCurrentNSEvent()
 {
-    struct EventReposter  : public CallbackMessage
-    {
-        EventReposter() : e ([[NSApp currentEvent] retain])  {}
-        ~EventReposter()  { [e release]; }
-
-        void messageCallback() override
-        {
-            [NSApp postEvent: e atStart: YES];
-        }
-
-        NSEvent* e;
-    };
-
-    (new EventReposter())->post();
+    NSEvent* e = [NSApp currentEvent];
+    [[NSOperationQueue mainQueue] addOperationWithBlock: ^{ [NSApp postEvent: e atStart: YES]; }];
 }

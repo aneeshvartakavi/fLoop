@@ -30,7 +30,7 @@
 AudioSetup::AudioSetup (AudioDeviceManager& deviceManager_)
     : deviceManager (deviceManager_)
 {
-    addAndMakeVisible (deviceSelector = new AudioDeviceSelectorComponent (deviceManager, 0, 2, 0, 2, false, false, true, true));
+    addAndMakeVisible (deviceSelector = new AudioDeviceSelectorComponent (deviceManager, 0, 2, 0, 2, true, true, true, false));
 
     addAndMakeVisible (backButton = new TextButton ("backButton"));
     backButton->setButtonText ("Back");

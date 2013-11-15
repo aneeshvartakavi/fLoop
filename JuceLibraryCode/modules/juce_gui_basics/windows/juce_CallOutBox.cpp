@@ -48,11 +48,8 @@ CallOutBox::~CallOutBox()
 {
 }
 
-enum { callOutBoxDismissCommandId = 0x4f83a04b };
-
 //==============================================================================
-class CallOutBoxCallback  : public ModalComponentManager::Callback,
-                            private Timer
+class CallOutBoxCallback  : public ModalComponentManager::Callback
 {
 public:
     CallOutBoxCallback (Component* c, const Rectangle<int>& area, Component* parent)
@@ -60,16 +57,9 @@ public:
     {
         callout.setVisible (true);
         callout.enterModalState (true, this);
-        startTimer (200);
     }
 
-    void modalStateFinished (int) override {}
-
-    void timerCallback() override
-    {
-        if (! Process::isForegroundProcess())
-            callout.postCommandMessage (callOutBoxDismissCommandId);
-    }
+    void modalStateFinished (int) {}
 
     ScopedPointer<Component> content;
     CallOutBox callout;
@@ -119,6 +109,8 @@ bool CallOutBox::hitTest (int x, int y)
 {
     return outline.contains ((float) x, (float) y);
 }
+
+enum { callOutBoxDismissCommandId = 0x4f83a04b };
 
 void CallOutBox::inputAttemptWhenModal()
 {
