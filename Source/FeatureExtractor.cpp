@@ -103,8 +103,8 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 			// May need to threshold values, the 10^-38 can be considered 0.
 						
 			// Uncomment to debug
-			for(int w=0;w<blockSize;w++)
-			DBG(String(res[w]));
+			//for(int w=0;w<blockSize;w++)
+			//DBG(String(res[w]));
 						
 		}
 
