@@ -69,7 +69,7 @@ MainComponent::MainComponent ()
     String result = deviceManager.setAudioDeviceSetup (deviceConfig, true);
 	DBG(result);
 
-	featureExtractor = new FeatureExtractor(2048,1024,10);
+	
     //[/Constructor]
 }
 
@@ -119,8 +119,13 @@ void MainComponent::buttonClicked (Button* buttonThatWasClicked)
 		readDirectory();
 		if(pathToDirectory.exists())
 		{
-			featureExtractor->computeFeatures(audioLoops); // Uncomment to run feature extractor here
+			featureExtractor = new FeatureExtractor(audioLoops,1,1024,512,10);
+			featureExtractor->computeFeatures(1);
+			featureExtractor->writeFile(pathToDirectory);
+			
+
 			addAndMakeVisible(loopPlayer = new LoopPlayer(deviceManager,pathToDirectory));
+		}
         //[/UserButtonCode_browseButton]
     }
     else if (buttonThatWasClicked == setupButton)
@@ -132,8 +137,8 @@ void MainComponent::buttonClicked (Button* buttonThatWasClicked)
 
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
-	}
 }
+
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...

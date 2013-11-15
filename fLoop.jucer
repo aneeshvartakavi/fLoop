@@ -5,6 +5,10 @@
               jucerVersion="3.1.0">
   <MAINGROUP id="igV5q7" name="fLoop">
     <GROUP id="{26EEE55C-A9FA-5E32-656B-A6A94001740C}" name="Source">
+      <FILE id="Fw4tIe" name="LoopSimilarity.cpp" compile="1" resource="0"
+            file="Source/LoopSimilarity.cpp"/>
+      <FILE id="oTosnO" name="LoopSimilarity.h" compile="0" resource="0"
+            file="Source/LoopSimilarity.h"/>
       <FILE id="EimraH" name="FeatureExtractor.cpp" compile="1" resource="0"
             file="Source/FeatureExtractor.cpp"/>
       <FILE id="Qel7OB" name="FeatureExtractor.h" compile="0" resource="0"
@@ -57,21 +61,17 @@
                        isDebug="0" optimisation="2" targetName="fLoop"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_audio_utils" path=".\JuceLibraryCode\modules"/>
-        <MODULEPATH id="dRowAudio" path=".\JuceLibraryCode\modules"/>
-        <MODULEPATH id="juce_audio_processors" path=".\JuceLibraryCode\modules"/>
-        <MODULEPATH id="juce_audio_basics" path=".\JuceLibraryCode\modules"/>
-        <MODULEPATH id="juce_audio_devices" path=".\JuceLibraryCode\modules"/>
-        <MODULEPATH id="juce_audio_formats" path=".\JuceLibraryCode\modules"/>
-        <MODULEPATH id="juce_cryptography" path=".\JuceLibraryCode\modules"/>
-        <MODULEPATH id="juce_video" path=".\JuceLibraryCode\modules"/>
-        <MODULEPATH id="juce_opengl" path=".\JuceLibraryCode\modules"/>
-        <MODULEPATH id="juce_data_structures" path=".\JuceLibraryCode\modules"/>
-        <MODULEPATH id="juce_gui_extra" path=".\JuceLibraryCode\modules"/>
-        <MODULEPATH id="juce_core" path=".\JuceLibraryCode\modules"/>
-        <MODULEPATH id="juce_events" path=".\JuceLibraryCode\modules"/>
-        <MODULEPATH id="juce_graphics" path=".\JuceLibraryCode\modules"/>
-        <MODULEPATH id="juce_gui_basics" path=".\JuceLibraryCode\modules"/>
+        <MODULEPATH id="juce_audio_utils" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
+        <MODULEPATH id="dRowAudio" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
+        <MODULEPATH id="juce_audio_processors"/>
+        <MODULEPATH id="juce_audio_basics"/>
+        <MODULEPATH id="juce_audio_devices"/>
+        <MODULEPATH id="juce_audio_formats"/>
+        <MODULEPATH id="juce_cryptography"/>
+        <MODULEPATH id="juce_video"/>
+        <MODULEPATH id="juce_opengl"/>
+        <MODULEPATH id="juce_data_structures"/>
+        <MODULEPATH id="juce_gui_extra"/>
       </MODULEPATHS>
     </XCODE_MAC>
   </EXPORTFORMATS>
