@@ -120,7 +120,7 @@ void MainComponent::buttonClicked (Button* buttonThatWasClicked)
 		if(pathToDirectory.exists())
 		{
 			featureExtractor = new FeatureExtractor(audioLoops,1,1024,512,10);
-			featureExtractor->computeFeatures(1);
+			featureExtractor->computeFeatures(audioLoops);
 			featureExtractor->writeFile(pathToDirectory);
 			
 

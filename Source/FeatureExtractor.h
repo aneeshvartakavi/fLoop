@@ -24,8 +24,9 @@ public:
 	void computeFeatures(int index);
 	// Index is used to place the element in the appropriate row of the var
 	void calculateTempo();
+    std::pair<float, float> calculateSpectralCrestFactor(std::vector<float> fftData, int length);
 	// Old code, has to be modified
-	float* calculateFFT(float* sampleData);
+    float* calculateFFT(float* sampleData);
 	float* calculateMFCC(float* sampleData);
 	float* spectralCentroid(float* magSpectrum);
 	
