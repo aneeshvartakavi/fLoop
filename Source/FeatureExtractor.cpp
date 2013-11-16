@@ -14,24 +14,15 @@ FeatureExtractor::FeatureExtractor(const Array<File> &audioLoops, int numFeature
 {
 	
 	// Create an empty var to hold each feature
-	//var tempVar = var();
-	
+	// Change this to an enum that species what features
+
 	numFeatures = numFeatures_+1; // Num features + path to file
 	
-	//for(int i=0; i<numFeatures; i++) 
-	//{
-	//	tempVar.insert(i,var());
-	//}
-	
-	//DBG(JSON::toString(tempVar));
-	// Create an array of vars for each file
 	featureVector.insertMultiple(0,var(),audioLoops.size());
-	/*for(int i=0; i<audioLoops.size(); i++) 
-		featureVector.insert(i,var());
-	*/
 	
 	blockSize = blockSize_;
 	hopSize = hopSize_;
+	
 	// Register basic formats to read
 	formatManager.registerBasicFormats();
 
@@ -117,6 +108,9 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 
 void FeatureExtractor::computeFeatures(int index)
 {
+	// Need some sort of input to decide what features to run
+	// Make sure the order of calls is consistent
+	// This makes sure that the database and the cache file store data in the right fields
 	// Insert names as the first entry
 	for(int i=0;i<fileList.size();i++)
 	{		
@@ -218,7 +212,7 @@ std::pair<float, float> FeatureExtractor::calculateSpectralCrestFactor(std::vect
     return distr;
 }
 
-void FeatureExtractor::writeFile(const File& pathToDirectory)
+void FeatureExtractor::writeCache(const File& pathToDirectory)
 {
 	
 	DynamicObject* features = new DynamicObject();
@@ -230,8 +224,6 @@ void FeatureExtractor::writeFile(const File& pathToDirectory)
 	{
 		DynamicObject* loop = new DynamicObject();
 		var tempFeature = featureVector[i];
-		
-//		DBG(String(tempFeature[0]));
 		
 		// Add all the properties
 		loop->setProperty("Path",tempFeature[0]);
@@ -246,9 +238,50 @@ void FeatureExtractor::writeFile(const File& pathToDirectory)
 	String tempPath = pathToDirectory.getFullPathName() + String("\\floop_cache.txt");
 	//tempPath = tempPath ;
 	
+	// Create a new cache file
 	File cache(tempPath);
+	
+	// Delete the old file if it exists
+	cache.deleteFile();
+	// Create a file output stream to write to
 	FileOutputStream tempStream(cache);
+	// Write to the stream
 	JSON::writeToStream(tempStream,features,false);
 	
+}
+
+bool FeatureExtractor::cacheExists(const File& pathToDirectory)
+{
+	// Call this function to check if a cache exists
+	String tempPath = pathToDirectory.getFullPathName() + String("\\floop_cache.txt");
+	File cache(tempPath);
+	return cache.exists();
+}
+
+void FeatureExtractor::readCache(const File& pathToDirectory)
+{
+	// Always call this after a call to check if cache exists
+	String tempPath = pathToDirectory.getFullPathName() + String("\\floop_cache.txt");
+	File cache(tempPath);
+	
+	// Clear state
+	 var result = JSON::parse(cache).getProperty(Identifier("LoopFeatures"),0);
+	 int length = result.getArray()->size();
+
+
+	 for(int i=0;i<length;i++)
+	 {
+		 // Get the data from the cache file
+		 String path = result[i].getProperty(Identifier("Path"),0);
+		 int tempo = result[i].getProperty(Identifier("Tempo"),0);
+	 
+		// Add it to the feature vector
+		 var& tempFeatures = featureVector.getReference(i);
+		 // Make sure the order is consistent
+		 tempFeatures.append(path);
+		 tempFeatures.append(tempo);
+	 }
 
 }
+
+

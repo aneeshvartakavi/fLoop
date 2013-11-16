@@ -31,9 +31,10 @@ public:
 	float* spectralCentroid(float* magSpectrum);
 	
 	// Writes a text file in the parent directory
-	void writeFile(const File &pathToDirectory);
+	void writeCache(const File &pathToDirectory);
+	bool cacheExists(const File &pathToDirectory);
 	// Reads the parent directory to see if there
-	bool readFile(const File& pathToDirectory);
+	void readCache(const File& pathToDirectory);
 	
 
 private:
@@ -43,12 +44,16 @@ private:
 	
 	// This stores the list of files
 	Array<File> fileList;
-
+	
+	// To manage reading audio formats
 	AudioFormatManager formatManager;
+	
+	// For the FFT
 	int blockSize;
 	int hopSize;
 	int numFeatures;
 	drow::FFTEngine fftEngine;
+	
 	enum features
 	{
 
