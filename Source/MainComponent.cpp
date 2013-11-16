@@ -63,13 +63,13 @@ MainComponent::MainComponent ()
     StringArray audioOutputDevices (audioDeviceType->getDeviceNames(false));
 	AudioDeviceManager::AudioDeviceSetup deviceConfig;
     deviceManager.getAudioDeviceSetup(deviceConfig);
-
+	
 	deviceConfig.inputDeviceName = audioInputDevices[0];
 	deviceConfig.outputDeviceName= audioOutputDevices[0];
     String result = deviceManager.setAudioDeviceSetup (deviceConfig, true);
 	DBG(result);
 
-	
+	newFilter = new CustomFileFilter(".wav");
     //[/Constructor]
 }
 
@@ -143,7 +143,7 @@ void MainComponent::buttonClicked (Button* buttonThatWasClicked)
 				featureExtractor->writeCache(pathToDirectory);
 			}
 			
-			addAndMakeVisible(loopPlayer = new LoopPlayer(deviceManager,pathToDirectory));
+			addAndMakeVisible(loopPlayer = new LoopPlayer(deviceManager,pathToDirectory,newFilter));
 						
 		}
         //[/UserButtonCode_browseButton]

@@ -23,6 +23,7 @@
 //[Headers]     -- You can add your own extra header files here --
 #include "JuceHeader.h"
 #include "ThumbnailComponent.h"
+#include "CustomFileFilter.h"
 class ThumbnailComponent;
 //[/Headers]
 
@@ -43,7 +44,7 @@ class LoopPlayer  : public Component,
 {
 public:
     //==============================================================================
-    LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDirectory);
+    LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDirectory, CustomFileFilter* customFilter);
     ~LoopPlayer();
 
     //==============================================================================

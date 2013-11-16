@@ -25,6 +25,7 @@
 #include "AudioSetup.h"
 #include "LoopPlayer.h"
 #include "FeatureExtractor.h"
+#include "CustomFileFilter.h"
 //[/Headers]
 
 
@@ -64,6 +65,7 @@ private:
 	ScopedPointer<FeatureExtractor> featureExtractor;
 	AudioDeviceManager deviceManager;
 	File pathToDirectory;
+	ScopedPointer<CustomFileFilter> newFilter;
     //[/UserVariables]
 
     //==============================================================================

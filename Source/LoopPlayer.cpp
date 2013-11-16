@@ -27,8 +27,8 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDirectory)
-    : deviceManager (deviceManager), thread ("Audio file preview"), directoryList (nullptr, thread)
+LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDirectory, CustomFileFilter* customFilter)
+    : deviceManager (deviceManager), thread ("Audio file preview"), directoryList (customFilter, thread)
 {
     addAndMakeVisible (zoomSlider = new Slider ("zoomSlider"));
     zoomSlider->setRange (0, 1, 0);
@@ -85,6 +85,7 @@ LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDir
 
 	directoryList.setDirectory (pathtoDirectory, true, true);
     thread.startThread (3);
+
 
     fileTreeComp->setColour (FileTreeComponent::backgroundColourId, Colours::white);
     fileTreeComp->addListener (this);
@@ -246,8 +247,8 @@ BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="LoopPlayer" componentName=""
                  parentClasses="public Component, public FileBrowserListener, public SliderListener, public ButtonListener"
-                 constructorParams="AudioDeviceManager&amp; deviceManager, const File&amp; pathtoDirectory"
-                 variableInitialisers="deviceManager (deviceManager), thread (&quot;Audio file preview&quot;), directoryList (nullptr, thread)"
+                 constructorParams="AudioDeviceManager&amp; deviceManager, const File&amp; pathtoDirectory, CustomFileFilter* customFilter"
+                 variableInitialisers="deviceManager (deviceManager), thread (&quot;Audio file preview&quot;), directoryList (customFilter, thread)"
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="0" initialWidth="1024" initialHeight="768">
   <BACKGROUND backgroundColour="fff0f0f0"/>

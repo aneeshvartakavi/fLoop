@@ -3,7 +3,7 @@
 
     FeatureExtractor.h
     Created: 10 Nov 2013 7:34:20pm
-    Author:  Aneesh
+    Author:  Aneesh, Cameron
 
   ==============================================================================
 */

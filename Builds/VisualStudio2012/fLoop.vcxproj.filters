@@ -343,6 +343,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\CustomFileFilter.cpp">
+      <Filter>fLoop\Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\FeatureExtractor.cpp">
       <Filter>fLoop\Source</Filter>
     </ClCompile>
@@ -1672,53 +1675,56 @@
     <ClCompile Include="..\..\JuceLibraryCode\modules\juce_video\native\juce_win32_QuickTimeMovieComponent.cpp">
       <Filter>Juce Modules\juce_video\native</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\dRowAudio\dRowAudio.cpp">
+    <ClCompile Include="..\..\JuceLibraryCode\modules\dRowAudio\dRowAudio.cpp">
       <Filter>Juce Library Code</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_audio_basics\juce_audio_basics.cpp">
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_basics\juce_audio_basics.cpp">
       <Filter>Juce Library Code</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_audio_devices\juce_audio_devices.cpp">
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_devices\juce_audio_devices.cpp">
       <Filter>Juce Library Code</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_audio_formats\juce_audio_formats.cpp">
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_formats\juce_audio_formats.cpp">
       <Filter>Juce Library Code</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_audio_processors\juce_audio_processors.cpp">
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_processors\juce_audio_processors.cpp">
       <Filter>Juce Library Code</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_audio_utils\juce_audio_utils.cpp">
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_audio_utils\juce_audio_utils.cpp">
       <Filter>Juce Library Code</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_core\juce_core.cpp">
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_core\juce_core.cpp">
       <Filter>Juce Library Code</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_cryptography\juce_cryptography.cpp">
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_cryptography\juce_cryptography.cpp">
       <Filter>Juce Library Code</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_data_structures\juce_data_structures.cpp">
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_data_structures\juce_data_structures.cpp">
       <Filter>Juce Library Code</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_events\juce_events.cpp">
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_events\juce_events.cpp">
       <Filter>Juce Library Code</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_graphics\juce_graphics.cpp">
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_graphics\juce_graphics.cpp">
       <Filter>Juce Library Code</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_gui_basics\juce_gui_basics.cpp">
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_gui_basics\juce_gui_basics.cpp">
       <Filter>Juce Library Code</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_gui_extra\juce_gui_extra.cpp">
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_gui_extra\juce_gui_extra.cpp">
       <Filter>Juce Library Code</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_opengl\juce_opengl.cpp">
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_opengl\juce_opengl.cpp">
       <Filter>Juce Library Code</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_video\juce_video.cpp">
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_video\juce_video.cpp">
       <Filter>Juce Library Code</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\CustomFileFilter.h">
+      <Filter>fLoop\Source</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\FeatureExtractor.h">
       <Filter>fLoop\Source</Filter>
     </ClInclude>
