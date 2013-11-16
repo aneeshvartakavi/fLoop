@@ -106,12 +106,6 @@ using namespace juce;
 - (BOOL) shouldAutorotateToInterfaceOrientation: (UIInterfaceOrientation) interfaceOrientation;
 - (void) willRotateToInterfaceOrientation: (UIInterfaceOrientation) toInterfaceOrientation duration: (NSTimeInterval) duration;
 - (void) didRotateFromInterfaceOrientation: (UIInterfaceOrientation) fromInterfaceOrientation;
-
-- (void) viewDidLoad;
-- (void) viewWillAppear: (BOOL) animated;
-- (void) viewDidAppear: (BOOL) animated;
-- (void) viewWillLayoutSubviews;
-- (void) viewDidLayoutSubviews;
 @end
 
 //==============================================================================
@@ -119,6 +113,7 @@ using namespace juce;
 {
 @private
     UIViewComponentPeer* owner;
+    bool isZooming;
 }
 
 - (void) setOwner: (UIViewComponentPeer*) owner;
@@ -328,16 +323,6 @@ private:
     [self viewDidLoad];
 }
 
-- (void) viewWillLayoutSubviews
-{
-    [self viewDidLoad];
-}
-
-- (void) viewDidLayoutSubviews
-{
-    [self viewDidLoad];
-}
-
 @end
 
 @implementation JuceUIView
@@ -443,6 +428,7 @@ private:
 - (void) setOwner: (UIViewComponentPeer*) peer
 {
     owner = peer;
+    isZooming = false;
 }
 
 - (void) becomeKeyWindow
@@ -494,7 +480,7 @@ UIViewComponentPeer::UIViewComponentPeer (Component& comp, const int windowStyle
     view = [[JuceUIView alloc] initWithOwner: this withFrame: r];
 
     view.multipleTouchEnabled = YES;
-    view.hidden = true;
+    view.hidden = ! component.isVisible();
     view.opaque = component.isOpaque();
     view.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent: 0];
     view.transform = CGAffineTransformIdentity;
@@ -506,32 +492,34 @@ UIViewComponentPeer::UIViewComponentPeer (Component& comp, const int windowStyle
     }
     else
     {
+        controller = [[JuceUIViewController alloc] init];
+        controller.view = view;
+
         r = convertToCGRect (rotatedScreenPosToReal (component.getBounds()));
         r.origin.y = [UIScreen mainScreen].bounds.size.height - (r.origin.y + r.size.height);
 
-        window = [[JuceUIWindow alloc] initWithFrame: r];
-        [((JuceUIWindow*) window) setOwner: this];
-
-        controller = [[JuceUIViewController alloc] init];
-        controller.view = view;
-        window.rootViewController = controller;
-
+        window = [[JuceUIWindow alloc] init];
         window.hidden = true;
         window.autoresizesSubviews = NO;
-        window.transform = Orientations::getCGTransformFor (Desktop::getInstance().getCurrentOrientation());
+        window.transform = CGAffineTransformIdentity;
+        window.frame = r;
         window.opaque = component.isOpaque();
         window.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent: 0];
+
+        [((JuceUIWindow*) window) setOwner: this];
 
         if (component.isAlwaysOnTop())
             window.windowLevel = UIWindowLevelAlert;
 
         view.frame = CGRectMake (0, 0, r.size.width, r.size.height);
 
+        window.rootViewController = controller;
         [window addSubview: view];
+
+        window.hidden = view.hidden;
     }
 
     setTitle (component.getName());
-    setVisible (component.isVisible());
 
     Desktop::getInstance().addFocusChangeListener (this);
 }
@@ -555,10 +543,10 @@ UIViewComponentPeer::~UIViewComponentPeer()
 //==============================================================================
 void UIViewComponentPeer::setVisible (bool shouldBeVisible)
 {
+    view.hidden = ! shouldBeVisible;
+
     if (! isSharedWindow)
         window.hidden = ! shouldBeVisible;
-
-    view.hidden = ! shouldBeVisible;
 }
 
 void UIViewComponentPeer::setTitle (const String&)
@@ -642,7 +630,7 @@ void UIViewComponentPeer::updateTransformAndScreenBounds()
     const Rectangle<int> oldArea (component.getBounds());
     const Rectangle<int> oldDesktop (desktop.getDisplays().getMainDisplay().userArea);
 
-    const_cast<Desktop::Displays&> (desktop.getDisplays()).refresh();
+    const_cast <Desktop::Displays&> (desktop.getDisplays()).refresh();
 
     window.transform = Orientations::getCGTransformFor (desktop.getCurrentOrientation());
     view.transform = CGAffineTransformIdentity;

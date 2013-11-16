@@ -441,7 +441,7 @@ public:
     /** Returns true if this data contains a valid string in this encoding. */
     static bool isValidString (const CharType* dataToTest, int maxBytesToRead)
     {
-        maxBytesToRead /= (int) sizeof (CharType);
+        maxBytesToRead /= sizeof (CharType);
 
         while (--maxBytesToRead >= 0 && *dataToTest != 0)
         {

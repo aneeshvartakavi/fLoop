@@ -100,7 +100,7 @@ private:
     //==============================================================================
     class AsyncUpdaterMessage;
     friend class ReferenceCountedObjectPtr<AsyncUpdaterMessage>;
-    ReferenceCountedObjectPtr<AsyncUpdaterMessage> activeMessage;
+    ReferenceCountedObjectPtr<AsyncUpdaterMessage> message;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AsyncUpdater)
 };

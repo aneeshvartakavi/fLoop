@@ -283,11 +283,12 @@ public:
         glyph = glyphNumber;
 
         const float fontHeight = font.getHeight();
-        edgeTable = typeface->getEdgeTableForGlyph (glyphNumber, AffineTransform::scale (fontHeight * font.getHorizontalScale(),
-                                                                                         fontHeight));
-
-        if (edgeTable != nullptr)
-            edgeTable->multiplyLevels (1.5f);
+        edgeTable = typeface->getEdgeTableForGlyph (glyphNumber,
+                                                    AffineTransform::scale (fontHeight * font.getHorizontalScale(), fontHeight)
+                                                                  #if JUCE_MAC || JUCE_IOS
+                                                                    .translated (0.0f, -0.5f)
+                                                                  #endif
+                                                    );
     }
 
     Font font;
@@ -2270,14 +2271,6 @@ public:
             renderImage (sourceImage, trans, nullptr);
     }
 
-    static bool isOnlyTranslationAllowingError (const AffineTransform& t)
-    {
-        return (std::abs (t.mat01) < 0.002)
-            && (std::abs (t.mat10) < 0.002)
-            && (std::abs (t.mat00 - 1.0f) < 0.002)
-            && (std::abs (t.mat11 - 1.0f) < 0.002);
-    }
-
     void renderImage (const Image& sourceImage, const AffineTransform& trans,
                       const BaseRegionType* const tiledFillClipRegion)
     {
@@ -2285,7 +2278,7 @@ public:
 
         const int alpha = fillType.colour.getAlpha();
 
-        if (isOnlyTranslationAllowingError (t))
+        if (t.isOnlyTranslation())
         {
             // If our translation doesn't involve any distortion, just use a simple blit..
             int tx = (int) (t.getTranslationX() * 256.0f);
