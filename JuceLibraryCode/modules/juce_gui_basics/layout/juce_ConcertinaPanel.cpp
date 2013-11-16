@@ -282,14 +282,6 @@ ConcertinaPanel::ConcertinaPanel()
 
 ConcertinaPanel::~ConcertinaPanel() {}
 
-Component* ConcertinaPanel::getPanel (int index) const noexcept
-{
-    if (PanelHolder* h = holders[index])
-        return h->component;
-
-    return nullptr;
-}
-
 void ConcertinaPanel::addPanel (int insertIndex, Component* component, bool takeOwnership)
 {
     jassert (component != nullptr); // can't use a null pointer here!

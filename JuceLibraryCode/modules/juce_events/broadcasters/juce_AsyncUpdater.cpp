@@ -44,7 +44,7 @@ private:
 //==============================================================================
 AsyncUpdater::AsyncUpdater()
 {
-    activeMessage = new AsyncUpdaterMessage (*this);
+    message = new AsyncUpdaterMessage (*this);
 }
 
 AsyncUpdater::~AsyncUpdater()
@@ -55,18 +55,18 @@ AsyncUpdater::~AsyncUpdater()
     // deleting this object, or find some other way to avoid such a race condition.
     jassert ((! isUpdatePending()) || MessageManager::getInstance()->currentThreadHasLockedMessageManager());
 
-    activeMessage->shouldDeliver.set (0);
+    message->shouldDeliver.set (0);
 }
 
 void AsyncUpdater::triggerAsyncUpdate()
 {
-    if (activeMessage->shouldDeliver.compareAndSetBool (1, 0))
-        activeMessage->post();
+    if (message->shouldDeliver.compareAndSetBool (1, 0))
+        message->post();
 }
 
 void AsyncUpdater::cancelPendingUpdate() noexcept
 {
-    activeMessage->shouldDeliver.set (0);
+    message->shouldDeliver.set (0);
 }
 
 void AsyncUpdater::handleUpdateNowIfNeeded()
@@ -74,11 +74,11 @@ void AsyncUpdater::handleUpdateNowIfNeeded()
     // This can only be called by the event thread.
     jassert (MessageManager::getInstance()->currentThreadHasLockedMessageManager());
 
-    if (activeMessage->shouldDeliver.exchange (0) != 0)
+    if (message->shouldDeliver.exchange (0) != 0)
         handleAsyncUpdate();
 }
 
 bool AsyncUpdater::isUpdatePending() const noexcept
 {
-    return activeMessage->shouldDeliver.value != 0;
+    return message->shouldDeliver.value != 0;
 }

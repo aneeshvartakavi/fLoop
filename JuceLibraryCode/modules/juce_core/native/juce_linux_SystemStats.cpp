@@ -42,11 +42,6 @@ String SystemStats::getOperatingSystemName()
     return "Linux";
 }
 
-String SystemStats::getDeviceDescription()
-{
-    return String::empty;
-}
-
 bool SystemStats::isOperatingSystem64Bit()
 {
    #if JUCE_64BIT

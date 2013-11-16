@@ -1041,7 +1041,9 @@ private:
         else if (wasDown && timeNow > window.windowCreationTime + 250
                    && ! (isDown || overScrollArea))
         {
-            if (window.reallyContains (localMousePos, true))
+            bool isOver = window.reallyContains (localMousePos, true);
+
+            if (isOver)
                 window.triggerCurrentlyHighlightedItem();
             else if ((window.hasBeenOver || ! window.dismissOnMouseUp) && ! isOverAny)
                 window.dismissMenu (nullptr);
@@ -1058,23 +1060,23 @@ private:
     {
         if (globalMousePos != lastMousePos || timeNow > lastMouseMoveTime + 350)
         {
-            const bool isMouseOver = window.reallyContains (localMousePos, true);
+            const bool isOver = window.reallyContains (localMousePos, true);
 
-            if (isMouseOver)
+            if (isOver)
                 window.hasBeenOver = true;
 
             if (lastMousePos.getDistanceFrom (globalMousePos) > 2)
             {
                 lastMouseMoveTime = timeNow;
 
-                if (window.disableMouseMoves && isMouseOver)
+                if (window.disableMouseMoves && isOver)
                     window.disableMouseMoves = false;
             }
 
             if (window.disableMouseMoves || (window.activeSubMenu != nullptr && window.activeSubMenu->isOverChildren()))
                 return;
 
-            const bool isMovingTowardsMenu = isMouseOver && globalMousePos != lastMousePos
+            const bool isMovingTowardsMenu = isOver && globalMousePos != lastMousePos
                                                 && isMovingTowardsSubmenu (globalMousePos);
 
             lastMousePos = globalMousePos;
@@ -1091,12 +1093,12 @@ private:
                     itemUnderMouse = c->findParentComponentOfClass<ItemComponent>();
 
                 if (itemUnderMouse != window.currentChild
-                      && (isMouseOver || (window.activeSubMenu == nullptr) || ! window.activeSubMenu->isVisible()))
+                      && (isOver || (window.activeSubMenu == nullptr) || ! window.activeSubMenu->isVisible()))
                 {
-                    if (isMouseOver && (c != nullptr) && (window.activeSubMenu != nullptr))
+                    if (isOver && (c != nullptr) && (window.activeSubMenu != nullptr))
                         window.activeSubMenu->hide (nullptr, true);
 
-                    if (! isMouseOver)
+                    if (! isOver)
                         itemUnderMouse = nullptr;
 
                     window.setCurrentlyHighlightedChild (itemUnderMouse);

@@ -45,9 +45,6 @@ public:
     /** Creates an empty property panel. */
     PropertyPanel();
 
-    /** Creates an empty property panel. */
-    PropertyPanel (const String& name);
-
     /** Destructor. */
     ~PropertyPanel();
 
@@ -156,7 +153,6 @@ private:
     PropertyHolderComponent* propertyHolderComponent;
     String messageWhenEmpty;
 
-    void init();
     void updatePropHolderLayout() const;
     void updatePropHolderLayout (int width) const;
 

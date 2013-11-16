@@ -29,8 +29,6 @@
   ==============================================================================
 */
 
-//#include "../../juce.h"
-//#include "../../JuceLibraryCode/JuceHeader.h"
 #ifndef __DROWAUDIO_GRAPHICALCOMPONENT_H__
 #define __DROWAUDIO_GRAPHICALCOMPONENT_H__
 

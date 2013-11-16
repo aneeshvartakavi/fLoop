@@ -197,11 +197,6 @@ String SystemStats::getOperatingSystemName()
     return name;
 }
 
-String SystemStats::getDeviceDescription()
-{
-    return String::empty;
-}
-
 bool SystemStats::isOperatingSystem64Bit()
 {
    #if JUCE_64BIT

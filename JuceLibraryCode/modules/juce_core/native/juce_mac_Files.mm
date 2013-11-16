@@ -356,7 +356,7 @@ public:
                     return false;
 
                 [enumerator skipDescendents];
-                filenameFound = nsStringToJuce (file).convertToPrecomposedUnicode();
+                filenameFound = nsStringToJuce (file);
 
                 if (wildcardUTF8 == nullptr)
                     wildcardUTF8 = wildCard.toUTF8();

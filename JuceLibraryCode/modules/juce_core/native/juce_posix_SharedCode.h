@@ -114,13 +114,8 @@ bool WaitableEvent::wait (const int timeOutMillisecs) const noexcept
 void WaitableEvent::signal() const noexcept
 {
     pthread_mutex_lock (&mutex);
-
-    if (! triggered)
-    {
-        triggered = true;
-        pthread_cond_broadcast (&condition);
-    }
-
+    triggered = true;
+    pthread_cond_broadcast (&condition);
     pthread_mutex_unlock (&mutex);
 }
 

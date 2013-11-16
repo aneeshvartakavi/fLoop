@@ -39,12 +39,10 @@ FeatureExtractor::~FeatureExtractor()
 void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 {
 	// Will be rewritten
-	
+    // Insert names as the first entry
 	
 	// First thing to do is write the filenames to var
 
-		
-		
 	// Iterate through all our loops
 	for(int i=0;i<audioLoops.size();i++)
 	{
@@ -68,6 +66,7 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 		length = (fileReader->lengthInSamples+length)/hopSize;
 		// For FFT
 		
+        std::vector<float> fftData;  // point to all fft data for file
 		for (int j=0;j<length-1;j++)
 		{
 			// Check if blockSize, hopSize implementation is correct
@@ -88,7 +87,10 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 			 
 			float* sampleData = sampleBuffer->getSampleData(0);
 			
-			float *res = calculateFFT(sampleData);
+            float* blockFFTData = calculateFFT(sampleData);
+            for(int i=0; i<blockSize; i++){
+                fftData.push_back(blockFFTData[i]);  // faster way?
+            }
 			
 			// Do a check for nan using std::isnan()
 			// May need to threshold values, the 10^-38 can be considered 0.
@@ -98,8 +100,20 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 			//DBG(String(res[w]));
 						
 		}
+        
+        // Add features to featureVector for this file
+        var& element = featureVector.getReference(i);
 
-			
+        // File name
+        element.append(loop.getFileNameWithoutExtension());
+        
+        // Tempo
+        element.append(calculateTempo(loop));
+        
+        // Spectral Crest Factor
+        std::pair<float, float> scfDistr = calculateSpectralCrestFactor(fftData, length-1);
+        element.append(scfDistr.first); // mean
+        element.append(scfDistr.second); // std
 	}
 }
 
@@ -110,15 +124,14 @@ void FeatureExtractor::computeFeatures(int index)
 	// This makes sure that the database and the cache file store data in the right fields
 	// Insert names as the first entry
 	for(int i=0;i<fileList.size();i++)
-	{
-		
+	{		
 		File tempFile = fileList.getUnchecked(i);
 		var& element = featureVector.getReference(i);
 		element.append(tempFile.getFileNameWithoutExtension());
 	}	
 
 	// Then estimate tempo
-	calculateTempo();
+//	calculateTempo();
 }
 
 
@@ -147,32 +160,66 @@ float* FeatureExtractor::calculateMFCC(float* sampleData)
 	return nullptr;
 }
 
-void FeatureExtractor::calculateTempo()
+float FeatureExtractor::calculateTempo(File loop)
 {
-	int numLoops = fileList.size();
+//	int numLoops = fileList.size();
 	// Preallocating some temporary variables
 	int len = 0;
 	int Fs = 0;
 	float fbpm;
-	
-	for(int i=0;i<numLoops;i++)
-	{
-		File loop(fileList.getUnchecked(i));
-		// Creating a reader for the file, depending on its format
-		ScopedPointer<AudioFormatReader> fileReader = formatManager.createReaderFor(loop);
 
-		// Perform out calculations
-		len = fileReader->lengthInSamples;
-		Fs = fileReader->sampleRate;
-		fbpm = (60*8*Fs)/len; // 60bpm * number of beats * fs /len
-		
-		// Get reference to the feature vector
-		var& tempVar = featureVector.getReference(i);
-		// Append the tempo
-		tempVar.append(adjustBPM(fbpm));
-	}
+//    File loop(fileList.getUnchecked(i));
+    // Creating a reader for the file, depending on its format
+    ScopedPointer<AudioFormatReader> fileReader = formatManager.createReaderFor(loop);
 
-	
+    // Perform out calculations
+    len = fileReader->lengthInSamples;
+    Fs = fileReader->sampleRate;
+    return fbpm = (60*8*Fs)/len; // 60bpm * number of beats * fs /len
+    
+//    // Get reference to the feature vector
+//    var& tempVar = featureVector.getReference(i);
+//    // Append the tempo
+//    tempVar.append(adjustBPM(fbpm));
+}
+
+std::pair<float, float> FeatureExtractor::calculateSpectralCrestFactor(std::vector<float> fftData, int length){
+    // Retruns a pair object with the mean and avg spectral crest factor for the file
+    // remember FFT for all blocks are in one vector so watch indexing
+    
+    std::pair<float, float> distr;
+    
+    float scfMean = 0.0;
+    float scfStd = 0.0;
+    
+    float runningSumSquares = 0.0;  // used to get running std
+    
+    for(int j=0; j<length; j++){  // iterate over each block
+        
+        float maxFFTVal = fftData[0];  // init
+        float spectralSum = fftData[0];  // init
+        
+        for(int i=0; i<(blockSize/2 - 1); i++){  // iterate over fft data in block
+            
+            if(fftData[j*blockSize + i] > maxFFTVal){
+                maxFFTVal = fftData[j*blockSize + i];
+            }            
+            spectralSum += fftData[j*blockSize + i];
+        }
+        
+        float scf = maxFFTVal / spectralSum;  // calc scf for flock
+        
+        //---Optimization: moving avg and std
+        runningSumSquares += square(scf);
+        scfMean = (scfMean + j*scf)/(j+1);
+        scfStd = sqrtf(runningSumSquares - square(scfMean));
+        
+    }
+    
+    distr.first = scfMean;
+    distr.second = scfStd;
+    
+    return distr;
 }
 
 void FeatureExtractor::writeCache(const File& pathToDirectory)
@@ -191,6 +238,8 @@ void FeatureExtractor::writeCache(const File& pathToDirectory)
 		// Add all the properties
 		loop->setProperty("Path",tempFeature[0]);
 		loop->setProperty("Tempo",tempFeature[1]);
+		loop->setProperty("SCF_Mean",tempFeature[2]);
+        loop->setProperty("SCF_Std", tempFeature[3]);
 		
 		loopFeatures.add(loop);
 		loop = nullptr;
