@@ -90,7 +90,7 @@ private:
 	// For the second FileBrowserComponent
 
 	DirectoryContentsList customDirectoryList;
-	TimeSliceThread thread1;
+	//TimeSliceThread thread1;
 	//CustomFileFilter customFileFilter;
     //[/UserVariables]
 

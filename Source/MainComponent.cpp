@@ -63,7 +63,7 @@ MainComponent::MainComponent ()
     StringArray audioOutputDevices (audioDeviceType->getDeviceNames(false));
 	AudioDeviceManager::AudioDeviceSetup deviceConfig;
     deviceManager.getAudioDeviceSetup(deviceConfig);
-	
+
 	deviceConfig.inputDeviceName = audioInputDevices[0];
 	deviceConfig.outputDeviceName= audioOutputDevices[0];
     String result = deviceManager.setAudioDeviceSetup (deviceConfig, true);
@@ -84,8 +84,12 @@ MainComponent::~MainComponent()
 
 
     //[Destructor]. You can add your own custom destruction code here..
+
+	audioSetup = nullptr;
+	wavFilter = nullptr;
+	customFileFilter = nullptr;
+	featureExtractor = nullptr;
 	loopPlayer = nullptr;
-	ScopedPointer<AudioSetup> audioSetup;
     //[/Destructor]
 }
 
@@ -121,7 +125,7 @@ void MainComponent::buttonClicked (Button* buttonThatWasClicked)
 		if(pathToDirectory.exists())
 		{
 			featureExtractor = new FeatureExtractor(audioLoops,1,1024,512,10);
-			
+
 			if(featureExtractor->cacheExists(pathToDirectory))
 			{
 				bool cacheSelected = AlertWindow::showOkCancelBox(AlertWindow::AlertIconType::QuestionIcon,"Cache Found","fLoop detected a pre-processed cache for this directory. Would you like to use it and save time?",
@@ -143,12 +147,11 @@ void MainComponent::buttonClicked (Button* buttonThatWasClicked)
 				featureExtractor->computeFeatures(audioLoops);
 				featureExtractor->writeCache(pathToDirectory);
 			}
-			
+
 			addAndMakeVisible(loopPlayer = new LoopPlayer(deviceManager,pathToDirectory,wavFilter,featureExtractor->returnFeatureVector(),audioLoops,customFileFilter));
-						
+
 		}
         //[/UserButtonCode_browseButton]
-
     }
     else if (buttonThatWasClicked == setupButton)
     {

@@ -28,7 +28,7 @@
 
 //==============================================================================
 LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDirectory, WavFileFilter* wavFilter, Array<var> featureVector, Array<File> audioLoops_, CustomFileFilter* customFileFilter)
-    : deviceManager (deviceManager), thread ("Audio file preview"), directoryList (wavFilter, thread), thread1("New Component"), customDirectoryList(customFileFilter,thread1)
+    : deviceManager (deviceManager), thread ("Audio file preview"), directoryList (wavFilter, thread), customDirectoryList(customFileFilter,thread)
 {
     addAndMakeVisible (zoomSlider = new Slider ("zoomSlider"));
     zoomSlider->setRange (0, 1, 0);
@@ -101,10 +101,10 @@ LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDir
 	// Handling the second component on our own
 
 	customDirectoryList.setDirectory(pathtoDirectory,true,true);
-	thread1.startThread(3);
+	//thread1.startThread(4);
 
 	fileTreeComp2->setColour (FileTreeComponent::backgroundColourId, Colours::white);
-    //fileTreeComp->addListener (this);
+    fileTreeComp->addListener (this);
     //[/Constructor]
 }
 
@@ -116,8 +116,9 @@ LoopPlayer::~LoopPlayer()
 
     deviceManager.removeAudioCallback (&audioSourcePlayer);
     fileTreeComp->removeListener (this);
-
+	currentAudioFileSource = nullptr;
 	//fileTreeComp2->
+	//thread1.stopThread(1000);
     //[/Destructor_pre]
 
     zoomSlider = nullptr;
@@ -267,7 +268,7 @@ BEGIN_JUCER_METADATA
 <JUCER_COMPONENT documentType="Component" className="LoopPlayer" componentName=""
                  parentClasses="public Component, public FileBrowserListener, public SliderListener, public ButtonListener"
                  constructorParams="AudioDeviceManager&amp; deviceManager, const File&amp; pathtoDirectory, WavFileFilter* wavFilter, Array&lt;var&gt; featureVector, Array&lt;File&gt; audioLoops_, CustomFileFilter* customFileFilter"
-                 variableInitialisers="deviceManager (deviceManager), thread (&quot;Audio file preview&quot;), directoryList (wavFilter, thread), thread1(&quot;New Component&quot;), customDirectoryList(customFileFilter,thread1)"
+                 variableInitialisers="deviceManager (deviceManager), thread (&quot;Audio file preview&quot;), directoryList (wavFilter, thread), customDirectoryList(customFileFilter,thread)"
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="0" initialWidth="1024" initialHeight="768">
   <BACKGROUND backgroundColour="fff0f0f0"/>
