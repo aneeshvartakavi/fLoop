@@ -94,7 +94,7 @@ void ThumbnailComponent::filesDropped (const StringArray& files, int /*x*/, int 
 	LoopPlayer* loopPage = findParentComponentOfClass<LoopPlayer>();
 
     if (loopPage != nullptr)
-        loopPage->showFile (File (files[0]));
+        loopPage->showLeftFile (File (files[0])); // Changed this
 }
 
 void ThumbnailComponent::mouseDown (const MouseEvent& e)

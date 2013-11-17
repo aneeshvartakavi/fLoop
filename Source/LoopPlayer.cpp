@@ -39,7 +39,7 @@ LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDir
     addAndMakeVisible (fileTreeComp = new FileTreeComponent (directoryList));
     fileTreeComp->setName ("FileTreeComp1");
 
-    addAndMakeVisible (thumbnailComponent = new ThumbnailComponent (formatManager, transportSource, *zoomSlider));
+    addAndMakeVisible (thumbnailComponent = new ThumbnailComponent (formatManager, leftTransportSource, *zoomSlider));
     thumbnailComponent->setName ("thumbnail");
 
     addAndMakeVisible (zoomLabel = new Label ("zoomLabel",
@@ -76,6 +76,13 @@ LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDir
     addAndMakeVisible (fileTreeComp2 = new FileTreeComponent (customDirectoryList));
     fileTreeComp2->setName ("FileTreeComp");
 
+    addAndMakeVisible (thumbnailComponent2 = new ThumbnailComponent (formatManager, rightTransportSource, *zoomSlider));
+    thumbnailComponent2->setName ("thumbnail");
+
+    addAndMakeVisible (startStopButton2 = new TextButton ("startStopButton"));
+    startStopButton2->setButtonText ("Start/Stop");
+    startStopButton2->addListener (this);
+
 
     //[UserPreSize]
     //[/UserPreSize]
@@ -87,38 +94,46 @@ LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDir
 	formatManager.registerBasicFormats();
 
 	directoryList.setDirectory (pathtoDirectory, true, true);
-    thread.startThread (3);
+    thread.startThread (7);
 
 
     fileTreeComp->setColour (FileTreeComponent::backgroundColourId, Colours::white);
     fileTreeComp->addListener (this);
 
-    deviceManager.addAudioCallback (&audioSourcePlayer);
-    audioSourcePlayer.setSource (&transportSource);
+    deviceManager.addAudioCallback (&leftAudioSourcePlayer);
+    leftAudioSourcePlayer.setSource (&leftTransportSource);
+	
+	deviceManager.addAudioCallback (&rightAudioSourcePlayer);
+    rightAudioSourcePlayer.setSource (&rightTransportSource);
+	
 
 	loopSimilarity = new LoopSimilarity(featureVector);
 
 	// Handling the second component on our own
 
 	customDirectoryList.setDirectory(pathtoDirectory,true,true);
-	//thread1.startThread(4);
+
 
 	fileTreeComp2->setColour (FileTreeComponent::backgroundColourId, Colours::white);
-    fileTreeComp->addListener (this);
+	fileTreeComp2->addListener (this);
     //[/Constructor]
 }
 
 LoopPlayer::~LoopPlayer()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
-	transportSource.setSource (nullptr);
-    audioSourcePlayer.setSource (nullptr);
+	rightTransportSource.setSource (nullptr);
+	leftTransportSource.setSource (nullptr);
+    leftAudioSourcePlayer.setSource (nullptr);
+	rightAudioSourcePlayer.setSource (nullptr);
 
-    deviceManager.removeAudioCallback (&audioSourcePlayer);
+    deviceManager.removeAudioCallback (&leftAudioSourcePlayer);
+	deviceManager.removeAudioCallback (&rightAudioSourcePlayer);
     fileTreeComp->removeListener (this);
-	currentAudioFileSource = nullptr;
-	//fileTreeComp2->
-	//thread1.stopThread(1000);
+	currentLeftAudioFileSource = nullptr;
+	currentRightAudioFileSource = nullptr;
+	fileTreeComp2->removeListener (this);
+
     //[/Destructor_pre]
 
     zoomSlider = nullptr;
@@ -130,6 +145,8 @@ LoopPlayer::~LoopPlayer()
     cpuMeter = nullptr;
     label = nullptr;
     fileTreeComp2 = nullptr;
+    thumbnailComponent2 = nullptr;
+    startStopButton2 = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -152,13 +169,15 @@ void LoopPlayer::resized()
 {
     zoomSlider->setBounds (32, 439, 150, 24);
     fileTreeComp->setBounds (32, 64, 320, 320);
-    thumbnailComponent->setBounds (24, 487, 944, 128);
+    thumbnailComponent->setBounds (24, 487, 440, 128);
     zoomLabel->setBounds (32, 407, 48, 24);
     explanation->setBounds (32, 16, 150, 24);
     startStopButton->setBounds (24, 648, 150, 24);
     cpuMeter->setBounds (928, 26, 64, 24);
     label->setBounds (920, 2, 150, 24);
     fileTreeComp2->setBounds (632, 64, 320, 320);
+    thumbnailComponent2->setBounds (608, 488, 440, 128);
+    startStopButton2->setBounds (624, 648, 150, 24);
     //[UserResized] Add your own custom resize handling here..
 
     //[/UserResized]
@@ -188,16 +207,30 @@ void LoopPlayer::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == startStopButton)
     {
         //[UserButtonCode_startStopButton] -- add your button handler code here..
-		if (transportSource.isPlaying())
+		if (leftTransportSource.isPlaying())
         {
-            transportSource.stop();
+            leftTransportSource.stop();
         }
         else
         {
-            transportSource.setPosition (0);
-            transportSource.start();
+            leftTransportSource.setPosition (0);
+            leftTransportSource.start();
         }
         //[/UserButtonCode_startStopButton]
+    }
+    else if (buttonThatWasClicked == startStopButton2)
+    {
+        //[UserButtonCode_startStopButton2] -- add your button handler code here..
+		if(rightTransportSource.isPlaying())
+		{
+            rightTransportSource.stop();
+        }
+        else
+        {
+            rightTransportSource.setPosition (0);
+            rightTransportSource.start();
+        }
+        //[/UserButtonCode_startStopButton2]
     }
 
     //[UserbuttonClicked_Post]
@@ -208,45 +241,95 @@ void LoopPlayer::buttonClicked (Button* buttonThatWasClicked)
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 
-void LoopPlayer::showFile (const File& file)
+void LoopPlayer::showLeftFile (const File& file)
 {
-    loadFileIntoTransport (file);
+    DBG("In Left File");
+	loadLeftFileIntoTransport (file);
 
     zoomSlider->setValue (0, dontSendNotification);
 	thumbnailComponent->setFile (file);
+	
 }
 
-void LoopPlayer::loadFileIntoTransport (const File& audioFile)
+void LoopPlayer::loadLeftFileIntoTransport (const File& audioFile)
 {
     // unload the previous file source and delete it..
-    transportSource.stop();
-    transportSource.setSource (nullptr);
-    currentAudioFileSource = nullptr;
+    leftTransportSource.stop();
+    leftTransportSource.setSource (nullptr);
+    currentLeftAudioFileSource = nullptr;
 
-    AudioFormatReader* reader = formatManager.createReaderFor (audioFile);
+    AudioFormatReader* leftReader = formatManager.createReaderFor (audioFile);
 
-    if (reader != nullptr)
+    if (leftReader != nullptr)
     {
-        currentAudioFileSource = new AudioFormatReaderSource (reader, true);
+        currentLeftAudioFileSource = new AudioFormatReaderSource (leftReader, true);
+
+        // ..and plug it into our transport source
+        leftTransportSource.setSource (currentLeftAudioFileSource,
+                                   32768, // tells it to buffer this many samples ahead
+                                   &thread, // this is the background thread to use for reading-ahead
+                                   leftReader->sampleRate);
+    }
+}
+
+void LoopPlayer::showRightFile (const File& file)
+{
+    DBG("In Right File");
+	loadRightFileIntoTransport (file);
+
+    zoomSlider->setValue (0, dontSendNotification);
+	thumbnailComponent2->setFile (file);
+	
+}
+
+void LoopPlayer::loadRightFileIntoTransport (const File& audioFile)
+{
+    // unload the previous file source and delete it..
+    rightTransportSource.stop();
+    rightTransportSource.setSource (nullptr);
+    currentRightAudioFileSource = nullptr;
+
+    AudioFormatReader* rightReader = formatManager.createReaderFor (audioFile);
+
+    if (rightReader != nullptr)
+    {
+        currentRightAudioFileSource = new AudioFormatReaderSource (rightReader, true);
 
         //featureExtractor->processFile(reader);
 //        featureExtractor.getBlockSpectralCrestFactor(<#float *data#>)
         // ..and plug it into our transport source
-        transportSource.setSource (currentAudioFileSource,
+        rightTransportSource.setSource (currentRightAudioFileSource,
                                    32768, // tells it to buffer this many samples ahead
                                    &thread, // this is the background thread to use for reading-ahead
-                                   reader->sampleRate);
+                                   rightReader->sampleRate);
     }
 }
 
+
 void LoopPlayer::selectionChanged()
 {
-    showFile (fileTreeComp->getSelectedFile());
+
+	//showFile(fileTreeComp2->getSelectedFile());
+
+	//DBG(fileTreeComp->getSelectedFile().getFileNameWithoutExtension());
+	//showFile (fileTreeComp->getSelectedFile());
 }
 
-void LoopPlayer::fileClicked (const File&, const MouseEvent&)
+void LoopPlayer::fileClicked (const File&, const MouseEvent& mouseEvent)
 {
-	DBG("FileClicked");
+	if(mouseEvent.getScreenX()>937)  // Lets pretend you did not see this code
+	{
+		DBG("Right Box!");
+		showRightFile(fileTreeComp2->getSelectedFile());
+	}
+
+	else
+	{
+		DBG("Left Box!");
+		showLeftFile(fileTreeComp->getSelectedFile());
+	}
+
+
 }
 
 void LoopPlayer::fileDoubleClicked (const File&)
@@ -280,7 +363,7 @@ BEGIN_JUCER_METADATA
                     virtualName="" explicitFocusOrder="0" pos="32 64 320 320" class="FileTreeComponent"
                     params="directoryList"/>
   <GENERICCOMPONENT name="thumbnail" id="9da459d8045d031" memberName="thumbnailComponent"
-                    virtualName="" explicitFocusOrder="0" pos="24 487 944 128" class="ThumbnailComponent"
+                    virtualName="" explicitFocusOrder="0" pos="24 487 440 128" class="ThumbnailComponent"
                     params="formatManager, transportSource, *zoomSlider"/>
   <LABEL name="zoomLabel" id="6b306247a4bb8a6c" memberName="zoomLabel"
          virtualName="" explicitFocusOrder="0" pos="32 407 48 24" edTextCol="ff000000"
@@ -305,6 +388,12 @@ BEGIN_JUCER_METADATA
   <GENERICCOMPONENT name="FileTreeComp" id="c2172d74b9138c92" memberName="fileTreeComp2"
                     virtualName="" explicitFocusOrder="0" pos="632 64 320 320" class="FileTreeComponent"
                     params="customDirectoryList"/>
+  <GENERICCOMPONENT name="thumbnail" id="36f43827792a330f" memberName="thumbnailComponent2"
+                    virtualName="" explicitFocusOrder="0" pos="608 488 440 128" class="ThumbnailComponent"
+                    params="formatManager, transportSource, *zoomSlider"/>
+  <TEXTBUTTON name="startStopButton" id="a71706b6a5dc9605" memberName="startStopButton2"
+              virtualName="" explicitFocusOrder="0" pos="624 648 150 24" buttonText="Start/Stop"
+              connectedEdges="0" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

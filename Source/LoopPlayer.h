@@ -28,8 +28,6 @@
 #include "FeatureExtractor.h"
 #include "LoopSimilarity.h"
 
-
-
 class ThumbnailComponent;
 //[/Headers]
 
@@ -61,7 +59,8 @@ public:
     void fileClicked (const File& file, const MouseEvent& e);
     void fileDoubleClicked (const File& file);
     void browserRootChanged (const File&) {}
-    void showFile (const File& file);
+    void showLeftFile (const File& file);
+	void showRightFile (const File& file);
 
     //[/UserMethods]
 
@@ -79,17 +78,22 @@ private:
 	TimeSliceThread thread;
     DirectoryContentsList directoryList;
 
-    AudioSourcePlayer audioSourcePlayer;
-    AudioTransportSource transportSource;
-    ScopedPointer<AudioFormatReaderSource> currentAudioFileSource;
+    AudioSourcePlayer leftAudioSourcePlayer;
+	AudioSourcePlayer rightAudioSourcePlayer;
+    AudioTransportSource leftTransportSource;
+	AudioTransportSource rightTransportSource;
+    ScopedPointer<AudioFormatReaderSource> currentLeftAudioFileSource;
+	ScopedPointer<AudioFormatReaderSource> currentRightAudioFileSource;
 
-	void loadFileIntoTransport (const File& audioFile);
+	void loadLeftFileIntoTransport (const File& audioFile);
+	void loadRightFileIntoTransport (const File& audioFile);
 
 	ScopedPointer<LoopSimilarity> loopSimilarity;
 
 	// For the second FileBrowserComponent
 
 	DirectoryContentsList customDirectoryList;
+	
 	//TimeSliceThread thread1;
 	//CustomFileFilter customFileFilter;
     //[/UserVariables]
@@ -104,6 +108,8 @@ private:
     ScopedPointer<drow::CpuMeter> cpuMeter;
     ScopedPointer<Label> label;
     ScopedPointer<FileTreeComponent> fileTreeComp2;
+    ScopedPointer<ThumbnailComponent> thumbnailComponent2;
+    ScopedPointer<TextButton> startStopButton2;
 
 
     //==============================================================================
