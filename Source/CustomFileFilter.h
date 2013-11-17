@@ -2,8 +2,8 @@
   ==============================================================================
 
     CustomFileFilter.h
-    Created: 16 Nov 2013 12:07:28pm
-    Author:  Aneesh, Cameron
+    Created: 16 Nov 2013 6:23:55pm
+    Author:  Aneesh
 
   ==============================================================================
 */
@@ -13,20 +13,34 @@
 
 #include "JuceHeader.h"
 
-class CustomFileFilter : public FileFilter
+class CustomFileFilter: public FileFilter
 {
-
 public:
-	CustomFileFilter();
-	CustomFileFilter(const String& filterDescription);
-	~CustomFileFilter();
-	// Implementing virtual functions
-	bool isFileSuitable(const File &file) const;
-	bool isDirectorySuitable(const File &file) const;
-	//void dummy();
+	CustomFileFilter(const String& filterDescription):FileFilter(filterDescription)
+	{
+
+	}
+
+	~CustomFileFilter()
+	{
+		// Nothing here yet
+	}
+
+	bool isFileSuitable(const File &file) const
+	{
+		// Read valid files, and return bool
+		return true;
+
+	}
+
+	bool isDirectorySuitable(const File &file) const
+	{
+		// For now, all directories are valid
+		return true;
+	}
 
 private:
-	
+	// Store valid files
 
 };
 

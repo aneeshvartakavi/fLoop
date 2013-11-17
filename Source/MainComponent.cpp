@@ -69,7 +69,8 @@ MainComponent::MainComponent ()
     String result = deviceManager.setAudioDeviceSetup (deviceConfig, true);
 	DBG(result);
 
-	newFilter = new CustomFileFilter(".wav");
+	wavFilter = new WavFileFilter(".wav");
+	customFileFilter = new CustomFileFilter("new");
     //[/Constructor]
 }
 
@@ -123,7 +124,7 @@ void MainComponent::buttonClicked (Button* buttonThatWasClicked)
 			
 			if(featureExtractor->cacheExists(pathToDirectory))
 			{
-				bool cacheSelected = AlertWindow::showOkCancelBox(AlertWindow::AlertIconType::QuestionIcon,"Cache Found","fLoop detected a pre-processed cache for this directory. Would you like to use it and save some time?",
+				bool cacheSelected = AlertWindow::showOkCancelBox(AlertWindow::AlertIconType::QuestionIcon,"Cache Found","fLoop detected a pre-processed cache for this directory. Would you like to use it and save time?",
 					"Yes","No",this);
 				if (cacheSelected)
 				{
@@ -143,7 +144,7 @@ void MainComponent::buttonClicked (Button* buttonThatWasClicked)
 				featureExtractor->writeCache(pathToDirectory);
 			}
 			
-			addAndMakeVisible(loopPlayer = new LoopPlayer(deviceManager,pathToDirectory,newFilter));
+			addAndMakeVisible(loopPlayer = new LoopPlayer(deviceManager,pathToDirectory,wavFilter,featureExtractor->returnFeatureVector(),audioLoops,customFileFilter));
 						
 		}
         //[/UserButtonCode_browseButton]

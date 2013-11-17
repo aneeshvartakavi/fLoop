@@ -32,10 +32,13 @@ public:
 	
 	// Writes a text file in the parent directory
 	void writeCache(const File &pathToDirectory);
+	// Returns true if a cache exists, no check if the files in the cache match the files of the directory
 	bool cacheExists(const File &pathToDirectory);
 	// Reads the parent directory to see if there
 	void readCache(const File& pathToDirectory);
 	
+	// Returns some data elements
+	Array<var> returnFeatureVector();
 
 private:
 	// The variable that stores all the features.
@@ -54,17 +57,6 @@ private:
 	int numFeatures;
 	drow::FFTEngine fftEngine;
 	
-	enum features
-	{
-
-	};
-
-	// feature is a pointer to an array of float pointers
-	// All the feature fuctions should return a float pointer, which can be appended to the array.
-	// The pointer to the array can then effeciently be sent to other classes.
-
-	//ScopedPointer<Array<float*>> featureVector;
-
 	// Returns adjusted BPM
 	inline int adjustBPM(float fbpm)
 	{

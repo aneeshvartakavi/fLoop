@@ -5,10 +5,15 @@
               jucerVersion="3.1.0">
   <MAINGROUP id="igV5q7" name="fLoop">
     <GROUP id="{26EEE55C-A9FA-5E32-656B-A6A94001740C}" name="Source">
-      <FILE id="yWWj9t" name="CustomFileFilter.cpp" compile="1" resource="0"
-            file="Source/CustomFileFilter.cpp"/>
-      <FILE id="Xm66Pt" name="CustomFileFilter.h" compile="0" resource="0"
-            file="Source/CustomFileFilter.h"/>
+      <GROUP id="{D89D27A4-267B-6726-42D7-1D6D95CD2341}" name="FileFilters">
+        <FILE id="c1F2uI" name="CustomFileFilter.h" compile="0" resource="0"
+              file="Source/CustomFileFilter.h"/>
+        <FILE id="zAN7YS" name="WavFileFilter.h" compile="0" resource="0" file="Source/WavFileFilter.h"/>
+      </GROUP>
+      <FILE id="pPzmfD" name="LoopSimilarity.cpp" compile="1" resource="0"
+            file="Source/LoopSimilarity.cpp"/>
+      <FILE id="Tp7des" name="LoopSimilarity.h" compile="0" resource="0"
+            file="Source/LoopSimilarity.h"/>
       <FILE id="EimraH" name="FeatureExtractor.cpp" compile="1" resource="0"
             file="Source/FeatureExtractor.cpp"/>
       <FILE id="Qel7OB" name="FeatureExtractor.h" compile="0" resource="0"

@@ -27,8 +27,8 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDirectory, CustomFileFilter* customFilter)
-    : deviceManager (deviceManager), thread ("Audio file preview"), directoryList (customFilter, thread)
+LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDirectory, WavFileFilter* wavFilter, Array<var> featureVector, Array<File> audioLoops_, CustomFileFilter* customFileFilter)
+    : deviceManager (deviceManager), thread ("Audio file preview"), directoryList (wavFilter, thread), thread1("New Component"), customDirectoryList(customFileFilter,thread1)
 {
     addAndMakeVisible (zoomSlider = new Slider ("zoomSlider"));
     zoomSlider->setRange (0, 1, 0);
@@ -73,6 +73,9 @@ LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDir
     label->setColour (TextEditor::textColourId, Colours::black);
     label->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
+    addAndMakeVisible (fileTreeComp2 = new FileTreeComponent (customDirectoryList));
+    fileTreeComp2->setName ("FileTreeComp");
+
 
     //[UserPreSize]
     //[/UserPreSize]
@@ -92,6 +95,16 @@ LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDir
 
     deviceManager.addAudioCallback (&audioSourcePlayer);
     audioSourcePlayer.setSource (&transportSource);
+
+	loopSimilarity = new LoopSimilarity(featureVector);
+
+	// Handling the second component on our own
+
+	customDirectoryList.setDirectory(pathtoDirectory,true,true);
+	thread1.startThread(3);
+
+	fileTreeComp2->setColour (FileTreeComponent::backgroundColourId, Colours::white);
+    //fileTreeComp->addListener (this);
     //[/Constructor]
 }
 
@@ -103,6 +116,8 @@ LoopPlayer::~LoopPlayer()
 
     deviceManager.removeAudioCallback (&audioSourcePlayer);
     fileTreeComp->removeListener (this);
+
+	//fileTreeComp2->
     //[/Destructor_pre]
 
     zoomSlider = nullptr;
@@ -113,6 +128,7 @@ LoopPlayer::~LoopPlayer()
     startStopButton = nullptr;
     cpuMeter = nullptr;
     label = nullptr;
+    fileTreeComp2 = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -139,9 +155,11 @@ void LoopPlayer::resized()
     zoomLabel->setBounds (32, 407, 48, 24);
     explanation->setBounds (32, 16, 150, 24);
     startStopButton->setBounds (24, 648, 150, 24);
-    cpuMeter->setBounds (496, 64, 64, 24);
-    label->setBounds (488, 40, 150, 24);
+    cpuMeter->setBounds (928, 26, 64, 24);
+    label->setBounds (920, 2, 150, 24);
+    fileTreeComp2->setBounds (632, 64, 320, 320);
     //[UserResized] Add your own custom resize handling here..
+
     //[/UserResized]
 }
 
@@ -227,6 +245,7 @@ void LoopPlayer::selectionChanged()
 
 void LoopPlayer::fileClicked (const File&, const MouseEvent&)
 {
+	DBG("FileClicked");
 }
 
 void LoopPlayer::fileDoubleClicked (const File&)
@@ -247,8 +266,8 @@ BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="LoopPlayer" componentName=""
                  parentClasses="public Component, public FileBrowserListener, public SliderListener, public ButtonListener"
-                 constructorParams="AudioDeviceManager&amp; deviceManager, const File&amp; pathtoDirectory, CustomFileFilter* customFilter"
-                 variableInitialisers="deviceManager (deviceManager), thread (&quot;Audio file preview&quot;), directoryList (customFilter, thread)"
+                 constructorParams="AudioDeviceManager&amp; deviceManager, const File&amp; pathtoDirectory, WavFileFilter* wavFilter, Array&lt;var&gt; featureVector, Array&lt;File&gt; audioLoops_, CustomFileFilter* customFileFilter"
+                 variableInitialisers="deviceManager (deviceManager), thread (&quot;Audio file preview&quot;), directoryList (wavFilter, thread), thread1(&quot;New Component&quot;), customDirectoryList(customFileFilter,thread1)"
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="0" initialWidth="1024" initialHeight="768">
   <BACKGROUND backgroundColour="fff0f0f0"/>
@@ -276,12 +295,15 @@ BEGIN_JUCER_METADATA
               virtualName="" explicitFocusOrder="0" pos="24 648 150 24" buttonText="Start/Stop"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <GENERICCOMPONENT name="cpuMeter" id="47442aafe0aa91da" memberName="cpuMeter" virtualName="drow::CpuMeter"
-                    explicitFocusOrder="0" pos="496 64 64 24" class="Component" params="&amp;deviceManager"/>
+                    explicitFocusOrder="0" pos="928 26 64 24" class="Component" params="&amp;deviceManager"/>
   <LABEL name="new label" id="1a1155b3b685297c" memberName="label" virtualName=""
-         explicitFocusOrder="0" pos="488 40 150 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="920 2 150 24" edTextCol="ff000000"
          edBkgCol="0" labelText="CPU Usage" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15"
          bold="0" italic="0" justification="33"/>
+  <GENERICCOMPONENT name="FileTreeComp" id="c2172d74b9138c92" memberName="fileTreeComp2"
+                    virtualName="" explicitFocusOrder="0" pos="632 64 320 320" class="FileTreeComponent"
+                    params="customDirectoryList"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

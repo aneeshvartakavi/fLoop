@@ -296,4 +296,9 @@ void FeatureExtractor::readCache(const File& pathToDirectory)
 
 }
 
+Array<var> FeatureExtractor::returnFeatureVector()
+{
+	return featureVector;
+}
+
 

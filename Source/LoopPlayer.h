@@ -23,7 +23,13 @@
 //[Headers]     -- You can add your own extra header files here --
 #include "JuceHeader.h"
 #include "ThumbnailComponent.h"
+#include "WavFileFilter.h"
 #include "CustomFileFilter.h"
+#include "FeatureExtractor.h"
+#include "LoopSimilarity.h"
+
+
+
 class ThumbnailComponent;
 //[/Headers]
 
@@ -44,7 +50,7 @@ class LoopPlayer  : public Component,
 {
 public:
     //==============================================================================
-    LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDirectory, CustomFileFilter* customFilter);
+    LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDirectory, WavFileFilter* wavFilter, Array<var> featureVector, Array<File> audioLoops_, CustomFileFilter* customFileFilter);
     ~LoopPlayer();
 
     //==============================================================================
@@ -77,7 +83,15 @@ private:
     AudioTransportSource transportSource;
     ScopedPointer<AudioFormatReaderSource> currentAudioFileSource;
 
-    void loadFileIntoTransport (const File& audioFile);
+	void loadFileIntoTransport (const File& audioFile);
+
+	ScopedPointer<LoopSimilarity> loopSimilarity;
+
+	// For the second FileBrowserComponent
+
+	DirectoryContentsList customDirectoryList;
+	TimeSliceThread thread1;
+	//CustomFileFilter customFileFilter;
     //[/UserVariables]
 
     //==============================================================================
@@ -89,6 +103,7 @@ private:
     ScopedPointer<TextButton> startStopButton;
     ScopedPointer<drow::CpuMeter> cpuMeter;
     ScopedPointer<Label> label;
+    ScopedPointer<FileTreeComponent> fileTreeComp2;
 
 
     //==============================================================================
