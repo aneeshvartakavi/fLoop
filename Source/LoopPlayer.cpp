@@ -102,10 +102,10 @@ LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDir
 
     deviceManager.addAudioCallback (&leftAudioSourcePlayer);
     leftAudioSourcePlayer.setSource (&leftTransportSource);
-	
+
 	deviceManager.addAudioCallback (&rightAudioSourcePlayer);
     rightAudioSourcePlayer.setSource (&rightTransportSource);
-	
+
 
 	loopSimilarity = new LoopSimilarity(featureVector);
 
@@ -175,9 +175,9 @@ void LoopPlayer::resized()
     startStopButton->setBounds (24, 648, 150, 24);
     cpuMeter->setBounds (928, 26, 64, 24);
     label->setBounds (920, 2, 150, 24);
-    fileTreeComp2->setBounds (632, 64, 320, 320);
-    thumbnailComponent2->setBounds (608, 488, 440, 128);
-    startStopButton2->setBounds (624, 648, 150, 24);
+    fileTreeComp2->setBounds (620, 64, 320, 320);
+    thumbnailComponent2->setBounds (573, 487, 440, 128);
+    startStopButton2->setBounds (604, 648, 150, 24);
     //[UserResized] Add your own custom resize handling here..
 
     //[/UserResized]
@@ -248,7 +248,7 @@ void LoopPlayer::showLeftFile (const File& file)
 
     zoomSlider->setValue (0, dontSendNotification);
 	thumbnailComponent->setFile (file);
-	
+
 }
 
 void LoopPlayer::loadLeftFileIntoTransport (const File& audioFile)
@@ -279,7 +279,7 @@ void LoopPlayer::showRightFile (const File& file)
 
     zoomSlider->setValue (0, dontSendNotification);
 	thumbnailComponent2->setFile (file);
-	
+
 }
 
 void LoopPlayer::loadRightFileIntoTransport (const File& audioFile)
@@ -364,7 +364,7 @@ BEGIN_JUCER_METADATA
                     params="directoryList"/>
   <GENERICCOMPONENT name="thumbnail" id="9da459d8045d031" memberName="thumbnailComponent"
                     virtualName="" explicitFocusOrder="0" pos="24 487 440 128" class="ThumbnailComponent"
-                    params="formatManager, transportSource, *zoomSlider"/>
+                    params="formatManager, leftTransportSource, *zoomSlider"/>
   <LABEL name="zoomLabel" id="6b306247a4bb8a6c" memberName="zoomLabel"
          virtualName="" explicitFocusOrder="0" pos="32 407 48 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Zoom" editableSingleClick="0" editableDoubleClick="0"
@@ -386,13 +386,13 @@ BEGIN_JUCER_METADATA
          focusDiscardsChanges="0" fontname="Default font" fontsize="15"
          bold="0" italic="0" justification="33"/>
   <GENERICCOMPONENT name="FileTreeComp" id="c2172d74b9138c92" memberName="fileTreeComp2"
-                    virtualName="" explicitFocusOrder="0" pos="632 64 320 320" class="FileTreeComponent"
+                    virtualName="" explicitFocusOrder="0" pos="620 64 320 320" class="FileTreeComponent"
                     params="customDirectoryList"/>
   <GENERICCOMPONENT name="thumbnail" id="36f43827792a330f" memberName="thumbnailComponent2"
-                    virtualName="" explicitFocusOrder="0" pos="608 488 440 128" class="ThumbnailComponent"
-                    params="formatManager, transportSource, *zoomSlider"/>
+                    virtualName="" explicitFocusOrder="0" pos="573 487 440 128" class="ThumbnailComponent"
+                    params="formatManager, rightTransportSource, *zoomSlider"/>
   <TEXTBUTTON name="startStopButton" id="a71706b6a5dc9605" memberName="startStopButton2"
-              virtualName="" explicitFocusOrder="0" pos="624 648 150 24" buttonText="Start/Stop"
+              virtualName="" explicitFocusOrder="0" pos="604 648 150 24" buttonText="Start/Stop"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
 </JUCER_COMPONENT>
 
