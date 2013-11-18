@@ -24,11 +24,15 @@ public:
 	LoopSimilarity(Array<var> featureVector_);
 	~LoopSimilarity();
 
+	void returnSimilar(int sliderIndex, int sliderMax, int sliderMin,const File &referenceFile);
+	StringArray* returnSimilarTempo(int sliderMax, int sliderMin, const File &referenceFile);
 private:
 	
 	Array<var> featureVector;
 
 	ScopedPointer<Array<File>> audioLoops;
+
+	ScopedPointer<StringArray> similarFiles;
 
 	void readFile(File* path);
 

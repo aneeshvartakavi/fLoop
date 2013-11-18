@@ -27,8 +27,8 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDirectory, WavFileFilter* wavFilter, Array<var> featureVector, Array<File> audioLoops_, CustomFileFilter* customFileFilter)
-    : deviceManager (deviceManager), thread ("Audio file preview"), directoryList (wavFilter, thread), customDirectoryList(customFileFilter,thread)
+LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDirectory, WavFileFilter* wavFilter, Array<var> featureVector, Array<File> audioLoops_, CustomFileFilter* customFileFilter_)
+    : deviceManager (deviceManager), thread ("Audio file preview"), directoryList (wavFilter, thread), customDirectoryList(customFileFilter_,thread)
 {
     addAndMakeVisible (zoomSlider = new Slider ("zoomSlider"));
     zoomSlider->setRange (0, 1, 0);
@@ -83,6 +83,12 @@ LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDir
     startStopButton2->setButtonText ("Start/Stop");
     startStopButton2->addListener (this);
 
+    addAndMakeVisible (tempoSlider = new Slider ("new slider"));
+    tempoSlider->setRange (-60, 60, 5);
+    tempoSlider->setSliderStyle (Slider::TwoValueVertical);
+    tempoSlider->setTextBoxStyle (Slider::TextBoxBelow, true, 80, 20);
+    tempoSlider->addListener (this);
+
 
     //[UserPreSize]
     //[/UserPreSize]
@@ -106,7 +112,7 @@ LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDir
 	deviceManager.addAudioCallback (&rightAudioSourcePlayer);
     rightAudioSourcePlayer.setSource (&rightTransportSource);
 
-
+	// Initialize LoopSimilarity with feature vector
 	loopSimilarity = new LoopSimilarity(featureVector);
 
 	// Handling the second component on our own
@@ -116,6 +122,15 @@ LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDir
 
 	fileTreeComp2->setColour (FileTreeComponent::backgroundColourId, Colours::white);
 	fileTreeComp2->addListener (this);
+
+	// Will prevent a whole lot of messages
+	tempoSlider->setChangeNotificationOnlyOnRelease(true);
+	tempoSlider->setPopupDisplayEnabled(true,this);
+	tempoSlider->setMaxValue(10,NotificationType(0),false);
+	tempoSlider->setMinValue(-10,NotificationType(0),false);
+
+	customFileFilter = customFileFilter_;
+
     //[/Constructor]
 }
 
@@ -134,6 +149,9 @@ LoopPlayer::~LoopPlayer()
 	currentRightAudioFileSource = nullptr;
 	fileTreeComp2->removeListener (this);
 
+	similarLoops = nullptr;
+	customFileFilter = nullptr;
+	
     //[/Destructor_pre]
 
     zoomSlider = nullptr;
@@ -147,9 +165,11 @@ LoopPlayer::~LoopPlayer()
     fileTreeComp2 = nullptr;
     thumbnailComponent2 = nullptr;
     startStopButton2 = nullptr;
+    tempoSlider = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
+	
     //[/Destructor]
 }
 
@@ -178,6 +198,7 @@ void LoopPlayer::resized()
     fileTreeComp2->setBounds (620, 64, 320, 320);
     thumbnailComponent2->setBounds (573, 487, 440, 128);
     startStopButton2->setBounds (604, 648, 150, 24);
+    tempoSlider->setBounds (400, 112, 150, 144);
     //[UserResized] Add your own custom resize handling here..
 
     //[/UserResized]
@@ -193,6 +214,41 @@ void LoopPlayer::sliderValueChanged (Slider* sliderThatWasMoved)
         //[UserSliderCode_zoomSlider] -- add your slider handling code here..
 		thumbnailComponent->setZoomFactor (zoomSlider->getValue());
         //[/UserSliderCode_zoomSlider]
+    }
+    else if (sliderThatWasMoved == tempoSlider)
+    {
+        //[UserSliderCode_tempoSlider] -- add your slider handling code here..
+		int tempoMin = tempoSlider->getMinValue();
+		int tempoMax = tempoSlider->getMaxValue();
+		File selectedFile = fileTreeComp->getSelectedFile();
+		// Pointe causing the problem		
+		//ScopedPointer<StringArray> similarLoops;
+		if(selectedFile.exists())
+		{
+			// Get similarFiles
+			similarLoops = loopSimilarity->returnSimilarTempo(tempoMax,tempoMin,selectedFile);
+		
+			// Update the custom filter
+			customFileFilter->updateFilters(similarLoops);
+			// New function!
+			customDirectoryList.setFileFilter(customFileFilter);
+
+			for(int q = 0; q<similarLoops->size();q++)
+			{
+				String temp = similarLoops->operator[](q); 
+				DBG(temp);
+			}
+
+			customDirectoryList.refresh();
+//			customDirectoryList.clear();
+//			customDirectoryList = DirectoryContentsList(customFileFilter,thread);
+			// see what happens!
+			
+		}
+
+		
+		//similarLoops = nullptr;
+        //[/UserSliderCode_tempoSlider]
     }
 
     //[UsersliderValueChanged_Post]
@@ -350,8 +406,8 @@ BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="LoopPlayer" componentName=""
                  parentClasses="public Component, public FileBrowserListener, public SliderListener, public ButtonListener"
-                 constructorParams="AudioDeviceManager&amp; deviceManager, const File&amp; pathtoDirectory, WavFileFilter* wavFilter, Array&lt;var&gt; featureVector, Array&lt;File&gt; audioLoops_, CustomFileFilter* customFileFilter"
-                 variableInitialisers="deviceManager (deviceManager), thread (&quot;Audio file preview&quot;), directoryList (wavFilter, thread), customDirectoryList(customFileFilter,thread)"
+                 constructorParams="AudioDeviceManager&amp; deviceManager, const File&amp; pathtoDirectory, WavFileFilter* wavFilter, Array&lt;var&gt; featureVector, Array&lt;File&gt; audioLoops_, CustomFileFilter* customFileFilter_"
+                 variableInitialisers="deviceManager (deviceManager), thread (&quot;Audio file preview&quot;), directoryList (wavFilter, thread), customDirectoryList(customFileFilter_,thread)"
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="0" initialWidth="1024" initialHeight="768">
   <BACKGROUND backgroundColour="fff0f0f0"/>
@@ -394,6 +450,10 @@ BEGIN_JUCER_METADATA
   <TEXTBUTTON name="startStopButton" id="a71706b6a5dc9605" memberName="startStopButton2"
               virtualName="" explicitFocusOrder="0" pos="604 648 150 24" buttonText="Start/Stop"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+  <SLIDER name="new slider" id="d8772d43f4c77a73" memberName="tempoSlider"
+          virtualName="" explicitFocusOrder="0" pos="400 112 150 144" min="-60"
+          max="60" int="5" style="TwoValueVertical" textBoxPos="TextBoxBelow"
+          textBoxEditable="0" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

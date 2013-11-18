@@ -280,6 +280,8 @@ void FeatureExtractor::readCache(const File& pathToDirectory)
 	 var result = JSON::parse(cache).getProperty(Identifier("LoopFeatures"),0);
 	 int length = result.getArray()->size();
 
+	 // Initialize the feature vector, do we need this
+	 featureVector.insertMultiple(0,var(),length);
 
 	 for(int i=0;i<length;i++)
 	 {

@@ -71,6 +71,7 @@ MainComponent::MainComponent ()
 
 	wavFilter = new WavFileFilter(".wav");
 	customFileFilter = new CustomFileFilter("new");
+	customFileFilter->clearFilters();
     //[/Constructor]
 }
 
