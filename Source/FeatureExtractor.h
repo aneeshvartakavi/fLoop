@@ -25,6 +25,8 @@ public:
 	// Index is used to place the element in the appropriate row of the var
 	float calculateTempo(File loop);
     std::pair<float, float> calculateSpectralCrestFactor(std::vector<float> fftData, int length);
+    std::vector<float> calcBeatSpectrum(std::vector<float> fftData, int numBlocks);
+    float calcFFTEuclDist(std::vector<float> vec1, std::vector<float> vec2);
 	// Old code, has to be modified
     float* calculateFFT(float* sampleData);
 	float* calculateMFCC(float* sampleData);
