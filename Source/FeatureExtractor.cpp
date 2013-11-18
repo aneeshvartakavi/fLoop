@@ -9,6 +9,8 @@
 */
 
 #include "FeatureExtractor.h"
+#include <fstream>
+#include <iterator>
 
 FeatureExtractor::FeatureExtractor(const Array<File> &audioLoops, int numFeatures_, int blockSize_, int hopSize_, int fftSizelog2):fftEngine(fftSizelog2)
 {
@@ -60,14 +62,14 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 		sampleBuffer2->clear();
 
 		int numChannels = fileReader->numChannels;
-		int64 length = fileReader->lengthInSamples%hopSize;
+		int64 numBlocks= fileReader->lengthInSamples%hopSize;
 		
 		// Accounting for non-integer multiples of blockSize
-		length = (fileReader->lengthInSamples+length)/hopSize;
+		numBlocks= (fileReader->lengthInSamples+numBlocks)/hopSize;
 		// For FFT
 		
         std::vector<float> fftData;  // point to all fft data for file
-		for (int j=0;j<length-1;j++)
+		for (int j=0;j<numBlocks-1;j++)
 		{
 			// Check if blockSize, hopSize implementation is correct
 			fileReader->read(sampleBuffer,0,blockSize,j*hopSize,true,false);
@@ -111,9 +113,17 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
         element.append(calculateTempo(loop));
         
         // Spectral Crest Factor
-        std::pair<float, float> scfDistr = calculateSpectralCrestFactor(fftData, length-1);
+        std::pair<float, float> scfDistr = calculateSpectralCrestFactor(fftData, numBlocks-1);
         element.append(scfDistr.first); // mean
         element.append(scfDistr.second); // std
+        
+        // Beat Spectrum
+        std::vector<float> beatSpectrum = calcBeatSpectrum(fftData, numBlocks-1);
+                
+//        std::ofstream output_file("./example.txt");
+//        std::ostreambuf_iterator<std::string> output_iterator(output_file, "\n");
+//        std::copy(beatSpectrum.begin(), beatSpectrum.end(), output_iterator);
+        
 	}
 }
 
@@ -168,7 +178,6 @@ float FeatureExtractor::calculateTempo(File loop)
 	int Fs = 0;
 	float fbpm;
 
-//    File loop(fileList.getUnchecked(i));
     // Creating a reader for the file, depending on its format
     ScopedPointer<AudioFormatReader> fileReader = formatManager.createReaderFor(loop);
 
@@ -183,7 +192,7 @@ float FeatureExtractor::calculateTempo(File loop)
 //    tempVar.append(adjustBPM(fbpm));
 }
 
-std::pair<float, float> FeatureExtractor::calculateSpectralCrestFactor(std::vector<float> fftData, int length){
+std::pair<float, float> FeatureExtractor::calculateSpectralCrestFactor(std::vector<float> fftData, int numBlocks){
     // Retruns a pair object with the mean and avg spectral crest factor for the file
     // remember FFT for all blocks are in one vector so watch indexing
     
@@ -194,7 +203,7 @@ std::pair<float, float> FeatureExtractor::calculateSpectralCrestFactor(std::vect
     
     float runningSumSquares = 0.0;  // used to get running std
     
-    for(int j=0; j<length; j++){  // iterate over each block
+    for(int j=0; j<numBlocks; j++){  // iterate over each block
         
         float maxFFTVal = fftData[0];  // init
         float spectralSum = fftData[0];  // init
@@ -221,6 +230,46 @@ std::pair<float, float> FeatureExtractor::calculateSpectralCrestFactor(std::vect
     
     return distr;
 }
+
+std::vector<float> FeatureExtractor::calcBeatSpectrum(std::vector<float> fftData, int numBlocks){
+    // See paper for description of this
+    // THE BEAT SPECTRUM: A NEW APPROACH TO RHYTHM ANALYSIS, Foote, J., Uchihashi, S.
+    
+    std::vector<float> beatSpectrum;
+    
+    for(int l=0; l<numBlocks; l++){
+        
+        float b_l = 0.0;        
+        std::vector<float> refVect(fftData.begin() + (numBlocks * l), fftData.begin() + (numBlocks * l) + blockSize);
+                
+        for(int k=0; k<numBlocks; k++) {
+            std::vector<float> otherVect(fftData.begin() + (numBlocks * k), fftData.begin() + (numBlocks * k) + blockSize);
+            b_l += calcFFTEuclDist(refVect, otherVect);
+        }
+        
+        beatSpectrum.push_back(b_l);
+    }
+    
+    return beatSpectrum;
+}
+
+
+float FeatureExtractor::calcFFTEuclDist(std::vector<float> vect1, std::vector<float> vect2){
+    // Calculate euclidean distance between two vectors
+    // Assuming they are the same size, TODO catch this as an error        
+    
+    int vectSize = vect1.size();
+    float euclDist = 0.0;
+    
+    for(int i=0; i<vectSize; i++){
+        float sq = square(vect1[i] - vect2[i]);
+        euclDist += sq;
+    }
+    
+    return euclDist;
+}
+
+
 
 void FeatureExtractor::writeCache(const File& pathToDirectory)
 {
@@ -278,12 +327,12 @@ void FeatureExtractor::readCache(const File& pathToDirectory)
 	
 	// Clear state
 	 var result = JSON::parse(cache).getProperty(Identifier("LoopFeatures"),0);
-	 int length = result.getArray()->size();
+	 int numBlocks= result.getArray()->size();
 
 	 // Initialize the feature vector, do we need this
 	 featureVector.insertMultiple(0,var(),length);
 
-	 for(int i=0;i<length;i++)
+	 for(int i=0;i<numBlocks;i++)
 	 {
 		 // Get the data from the cache file
 		 String path = result[i].getProperty(Identifier("Path"),0);
