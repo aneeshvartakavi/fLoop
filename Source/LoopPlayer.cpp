@@ -27,7 +27,7 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDirectory, WavFileFilter* wavFilter, Array<var> featureVector, Array<File> audioLoops_, CustomFileFilter* customFileFilter_)
+LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDirectory, WavFileFilter* wavFilter, Array<File> &audioLoops_, ScopedPointer<CustomFileFilter> customFileFilter_)
     : deviceManager (deviceManager), thread ("Audio file preview"), directoryList (wavFilter, thread), customDirectoryList(customFileFilter_,thread)
 {
     addAndMakeVisible (zoomSlider = new Slider ("zoomSlider"));
@@ -113,12 +113,12 @@ LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDir
     rightAudioSourcePlayer.setSource (&rightTransportSource);
 
 	// Initialize LoopSimilarity with feature vector
-	loopSimilarity = new LoopSimilarity(featureVector);
-
-	// Handling the second component on our own
+	//loopSimilarity = new LoopSimilarity(featureVector);
+	// New code
+	loopSimilarity = new LoopSimilarity();
+	loopSimilarity->readCache(pathtoDirectory);
 
 	customDirectoryList.setDirectory(pathtoDirectory,true,true);
-
 
 	fileTreeComp2->setColour (FileTreeComponent::backgroundColourId, Colours::white);
 	fileTreeComp2->addListener (this);
@@ -127,9 +127,9 @@ LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDir
 	tempoSlider->setChangeNotificationOnlyOnRelease(true);
 	tempoSlider->setPopupDisplayEnabled(true,this);
 	tempoSlider->setMaxValue(10,NotificationType(0),false);
-	tempoSlider->setMinValue(-10,NotificationType(0),false);
+	tempoSlider->setMinValue(0,NotificationType(0),false);
 
-	customFileFilter = customFileFilter_;
+	customFileFilter1 = customFileFilter_;
 
     //[/Constructor]
 }
@@ -149,9 +149,9 @@ LoopPlayer::~LoopPlayer()
 	currentRightAudioFileSource = nullptr;
 	fileTreeComp2->removeListener (this);
 
-	similarLoops = nullptr;
-	customFileFilter = nullptr;
-	
+	//similarLoops = nullptr;
+	//customFileFilter1 = nullptr;
+
     //[/Destructor_pre]
 
     zoomSlider = nullptr;
@@ -169,7 +169,7 @@ LoopPlayer::~LoopPlayer()
 
 
     //[Destructor]. You can add your own custom destruction code here..
-	
+
     //[/Destructor]
 }
 
@@ -221,33 +221,24 @@ void LoopPlayer::sliderValueChanged (Slider* sliderThatWasMoved)
 		int tempoMin = tempoSlider->getMinValue();
 		int tempoMax = tempoSlider->getMaxValue();
 		File selectedFile = fileTreeComp->getSelectedFile();
-		// Pointe causing the problem		
+		//similarLoops = new StringArray();
 		//ScopedPointer<StringArray> similarLoops;
 		if(selectedFile.exists())
 		{
 			// Get similarFiles
 			similarLoops = loopSimilarity->returnSimilarTempo(tempoMax,tempoMin,selectedFile);
-		
+
 			// Update the custom filter
-			customFileFilter->updateFilters(similarLoops);
+
+			//const FileFilter* temp = customDirectoryList.getFilter();
+
+			customFileFilter1->updateFilters(similarLoops);
 			// New function!
-			customDirectoryList.setFileFilter(customFileFilter);
-
-			for(int q = 0; q<similarLoops->size();q++)
-			{
-				String temp = similarLoops->operator[](q); 
-				DBG(temp);
-			}
-
+			customDirectoryList.setFileFilter(customFileFilter1);
 			customDirectoryList.refresh();
-//			customDirectoryList.clear();
-//			customDirectoryList = DirectoryContentsList(customFileFilter,thread);
-			// see what happens!
-			
+
 		}
 
-		
-		//similarLoops = nullptr;
         //[/UserSliderCode_tempoSlider]
     }
 
@@ -406,7 +397,7 @@ BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="LoopPlayer" componentName=""
                  parentClasses="public Component, public FileBrowserListener, public SliderListener, public ButtonListener"
-                 constructorParams="AudioDeviceManager&amp; deviceManager, const File&amp; pathtoDirectory, WavFileFilter* wavFilter, Array&lt;var&gt; featureVector, Array&lt;File&gt; audioLoops_, CustomFileFilter* customFileFilter_"
+                 constructorParams="AudioDeviceManager&amp; deviceManager, const File&amp; pathtoDirectory, WavFileFilter* wavFilter, Array&lt;File&gt; &amp;audioLoops_, ScopedPointer&lt;CustomFileFilter&gt; customFileFilter_"
                  variableInitialisers="deviceManager (deviceManager), thread (&quot;Audio file preview&quot;), directoryList (wavFilter, thread), customDirectoryList(customFileFilter_,thread)"
                  snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
                  fixedSize="0" initialWidth="1024" initialHeight="768">

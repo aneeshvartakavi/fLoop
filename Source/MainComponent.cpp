@@ -88,9 +88,9 @@ MainComponent::~MainComponent()
 
 	audioSetup = nullptr;
 	wavFilter = nullptr;
-	customFileFilter = nullptr;
 	featureExtractor = nullptr;
 	loopPlayer = nullptr;
+	customFileFilter = nullptr;
     //[/Destructor]
 }
 
@@ -149,7 +149,8 @@ void MainComponent::buttonClicked (Button* buttonThatWasClicked)
 				featureExtractor->writeCache(pathToDirectory);
 			}
 
-			addAndMakeVisible(loopPlayer = new LoopPlayer(deviceManager,pathToDirectory,wavFilter,featureExtractor->returnFeatureVector(),audioLoops,customFileFilter));
+			addAndMakeVisible(loopPlayer = new LoopPlayer(deviceManager,pathToDirectory,wavFilter,audioLoops,customFileFilter));
+			//addAndMakeVisible(loopPlayer = new LoopPlayer(deviceManager,pathToDirectory,wavFilter,featureExtractor->returnFeatureVector(),audioLoops,customFileFilter));
 
 		}
         //[/UserButtonCode_browseButton]

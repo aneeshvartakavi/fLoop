@@ -48,7 +48,7 @@ class LoopPlayer  : public Component,
 {
 public:
     //==============================================================================
-    LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDirectory, WavFileFilter* wavFilter, Array<var> featureVector, Array<File> audioLoops_, CustomFileFilter* customFileFilter_);
+    LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDirectory, WavFileFilter* wavFilter, Array<File> &audioLoops_, ScopedPointer<CustomFileFilter> customFileFilter_);
     ~LoopPlayer();
 
     //==============================================================================
@@ -89,13 +89,14 @@ private:
 	void loadRightFileIntoTransport (const File& audioFile);
 
 	ScopedPointer<LoopSimilarity> loopSimilarity;
-	ScopedPointer<StringArray> similarLoops;
+	//ScopedPointer<StringArray> similarLoops;
+	StringArray similarLoops;
 	// For the second FileBrowserComponent
 
 	DirectoryContentsList customDirectoryList;
 
 	//TimeSliceThread thread1;
-	ScopedPointer<CustomFileFilter> customFileFilter;
+	ScopedPointer<CustomFileFilter> customFileFilter1;
     //[/UserVariables]
 
     //==============================================================================

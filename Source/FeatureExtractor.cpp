@@ -330,7 +330,7 @@ void FeatureExtractor::readCache(const File& pathToDirectory)
 	 int numBlocks= result.getArray()->size();
 
 	 // Initialize the feature vector, do we need this
-	 featureVector.insertMultiple(0,var(),length);
+	 //featureVector.insertMultiple(0,var(),length);
 
 	 for(int i=0;i<numBlocks;i++)
 	 {

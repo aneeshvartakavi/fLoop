@@ -23,8 +23,15 @@ public:
 
 	~CustomFileFilter()
 	{
+		clearFilters();
 		// Nothing here yet
 	}
+
+	CustomFileFilter(const String& filterDescription,CustomFileFilter* filterToCopyFrom):FileFilter(filterDescription)
+	{
+		validFiles = filterToCopyFrom->returnValidFiles();
+	}
+
 
 	bool isFileSuitable(const File &file) const
 	{
@@ -67,16 +74,22 @@ public:
 		return true;
 	}
 
-	void updateFilters(StringArray* validFiles_)
+	void updateFilters(const StringArray &validFiles_)
 	{
 		// Add array because we can potentially have multiple criteria selected
-		validFiles.addArray(*validFiles_);
+		validFiles.addArray(validFiles_);
 	}
 
 	void clearFilters()
 	{
 		validFiles.clear();
 	}
+
+	StringArray returnValidFiles()
+	{
+		return validFiles;
+	}
+
 
 
 private:
