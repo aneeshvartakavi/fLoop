@@ -12,7 +12,7 @@
 #define FEATUREEXTRACTOR_H_INCLUDED
 
 #include "JuceHeader.h"
-//#include "qm_dsp\dsp\mfcc\MFCC.h"
+#include "Eigen\Dense.h"
 
 class FeatureExtractor
 {
@@ -21,15 +21,18 @@ public:
 	FeatureExtractor(const Array<File> &audioLoops, int numFeatures, int blockSize_,int hopSize_, int fftSizeLog2);
 	~FeatureExtractor();
 	void computeFeatures(const Array<File> &audioLoops);
-	void computeFeatures(int index);
-	// Index is used to place the element in the appropriate row of the var
+	
+	
 	float calculateTempo(File loop);
-    std::pair<float, float> calculateSpectralCrestFactor(std::vector<float> fftData, int length);
-    std::vector<float> calcBeatSpectrum(std::vector<float> fftData, int numBlocks);
-    float calcFFTEuclDist(std::vector<float> vec1, std::vector<float> vec2);
+    
+	void computeBeatSpectrum(const Eigen::MatrixXf &spec, var& tempVar,int num_blocks);
+	
+	std::pair<float, float> calculateSpectralCrestFactor(std::vector<float> fftData, int length);
+	
+    
 	// Old code, has to be modified
-    float* calculateFFT(float* sampleData);
-	float* calculateMFCC(float* sampleData);
+    float* calculateMFCC(std::vector<float> &fftVector);
+	
 	float* spectralCentroid(float* magSpectrum);
 	
 	// Writes a text file in the parent directory
@@ -57,6 +60,7 @@ private:
 	int blockSize;
 	int hopSize;
 	int numFeatures;
+	int halfBlockSize;
 	drow::FFTEngine fftEngine;
 	
 	// Returns adjusted BPM

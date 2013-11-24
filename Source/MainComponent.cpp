@@ -146,7 +146,7 @@ void MainComponent::buttonClicked (Button* buttonThatWasClicked)
 			{
 				// Cache not found
 				featureExtractor->computeFeatures(audioLoops);
-				featureExtractor->writeCache(pathToDirectory);
+				//featureExtractor->writeCache(pathToDirectory);
 			}
 
 			addAndMakeVisible(loopPlayer = new LoopPlayer(deviceManager,pathToDirectory,wavFilter,audioLoops,customFileFilter));

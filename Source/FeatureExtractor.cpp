@@ -11,6 +11,9 @@
 #include "FeatureExtractor.h"
 #include <fstream>
 #include <iterator>
+#include "Eigen\Dense.h"
+#include "Eigen\FFT.h"
+
 
 FeatureExtractor::FeatureExtractor(const Array<File> &audioLoops, int numFeatures_, int blockSize_, int hopSize_, int fftSizelog2):fftEngine(fftSizelog2)
 {
@@ -25,6 +28,8 @@ FeatureExtractor::FeatureExtractor(const Array<File> &audioLoops, int numFeature
 	blockSize = blockSize_;
 	hopSize = hopSize_;
 	
+	halfBlockSize = (blockSize/2)+1;
+	
 	// Register basic formats to read
 	formatManager.registerBasicFormats();
 
@@ -36,6 +41,7 @@ FeatureExtractor::FeatureExtractor(const Array<File> &audioLoops, int numFeature
 FeatureExtractor::~FeatureExtractor()
 {
 	//fileList = nullptr;
+
 }
 
 void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
@@ -66,60 +72,97 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 		
 		// Accounting for non-integer multiples of blockSize
 		numBlocks= (fileReader->lengthInSamples+numBlocks)/hopSize;
-		// For FFT
 		
-        std::vector<float> fftData;  // point to all fft data for file
+		// Define a matrix to hold all the audio
+		Eigen::MatrixXf audioBuffer(blockSize,numBlocks);
+
+		
+		// For FFT
 		for (int j=0;j<numBlocks-1;j++)
 		{
 			// Check if blockSize, hopSize implementation is correct
 			fileReader->read(sampleBuffer,0,blockSize,j*hopSize,true,false);
 			
-			if(numChannels == 2)
-			{
-				// Read the right channel into our second buffer
-				fileReader->read(sampleBuffer2,0,blockSize,0,false,true);
-				// Reducing gain so there is no clipping 		
-				sampleBuffer->applyGain(0.5);
-				sampleBuffer2->applyGain(0.5);
-				// Adding the samples to the final buffer
-				sampleBuffer->addFrom(0,0,*sampleBuffer2,0,0,blockSize);
-			}
+			//if(numChannels == 2)
+			//{
+			//	// Read the right channel into our second buffer
+			//	fileReader->read(sampleBuffer2,0,blockSize,0,false,true);
+			//	// Reducing gain so there is no clipping 		
+			//	sampleBuffer->applyGain(0.5);
+			//	sampleBuffer2->applyGain(0.5);
+			//	// Adding the samples to the final buffer
+			//	sampleBuffer->addFrom(0,0,*sampleBuffer2,0,0,blockSize);
+			//}
 			
 			// sampleBuffer now has the audio samples, do something with them
 			 
 			float* sampleData = sampleBuffer->getSampleData(0);
 			
-            float* blockFFTData = calculateFFT(sampleData);
-            for(int i=0; i<blockSize; i++){
-                fftData.push_back(blockFFTData[i]);  // faster way?
-            }
-			
-			// Do a check for nan using std::isnan()
-			// May need to threshold values, the 10^-38 can be considered 0.
-						
-			// Uncomment to debug
-			//for(int w=0;w<blockSize;w++)
-			//DBG(String(res[w]));
-						
+			for(int k=0;k<blockSize;k++)
+			{
+				// Copy the samples into the matrix
+				// Can potentially use Eigen::Map to speed up
+				audioBuffer(k,j) = sampleData[k];
+			}
 		}
-        
-        // Add features to featureVector for this file
-        var& element = featureVector.getReference(i);
+		// We now have all the samples for the audio file
+		
+		// Compute FFT
+		Eigen::FFT<float> fft;
+		fft.SetFlag(fft.HalfSpectrum);
+		
 
-        // File name
-        element.append(loop.getFileNameWithoutExtension());
-        
-        // Tempo
-        element.append(calculateTempo(loop));
-        
-        // Spectral Crest Factor
-        std::pair<float, float> scfDistr = calculateSpectralCrestFactor(fftData, numBlocks-1);
-        element.append(scfDistr.first); // mean
-        element.append(scfDistr.second); // std
-        
-        // Beat Spectrum
-        std::vector<float> beatSpectrum = calcBeatSpectrum(fftData, numBlocks-1);
-                
+		Eigen::MatrixXcf stftc(halfBlockSize,numBlocks);
+		Eigen::MatrixXf stft(halfBlockSize,numBlocks);
+		for (int k=0;k<audioBuffer.cols();++k)
+		{
+			stftc.col(k) = fft.fwd(audioBuffer.col(k),blockSize);
+			stft.col(k) = stftc.col(k).real().cwiseAbs();
+		
+		}
+
+		// Compute beat spectrum
+		var beatSpec;
+		computeBeatSpectrum(stft,beatSpec,numBlocks);
+
+		DBG(JSON::toString(beatSpec));
+
+		 // Add features to featureVector for this file
+  //      var& element = featureVector.getReference(i);
+		////element.convertToArray();
+  //      // File name
+		//var fName(loop.getFileNameWithoutExtension());
+		//element.append(fName);
+  //      
+  //      // Tempo
+		//var tempo = calculateTempo(loop);
+		//element.append(tempo);
+  //      
+  //      // Spectral Crest Factor
+  //      //std::pair<float, float> scfDistr = calculateSpectralCrestFactor(fftData, numBlocks-1);
+  //      //element.append(scfDistr.first); // mean
+  //      //element.append(scfDistr.second); // std
+  //      
+
+  //      // Beat Spectrum
+		//var beatSpectrum = calcBeatSpectrum(fftData, numBlocks-1);
+		////var beatSpectrum = calcBeatSpectrum(fftData, numBlocks-1);
+		////Array<var> beatSpec;
+		//DBG(JSON::toString(beatSpectrum));
+		//var beatSpec;
+		//beatSpec.ensureStorageAllocated(beatSpectrum.size());
+	/*	for(int kw = 0; kw<beatSpectrum.size();kw++)
+		{
+			beatSpec.insert(kw,beatSpectrum[kw]);
+			DBG(String(beatSpectrum[kw]) + " " + JSON::toString(beatSpec[kw]));
+		}
+
+		
+		element.append(beatSpec);*/
+
+
+		//var beatSpec(beatSpectrum);
+
 //        std::ofstream output_file("./example.txt");
 //        std::ostreambuf_iterator<std::string> output_iterator(output_file, "\n");
 //        std::copy(beatSpectrum.begin(), beatSpectrum.end(), output_iterator);
@@ -127,48 +170,6 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 	}
 }
 
-void FeatureExtractor::computeFeatures(int index)
-{
-	// Need some sort of input to decide what features to run
-	// Make sure the order of calls is consistent
-	// This makes sure that the database and the cache file store data in the right fields
-	// Insert names as the first entry
-	for(int i=0;i<fileList.size();i++)
-	{		
-		File tempFile = fileList.getUnchecked(i);
-		var& element = featureVector.getReference(i);
-		element.append(tempFile.getFileNameWithoutExtension());
-	}	
-
-	// Then estimate tempo
-//	calculateTempo();
-}
-
-
-float* FeatureExtractor::calculateFFT(float* sampleData)
-{
-	// Get the samples
-	
-	// Initialize the FFT stuff
-	fftEngine.setWindowType(drow::Window::Hann);
-	fftEngine.performFFT (sampleData);
-	fftEngine.findMagnitudes();
-	
-	return fftEngine.getMagnitudesBuffer().getData();
-}
-
-
-float* FeatureExtractor::calculateMFCC(float* sampleData)
-{
-	//MFCCConfig config(44100);
-	//config.fftsize=2048;
-	//config.nceps = 13;
-	//config.logpower = false;
-	//
-	////MFCC a(config);
-
-	return nullptr;
-}
 
 float FeatureExtractor::calculateTempo(File loop)
 {
@@ -191,6 +192,38 @@ float FeatureExtractor::calculateTempo(File loop)
 //    // Append the tempo
 //    tempVar.append(adjustBPM(fbpm));
 }
+
+void FeatureExtractor::computeBeatSpectrum(const Eigen::MatrixXf &stft, var& tempVar,int numBlocks)
+{
+	//Compute similarity matrix for beatspectrum
+		
+		Eigen::MatrixXf similarityMatrix = Eigen::MatrixXf::Zero(numBlocks,numBlocks);
+		Eigen::VectorXf mags = stft.colwise().norm();
+			
+		for(int k=0;k<numBlocks;k++)
+		{
+			// Start from k, exploit symmetry
+			for(int l=k;l<numBlocks;l++)
+			{
+				float dist = stft.col(k).transpose() * stft.col(l);
+				//float dist = stft.col(k).dot(stft.col(l));
+				dist = dist/(mags(k) * mags(l));
+				similarityMatrix(l,k) = dist;
+			}
+		}
+		
+		// Find diagonal sums
+		Eigen::VectorXf diagSums = Eigen::VectorXf::Zero(numBlocks,1);
+		diagSums(0) = similarityMatrix.diagonal(0).sum();
+		for (int k=0;k<numBlocks;++k)
+			{
+				diagSums(k) = similarityMatrix.diagonal(-k).sum();
+				tempVar.append(diagSums(k));
+			}
+
+}
+
+
 
 std::pair<float, float> FeatureExtractor::calculateSpectralCrestFactor(std::vector<float> fftData, int numBlocks){
     // Retruns a pair object with the mean and avg spectral crest factor for the file
@@ -230,45 +263,6 @@ std::pair<float, float> FeatureExtractor::calculateSpectralCrestFactor(std::vect
     
     return distr;
 }
-
-std::vector<float> FeatureExtractor::calcBeatSpectrum(std::vector<float> fftData, int numBlocks){
-    // See paper for description of this
-    // THE BEAT SPECTRUM: A NEW APPROACH TO RHYTHM ANALYSIS, Foote, J., Uchihashi, S.
-    
-    std::vector<float> beatSpectrum;
-    
-    for(int l=0; l<numBlocks; l++){
-        
-        float b_l = 0.0;        
-        std::vector<float> refVect(fftData.begin() + (numBlocks * l), fftData.begin() + (numBlocks * l) + blockSize);
-                
-        for(int k=0; k<numBlocks; k++) {
-            std::vector<float> otherVect(fftData.begin() + (numBlocks * k), fftData.begin() + (numBlocks * k) + blockSize);
-            b_l += calcFFTEuclDist(refVect, otherVect);
-        }
-        
-        beatSpectrum.push_back(b_l);
-    }
-    
-    return beatSpectrum;
-}
-
-
-float FeatureExtractor::calcFFTEuclDist(std::vector<float> vect1, std::vector<float> vect2){
-    // Calculate euclidean distance between two vectors
-    // Assuming they are the same size, TODO catch this as an error        
-    
-    int vectSize = vect1.size();
-    float euclDist = 0.0;
-    
-    for(int i=0; i<vectSize; i++){
-        float sq = square(vect1[i] - vect2[i]);
-        euclDist += sq;
-    }
-    
-    return euclDist;
-}
-
 
 
 void FeatureExtractor::writeCache(const File& pathToDirectory)
