@@ -75,6 +75,13 @@ private:
 			return bpm/2;
 		}
 
+		if(bpm<50)
+		{
+			
+			return bpm*2;
+		}
+
+
 		else
 		{
 			return bpm;

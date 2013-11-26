@@ -126,7 +126,7 @@ void MainComponent::buttonClicked (Button* buttonThatWasClicked)
 		if(pathToDirectory.exists())
 		{
 			featureExtractor = new FeatureExtractor(audioLoops,1,1024,512,10);
-
+			
 			if(featureExtractor->cacheExists(pathToDirectory))
 			{
 				bool cacheSelected = AlertWindow::showOkCancelBox(AlertWindow::AlertIconType::QuestionIcon,"Cache Found","fLoop detected a pre-processed cache for this directory. Would you like to use it and save time?",
@@ -146,7 +146,7 @@ void MainComponent::buttonClicked (Button* buttonThatWasClicked)
 			{
 				// Cache not found
 				featureExtractor->computeFeatures(audioLoops);
-				//featureExtractor->writeCache(pathToDirectory);
+				featureExtractor->writeCache(pathToDirectory);
 			}
 
 			addAndMakeVisible(loopPlayer = new LoopPlayer(deviceManager,pathToDirectory,wavFilter,audioLoops,customFileFilter));

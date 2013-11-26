@@ -36,7 +36,7 @@ public:
 	bool isFileSuitable(const File &file) const
 	{
 		bool returnVal = false;
-		if(validFiles.size()==0)
+		if(validFiles.size()==0 && file.getFileExtension() == ".wav")
 		{
 			// If filters have not been defined yet, return true by default
 			returnVal = true;
@@ -49,7 +49,7 @@ public:
 			for(int k=0;k<validFiles.size();k++)
 			{
 				String validFile = validFiles[k];
-				if (validFile == tempName)
+				if (validFile == tempName && file.getFileExtension() == ".wav")
 				{
 					returnVal = true;
 					break;

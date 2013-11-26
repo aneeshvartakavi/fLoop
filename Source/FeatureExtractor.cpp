@@ -122,51 +122,31 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 		}
 
 		// Compute beat spectrum
+		
+		//DBG(JSON::toString(beatSpec));
+
+		// Add features to featureVector for this file
+        var& element = featureVector.getReference(i);
+		// File name
+		var fName(loop.getFileNameWithoutExtension());
+		element.append(fName);
+        
+        // Tempo
+		var tempo = calculateTempo(loop);
+		element.append(tempo);
+		/*
 		var beatSpec;
 		computeBeatSpectrum(stft,beatSpec,numBlocks);
 
-		DBG(JSON::toString(beatSpec));
+		element.append(beatSpec);*/
 
-		 // Add features to featureVector for this file
-  //      var& element = featureVector.getReference(i);
-		////element.convertToArray();
-  //      // File name
-		//var fName(loop.getFileNameWithoutExtension());
-		//element.append(fName);
-  //      
-  //      // Tempo
-		//var tempo = calculateTempo(loop);
-		//element.append(tempo);
-  //      
+		//DBG(JSON::toString(element));
+		      
   //      // Spectral Crest Factor
   //      //std::pair<float, float> scfDistr = calculateSpectralCrestFactor(fftData, numBlocks-1);
   //      //element.append(scfDistr.first); // mean
   //      //element.append(scfDistr.second); // std
   //      
-
-  //      // Beat Spectrum
-		//var beatSpectrum = calcBeatSpectrum(fftData, numBlocks-1);
-		////var beatSpectrum = calcBeatSpectrum(fftData, numBlocks-1);
-		////Array<var> beatSpec;
-		//DBG(JSON::toString(beatSpectrum));
-		//var beatSpec;
-		//beatSpec.ensureStorageAllocated(beatSpectrum.size());
-	/*	for(int kw = 0; kw<beatSpectrum.size();kw++)
-		{
-			beatSpec.insert(kw,beatSpectrum[kw]);
-			DBG(String(beatSpectrum[kw]) + " " + JSON::toString(beatSpec[kw]));
-		}
-
-		
-		element.append(beatSpec);*/
-
-
-		//var beatSpec(beatSpectrum);
-
-//        std::ofstream output_file("./example.txt");
-//        std::ostreambuf_iterator<std::string> output_iterator(output_file, "\n");
-//        std::copy(beatSpectrum.begin(), beatSpectrum.end(), output_iterator);
-        
 	}
 }
 
@@ -182,11 +162,11 @@ float FeatureExtractor::calculateTempo(File loop)
     // Creating a reader for the file, depending on its format
     ScopedPointer<AudioFormatReader> fileReader = formatManager.createReaderFor(loop);
 
-    // Perform out calculations
+    // Perform calculations
     len = fileReader->lengthInSamples;
     Fs = fileReader->sampleRate;
-    return fbpm = (60*8*Fs)/len; // 60bpm * number of beats * fs /len
-    
+    fbpm = (60*8*Fs)/len; // 60bpm * number of beats * fs /len
+	return adjustBPM(fbpm);
 //    // Get reference to the feature vector
 //    var& tempVar = featureVector.getReference(i);
 //    // Append the tempo
@@ -281,9 +261,8 @@ void FeatureExtractor::writeCache(const File& pathToDirectory)
 		// Add all the properties
 		loop->setProperty("Path",tempFeature[0]);
 		loop->setProperty("Tempo",tempFeature[1]);
-		loop->setProperty("SCF_Mean",tempFeature[2]);
-        loop->setProperty("SCF_Std", tempFeature[3]);
-		
+		//loop->setProperty("Beat_Spectrum",tempFeature[2]);
+
 		loopFeatures.add(loop);
 		loop = nullptr;
 	}
@@ -310,7 +289,31 @@ bool FeatureExtractor::cacheExists(const File& pathToDirectory)
 	// Call this function to check if a cache exists
 	String tempPath = pathToDirectory.getFullPathName() + String("\\floop_cache.txt");
 	File cache(tempPath);
-	return cache.exists();
+	bool returnVal = false;
+	if(cache.existsAsFile())
+	{
+		var result = JSON::parse(cache).getProperty(Identifier("LoopFeatures"),0);
+		int numLoops = result.getArray()->size();
+		if(numLoops==fileList.size())
+		{
+			returnVal = true;
+			for(int i=0;i<numLoops;i++)
+			 {
+				 // Get the data from the cache file
+				 String path = result[i].getProperty(Identifier("Path"),0);
+				 if(path==fileList[i].getFileNameWithoutExtension())
+				 continue;
+				 else
+				 {
+					 DBG("Files don't match");
+					 returnVal = false;
+					 break;
+				 }
+			}
+		}
+	}
+
+	return returnVal;
 }
 
 void FeatureExtractor::readCache(const File& pathToDirectory)
@@ -321,22 +324,23 @@ void FeatureExtractor::readCache(const File& pathToDirectory)
 	
 	// Clear state
 	 var result = JSON::parse(cache).getProperty(Identifier("LoopFeatures"),0);
-	 int numBlocks= result.getArray()->size();
+	 int numLoops = result.getArray()->size();
 
 	 // Initialize the feature vector, do we need this
 	 //featureVector.insertMultiple(0,var(),length);
 
-	 for(int i=0;i<numBlocks;i++)
+	 for(int i=0;i<numLoops;i++)
 	 {
 		 // Get the data from the cache file
 		 String path = result[i].getProperty(Identifier("Path"),0);
 		 int tempo = result[i].getProperty(Identifier("Tempo"),0);
-	 
+		 var beatSpec = result[i].getProperty(Identifier("Beat_Spectrum"),0);
 		// Add it to the feature vector
 		 var& tempFeatures = featureVector.getReference(i);
 		 // Make sure the order is consistent
 		 tempFeatures.append(path);
 		 tempFeatures.append(tempo);
+		 tempFeatures.append(beatSpec);
 	 }
 
 }
