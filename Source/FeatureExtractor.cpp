@@ -9,8 +9,7 @@
 */
 
 #include "FeatureExtractor.h"
-#include <fstream>
-#include <iterator>
+#include <math.h>
 #include "Eigen\Dense.h"
 #include "Eigen\FFT.h"
 
@@ -134,11 +133,11 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
         // Tempo
 		var tempo = calculateTempo(loop);
 		element.append(tempo);
-		/*
+		
 		var beatSpec;
 		computeBeatSpectrum(stft,beatSpec,numBlocks);
 
-		element.append(beatSpec);*/
+		element.append(beatSpec);
 
 		//DBG(JSON::toString(element));
 		      
@@ -194,13 +193,52 @@ void FeatureExtractor::computeBeatSpectrum(const Eigen::MatrixXf &stft, var& tem
 		
 		// Find diagonal sums
 		Eigen::VectorXf diagSums = Eigen::VectorXf::Zero(numBlocks,1);
-		diagSums(0) = similarityMatrix.diagonal(0).sum();
+		
 		for (int k=0;k<numBlocks;++k)
 			{
 				diagSums(k) = similarityMatrix.diagonal(-k).sum();
-				tempVar.append(diagSums(k));
+				//tempVar.append(diagSums(k));
 			}
 
+		// For now, let the features go here, and append to tempVar
+
+		// Mean
+		float meanBeatSpectrum = diagSums.mean();
+		tempVar.append(meanBeatSpectrum);
+		// STD
+		float stdBeatSpectrum=0.0;
+		for (int k=0;k<numBlocks;++k)
+		{
+			stdBeatSpectrum += pow((diagSums[k] - meanBeatSpectrum),2);
+		}
+		stdBeatSpectrum = sqrtf(stdBeatSpectrum/numBlocks);
+		tempVar.append(stdBeatSpectrum);
+
+		// Skewness
+		float skewnessBeatSpectrum = 0.0;
+		for (int k=0;k<numBlocks;++k)
+		{
+			skewnessBeatSpectrum += pow((diagSums[k] - meanBeatSpectrum),3);
+		}
+
+		skewnessBeatSpectrum = skewnessBeatSpectrum / (pow(stdBeatSpectrum,3) *numBlocks);
+		tempVar.append(skewnessBeatSpectrum);
+
+		// Kurtosis
+		float kurtosisBeatSpectrum = 0.0;
+		for (int k=0;k<numBlocks;++k)
+		{
+			kurtosisBeatSpectrum += pow((diagSums[k] - meanBeatSpectrum),4);
+		}
+
+		kurtosisBeatSpectrum = (kurtosisBeatSpectrum/numBlocks)/(pow(stdBeatSpectrum,4)-3);
+		tempVar.append(kurtosisBeatSpectrum);
+		
+
+
+
+
+	
 }
 
 
@@ -261,7 +299,7 @@ void FeatureExtractor::writeCache(const File& pathToDirectory)
 		// Add all the properties
 		loop->setProperty("Path",tempFeature[0]);
 		loop->setProperty("Tempo",tempFeature[1]);
-		//loop->setProperty("Beat_Spectrum",tempFeature[2]);
+		loop->setProperty("Beat_Spectrum",tempFeature[2]);
 
 		loopFeatures.add(loop);
 		loop = nullptr;
