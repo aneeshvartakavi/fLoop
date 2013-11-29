@@ -67,17 +67,21 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 		sampleBuffer2->clear();
 
 		int numChannels = fileReader->numChannels;
-		int64 numBlocks= fileReader->lengthInSamples%hopSize;
+		int sampleRate = fileReader->sampleRate;
+		int64 numSamples = fileReader->lengthInSamples;
+		int64 numBlocks= numSamples%hopSize;
 		
 		// Accounting for non-integer multiples of blockSize
-		numBlocks= (fileReader->lengthInSamples+numBlocks)/hopSize;
+		numBlocks= (numSamples+numBlocks)/hopSize;
 		
+		numBlocks+=1;
+
 		// Define a matrix to hold all the audio
 		Eigen::MatrixXf audioBuffer(blockSize,numBlocks);
 
 		
 		// For FFT
-		for (int j=0;j<numBlocks-1;j++)
+		for (int j=0;j<numBlocks;j++)
 		{
 			// Check if blockSize, hopSize implementation is correct
 			fileReader->read(sampleBuffer,0,blockSize,j*hopSize,true,false);
@@ -119,7 +123,7 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 			stft.col(k) = stftc.col(k).real().cwiseAbs();
 		
 		}
-
+		//stft = stft.array().log();
 		// Compute beat spectrum
 		
 		//DBG(JSON::toString(beatSpec));
@@ -131,11 +135,12 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 		element.append(fName);
         
         // Tempo
-		var tempo = calculateTempo(loop);
-		element.append(tempo);
-		
+		int tempo = calculateTempo(loop);
+		element.append(var(tempo));
+		DBG(JSON::toString(element));
+			
 		var beatSpec;
-		computeBeatSpectrum(stft,beatSpec,numBlocks);
+		computeBeatSpectrum(stft,beatSpec,numBlocks,tempo,sampleRate);
 
 		element.append(beatSpec);
 
@@ -172,7 +177,7 @@ float FeatureExtractor::calculateTempo(File loop)
 //    tempVar.append(adjustBPM(fbpm));
 }
 
-void FeatureExtractor::computeBeatSpectrum(const Eigen::MatrixXf &stft, var& tempVar,int numBlocks)
+void FeatureExtractor::computeBeatSpectrum(const Eigen::MatrixXf &stft, var& tempVar,int numBlocks, int tempo, int sampleRate)
 {
 	//Compute similarity matrix for beatspectrum
 		
@@ -192,24 +197,64 @@ void FeatureExtractor::computeBeatSpectrum(const Eigen::MatrixXf &stft, var& tem
 		}
 		
 		// Find diagonal sums
-		Eigen::VectorXf diagSums = Eigen::VectorXf::Zero(numBlocks,1);
+		Eigen::VectorXf colSums = Eigen::VectorXf::Zero(numBlocks,1);
 		
 		for (int k=0;k<numBlocks;++k)
 			{
-				diagSums(k) = similarityMatrix.diagonal(-k).sum();
+				colSums(k) = similarityMatrix.diagonal(-k).sum();
 				//tempVar.append(diagSums(k));
 			}
 
-		// For now, let the features go here, and append to tempVar
+		// Preprocessing
+		// Remove slope, the line of best fit in least squared sense
+		Eigen::VectorXf time = Eigen::VectorXf::Zero(numBlocks,1);
+		Eigen::VectorXf timeSq = Eigen::VectorXf::Zero(numBlocks,1);
+		for(int k=0; k<numBlocks; k++)
+		{
+			time[k] = k;
+			//timeSq[k] = k*k;
+		}
 
+		float meanX = time.mean();
+		float meanY = colSums.mean();
+
+		float sumX = time.sum();
+		float sumY = colSums.sum();
+
+		timeSq = time.array() * time.array();
+
+		float sumX2 = timeSq.sum();
+		float sumXY = (time.cwiseProduct(colSums)).sum();
+
+		float slope = (sumXY - ((sumX*sumY)/numBlocks))/(sumX2 - (pow(sumX,2)/numBlocks));
+		float yIntercept = meanY - slope*meanX;
+
+		Eigen::VectorXf trend = Eigen::VectorXf::Zero(numBlocks,1);
+		trend = ((time.array() * slope) + yIntercept);
+
+		Eigen::VectorXf beatSpectrum = colSums - trend;
+		// Normalize
+		float maxVal = beatSpectrum.cwiseAbs().maxCoeff();
+		beatSpectrum = beatSpectrum.array()/maxVal;
+
+		// Moving average to smooth out signal
+
+		for(int k=2; k<numBlocks; k++)
+		{
+			beatSpectrum[k] = (beatSpectrum[k] + beatSpectrum[k-1] + beatSpectrum[k-2])/3;
+		}
+
+		// Add the slope to the feature vector
+		// For now, let the features go here, and append to tempVar
+		// To do, combine the for loops to one, should improve performance
 		// Mean
-		float meanBeatSpectrum = diagSums.mean();
+		float meanBeatSpectrum = beatSpectrum.mean();
 		tempVar.append(meanBeatSpectrum);
 		// STD
 		float stdBeatSpectrum=0.0;
 		for (int k=0;k<numBlocks;++k)
 		{
-			stdBeatSpectrum += pow((diagSums[k] - meanBeatSpectrum),2);
+			stdBeatSpectrum += pow((beatSpectrum[k] - meanBeatSpectrum),2);
 		}
 		stdBeatSpectrum = sqrtf(stdBeatSpectrum/numBlocks);
 		tempVar.append(stdBeatSpectrum);
@@ -218,7 +263,7 @@ void FeatureExtractor::computeBeatSpectrum(const Eigen::MatrixXf &stft, var& tem
 		float skewnessBeatSpectrum = 0.0;
 		for (int k=0;k<numBlocks;++k)
 		{
-			skewnessBeatSpectrum += pow((diagSums[k] - meanBeatSpectrum),3);
+			skewnessBeatSpectrum += pow((beatSpectrum[k] - meanBeatSpectrum),3);
 		}
 
 		skewnessBeatSpectrum = skewnessBeatSpectrum / (pow(stdBeatSpectrum,3) *numBlocks);
@@ -228,16 +273,79 @@ void FeatureExtractor::computeBeatSpectrum(const Eigen::MatrixXf &stft, var& tem
 		float kurtosisBeatSpectrum = 0.0;
 		for (int k=0;k<numBlocks;++k)
 		{
-			kurtosisBeatSpectrum += pow((diagSums[k] - meanBeatSpectrum),4);
+			kurtosisBeatSpectrum += pow((beatSpectrum[k] - meanBeatSpectrum),4);
 		}
 
-		kurtosisBeatSpectrum = (kurtosisBeatSpectrum/numBlocks)/(pow(stdBeatSpectrum,4)-3);
+		kurtosisBeatSpectrum = ((kurtosisBeatSpectrum/numBlocks)/pow(stdBeatSpectrum,4)-3);
 		tempVar.append(kurtosisBeatSpectrum);
 		
+		// Amplitude of first peak to second peak
+		for (int k=1;k<numBlocks;++k)
+		{
+			float slope = beatSpectrum(k) - beatSpectrum(k-1);
+			if(slope>0)
+			{
+				// Fill this in
+
+			}
+
+		}
+		//tempVar.append();
+
+		// Cumulative difference between BS and straight line through signal
+		float lineSlope = (beatSpectrum(numBlocks-1) - beatSpectrum(0))/numBlocks;
+		float cumulativeDifference = 0.0;
+
+		for (int k=1;k<numBlocks;++k)
+		{
+			float refPt = lineSlope * k + beatSpectrum(0);
+			cumulativeDifference += abs(beatSpectrum(k)-refPt);
+		}
+		tempVar.append(cumulativeDifference);
+
+		// Number of changes in slope
+
+		int numSlopeChanges = 0;
+		int slopeSign = -1;
+
+		for (int k=1;k<numBlocks;++k)
+		{
+			float slope = beatSpectrum(k) - beatSpectrum(k-1);
+			if((slope >0 && slopeSign == -1)|| (slope <0 && slopeSign == 1))
+			{
+				slopeSign = -1 * slopeSign;
+				numSlopeChanges++;
+			}
+
+		}
+
+		// Instantaneous energy per beat
+		float firstBeatTime = 60.0/tempo;
+		int firstBeatIndex = ceilf(((sampleRate*firstBeatTime) - blockSize/2)/hopSize);
+		
+		Eigen::Vector4f instBeat = Eigen::VectorXf::Zero(4,1);	
+		for (int k=0;k<=12;k+=4)
+		{
+			instBeat[0]+= beatSpectrum(((k * firstBeatIndex)+ 1));
+			instBeat[1]+= beatSpectrum((((k+1) * firstBeatIndex)+ 1));
+			instBeat[2]+= beatSpectrum((((k+2) * firstBeatIndex)+ 1));
+			instBeat[3]+= beatSpectrum((((k+3) * firstBeatIndex)+ 1));
+		}
+
+		float coeff = instBeat.cwiseAbs().sum();
+		instBeat = instBeat.array()/ coeff;
+		
+		/*for(int k=0;k<4;k++)
+		{
+			DBG(String(instBeat[k]));
+		}*/
+
+		// Energy per beat
+		Eigen::Vector4f enBeat = Eigen::VectorXf::Zero(4,1);	
 
 
 
-
+		//DBG(JSON::toString(tempVar));
 	
 }
 
