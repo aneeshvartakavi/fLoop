@@ -13,7 +13,9 @@
 #include <complex>
 #include <vector>
 #include <map>
-#include "Eigen/Core.h"
+//#include "Eigen/Core.h"
+
+#include "Core.h"
 
 
 /**

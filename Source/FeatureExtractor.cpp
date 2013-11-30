@@ -7,12 +7,14 @@
 
   ==============================================================================
 */
+//#include "Eigen/
 
+#include "Eigen/Dense.h"
+#include "Eigen/FFT.h"
 #include "FeatureExtractor.h"
-#include <fstream>
-#include <iterator>
-#include "Eigen\Dense.h"
-#include "Eigen\FFT.h"
+//#include <fstream>
+//#include <iterator>
+
 
 
 FeatureExtractor::FeatureExtractor(const Array<File> &audioLoops, int numFeatures_, int blockSize_, int hopSize_, int fftSizelog2):fftEngine(fftSizelog2)
@@ -122,10 +124,10 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 		}
 
 		// Compute beat spectrum
-		var beatSpec;
-		computeBeatSpectrum(stft,beatSpec,numBlocks);
-
-		DBG(JSON::toString(beatSpec));
+//		var beatSpec;
+////		computeBeatSpectrum(stft,beatSpec,numBlocks);
+////
+//		DBG(JSON::toString(beatSpec));
 
 		 // Add features to featureVector for this file
   //      var& element = featureVector.getReference(i);
@@ -216,11 +218,10 @@ void FeatureExtractor::computeBeatSpectrum(const Eigen::MatrixXf &stft, var& tem
 		Eigen::VectorXf diagSums = Eigen::VectorXf::Zero(numBlocks,1);
 		diagSums(0) = similarityMatrix.diagonal(0).sum();
 		for (int k=0;k<numBlocks;++k)
-			{
-				diagSums(k) = similarityMatrix.diagonal(-k).sum();
-				tempVar.append(diagSums(k));
-			}
-
+        {
+            diagSums(k) = similarityMatrix.diagonal(-k).sum();
+//				tempVar.append(diagSums(k));
+        }
 }
 
 

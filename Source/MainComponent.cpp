@@ -139,7 +139,7 @@ void MainComponent::buttonClicked (Button* buttonThatWasClicked)
 				{
 					// Else do the same thing as you do when cache is not found
 					featureExtractor->computeFeatures(audioLoops);
-					featureExtractor->writeCache(pathToDirectory);
+//					featureExtractor->writeCache(pathToDirectory);
 				}
 			}
 			else

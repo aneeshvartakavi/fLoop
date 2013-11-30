@@ -11,8 +11,10 @@
 #ifndef FEATUREEXTRACTOR_H_INCLUDED
 #define FEATUREEXTRACTOR_H_INCLUDED
 
+#include "Eigen/Dense.h"
 #include "JuceHeader.h"
-#include "Eigen\Dense.h"
+//#include "Eigen/Dense.h"
+
 
 class FeatureExtractor
 {
