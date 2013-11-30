@@ -84,29 +84,34 @@ StringArray LoopSimilarity::returnSimilarTempo(int sliderMax, int sliderMin,cons
 
 void LoopSimilarity::readCache(const File& pathToDirectory)
 {
-	// Always call this after a call to check if cache exists
+		// Always call this after a call to check if cache exists
 	String tempPath = pathToDirectory.getFullPathName() + String("\\floop_cache.txt");
 	File cache(tempPath);
-
+	
 	// Clear state
 	 var result = JSON::parse(cache).getProperty(Identifier("LoopFeatures"),0);
-	 
-	 int length = result.size();
-	 // Initialize the feature vector, do we need this
-	 featureVector.insertMultiple(0,var(),length);
+	 int numLoops = result.getArray()->size();
 
-	 for(int i=0;i<length;i++)
+	 // Initialize the feature vector, do we need this
+	 featureVector.insertMultiple(0,var(),numLoops);
+
+	 for(int i=0;i<numLoops;i++)
 	 {
 		 // Get the data from the cache file
 		 String path = result[i].getProperty(Identifier("Path"),0);
 		 int tempo = result[i].getProperty(Identifier("Tempo"),0);
-	 
+		 var beatSpec = result[i].getProperty(Identifier("Beat_Spectrum"),0);
 		// Add it to the feature vector
 		 var& tempFeatures = featureVector.getReference(i);
 		 // Make sure the order is consistent
 		 tempFeatures.append(path);
+		 DBG(JSON::toString(tempFeatures));
+		 DBG(JSON::toString(featureVector));
 		 tempFeatures.append(tempo);
+		 tempFeatures.append(beatSpec);
 	 }
+
+	 DBG(JSON::toString(featureVector));
 
 }
 

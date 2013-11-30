@@ -27,7 +27,7 @@ public:
 	
 	float calculateTempo(File loop);
     
-	void computeBeatSpectrum(const Eigen::MatrixXf &spec, var& tempVar,int num_blocks);
+	void computeBeatSpectrum(const Eigen::MatrixXf &spec, var& tempVar,int num_blocks,int tempo, int sampleRate);
 	
 	std::pair<float, float> calculateSpectralCrestFactor(std::vector<float> fftData, int length);
 	
@@ -70,12 +70,19 @@ private:
 	{
 		int bpm = roundFloatToInt(fbpm);
 		// Round off tempo to closest multiple of 5
-		bpm = (bpm + 5-1) - (bpm - 1)%5;
+		//bpm = (bpm + 5-1) - (bpm - 1)%5;
 		// Define anything from 80-160 as range of tempo
 		if(bpm>160)
 		{
 			return bpm/2;
 		}
+
+		if(bpm<50)
+		{
+			
+			return bpm*2;
+		}
+
 
 		else
 		{
