@@ -66,8 +66,8 @@ public:
 
     void paint (Graphics& g);
     void resized();
-    void sliderValueChanged (Slider* sliderThatWasMoved);
     void buttonClicked (Button* buttonThatWasClicked);
+    void sliderValueChanged (Slider* sliderThatWasMoved);
 
 
 
@@ -97,13 +97,12 @@ private:
 
 	//TimeSliceThread thread1;
 	ScopedPointer<CustomFileFilter> customFileFilter1;
+
     //[/UserVariables]
 
     //==============================================================================
-    ScopedPointer<Slider> zoomSlider;
     ScopedPointer<FileTreeComponent> fileTreeComp;
     ScopedPointer<ThumbnailComponent> thumbnailComponent;
-    ScopedPointer<Label> zoomLabel;
     ScopedPointer<Label> explanation;
     ScopedPointer<TextButton> startStopButton;
     ScopedPointer<drow::CpuMeter> cpuMeter;
@@ -112,6 +111,8 @@ private:
     ScopedPointer<ThumbnailComponent> thumbnailComponent2;
     ScopedPointer<TextButton> startStopButton2;
     ScopedPointer<Slider> tempoSlider;
+    ScopedPointer<Slider> rhythmSlider;
+    ScopedPointer<Slider> zoomSlider;
 
 
     //==============================================================================

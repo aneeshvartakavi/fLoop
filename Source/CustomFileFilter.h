@@ -39,7 +39,7 @@ public:
 		if(validFiles.size()==0 && file.getFileExtension() == ".wav")
 		{
 			// If filters have not been defined yet, return true by default
-			returnVal = true;
+			returnVal = false;
 		}
 		else
 		{
@@ -74,11 +74,63 @@ public:
 		return true;
 	}
 
-	void updateFilters(const StringArray &validFiles_)
+	void updateTempoFilters(const StringArray &validFiles_)
 	{
-		// Add array because we can potentially have multiple criteria selected
-		validFiles.addArray(validFiles_);
+		if(validTempoFiles.size()==0)
+			validTempoFiles.addArray(validFiles_);
+		else
+		{
+			// Add array because we can potentially have multiple criteria selected
+			validTempoFiles.clear();
+			validTempoFiles = validFiles_;
+		}
+		combine();
 	}
+
+	void updateRhythmFilters(const StringArray &validFiles_)
+	{
+		if(validRhythmFiles.size()==0)
+			validRhythmFiles.addArray(validFiles_);
+		else
+		{
+			validRhythmFiles.clear();
+			validRhythmFiles = validFiles_;
+		}
+		
+		// Check for similar loops in both
+		combine();
+			
+	}
+
+	void combine()
+	{
+		validFiles.clear();
+
+		if(validTempoFiles.size()>0 && validRhythmFiles.size()==0)
+		{
+			//validFiles = validTempoFiles;
+		}
+
+		else
+		{
+		
+				// Search for the files that are present in both
+				for(int k=0;k<validTempoFiles.size();k++)
+				{
+					//String temp = validTempoFiles[k];
+					for(int k1=0;k1<validRhythmFiles.size();k1++)
+					{
+						if(validTempoFiles[k] == validRhythmFiles[k1])
+						{
+							validFiles.add(validTempoFiles[k]);
+						}
+				
+					}
+
+				}
+		}
+	}
+
 
 	void clearFilters()
 	{
@@ -95,6 +147,8 @@ public:
 private:
 	// Store valid files
 	StringArray validFiles;
+	StringArray validTempoFiles;
+	StringArray validRhythmFiles;
 };
 
 

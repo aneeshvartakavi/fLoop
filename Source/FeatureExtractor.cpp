@@ -12,6 +12,7 @@
 #include "Eigen/FFT.h"
 #include "FeatureExtractor.h"
 #include <math.h>
+//#include <cmath>
 #include "Eigen\Dense.h"
 #include "Eigen\FFT.h"
 
@@ -126,6 +127,30 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 			stft.col(k) = stftc.col(k).real().cwiseAbs();
 		
 		}
+
+	/*	if(stftc.allFinite())
+		{
+
+		}
+		else
+		{*/
+			//("NAN found");
+			//for(int k1=0;k1<stft.rows();k1++)
+			//{
+			//	for(int k2=0;k2<stft.cols();k2++)
+			//	{
+			//		if(stft(k1,k2)!=stft(k1,k2))
+			//		{
+			//			stft(k1,k2) = 0;
+			//		}
+
+			//	}
+
+			//}
+
+		//}
+
+
 		//stft = stft.array().log();
 		// Compute beat spectrum
 		
@@ -140,14 +165,14 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
         // Tempo
 		int tempo = calculateTempo(loop);
 		element.append(var(tempo));
-		DBG(JSON::toString(element));
+	//	DBG(JSON::toString(element));
 			
 		var beatSpec;
 		computeBeatSpectrum(stft,beatSpec,numBlocks,tempo,sampleRate);
-
+		//DBG(JSON::toString(beatSpec));
 		element.append(beatSpec);
 
-		//DBG(JSON::toString(element));
+	//	DBG(JSON::toString(element));
 		      
   //      // Spectral Crest Factor
   //      //std::pair<float, float> scfDistr = calculateSpectralCrestFactor(fftData, numBlocks-1);
@@ -194,8 +219,12 @@ void FeatureExtractor::computeBeatSpectrum(const Eigen::MatrixXf &stft, var& tem
 			{
 				float dist = stft.col(k).transpose() * stft.col(l);
 				//float dist = stft.col(k).dot(stft.col(l));
-				dist = dist/(mags(k) * mags(l));
+				if(mags(k)!=0 && mags(l)!=0)
+					dist = dist/(mags(k) * mags(l));
+				else
+					dist = 0;
 				similarityMatrix(l,k) = dist;
+			
 			}
 		}
 		
@@ -205,6 +234,7 @@ void FeatureExtractor::computeBeatSpectrum(const Eigen::MatrixXf &stft, var& tem
 		for (int k=0;k<numBlocks;++k)
 			{
 				colSums(k) = similarityMatrix.diagonal(-k).sum();
+				//DBG(String(colSums(k)));
 				//tempVar.append(diagSums(k));
 			}
 
@@ -248,11 +278,16 @@ void FeatureExtractor::computeBeatSpectrum(const Eigen::MatrixXf &stft, var& tem
 		}
 
 		// Add the slope to the feature vector
+		tempVar.append(slope);
+		tempVar.append(yIntercept);
+		
 		// For now, let the features go here, and append to tempVar
 		// To do, combine the for loops to one, should improve performance
 		// Mean
+		
+		
 		float meanBeatSpectrum = beatSpectrum.mean();
-		tempVar.append(meanBeatSpectrum);
+		//tempVar.append(meanBeatSpectrum);
 		// STD
 		float stdBeatSpectrum=0.0;
 		for (int k=0;k<numBlocks;++k)
@@ -283,16 +318,29 @@ void FeatureExtractor::computeBeatSpectrum(const Eigen::MatrixXf &stft, var& tem
 		tempVar.append(kurtosisBeatSpectrum);
 		
 		// Amplitude of first peak to second peak
-		for (int k=1;k<numBlocks;++k)
-		{
-			float slope = beatSpectrum(k) - beatSpectrum(k-1);
-			if(slope>0)
-			{
-				// Fill this in
+		//float ppRatio = 0.0;
+		//for (int k=1;k<numBlocks;++k)
+		//{
+		//	float slope = beatSpectrum(k) - beatSpectrum(k-1);
 
-			}
+		//	if(slope>0)
+		//	{
+		//		// Find the max value in the remaining vector
+		//		maxVal = beatSpectrum(k);
+		//		for(int t=k+1;t<numBlocks; ++t)
+		//		{
+		//			if(beatSpectrum(t)>maxVal)
+		//				maxVal = beatSpectrum(t);
+		//		}
 
-		}
+		//		// Fill this in
+		//		ppRatio = beatSpectrum(0)/maxVal;
+
+		//	}
+
+		//}
+
+		//tempVar.append(ppRatio);
 		//tempVar.append();
 
 		// Cumulative difference between BS and straight line through signal
@@ -338,10 +386,10 @@ void FeatureExtractor::computeBeatSpectrum(const Eigen::MatrixXf &stft, var& tem
 		float coeff = instBeat.cwiseAbs().sum();
 		instBeat = instBeat.array()/ coeff;
 		
-		/*for(int k=0;k<4;k++)
+		for(int k=0;k<4;k++)
 		{
-			DBG(String(instBeat[k]));
-		}*/
+			tempVar.append(instBeat(k));
+		}
 
 		// Energy per beat
 		Eigen::Vector4f enBeat = Eigen::VectorXf::Zero(4,1);	
@@ -410,8 +458,11 @@ void FeatureExtractor::writeCache(const File& pathToDirectory)
 		// Add all the properties
 		loop->setProperty("Path",tempFeature[0]);
 		loop->setProperty("Tempo",tempFeature[1]);
+		//DBG(JSON::toString(tempFeature[2]));
+		//DynamicObject* beatSpec = new DynamicObject();
+		//beatSpec->setProperty("Beat_spec",tempFeature[2]);
+		//loop->setProperty("Beat_Spectrum",beatSpec);
 		loop->setProperty("Beat_Spectrum",tempFeature[2]);
-
 		loopFeatures.add(loop);
 		loop = nullptr;
 	}
@@ -441,7 +492,10 @@ bool FeatureExtractor::cacheExists(const File& pathToDirectory)
 	bool returnVal = false;
 	if(cache.existsAsFile())
 	{
+		var tempR = JSON::parse(cache);
+	//	DBG(JSON::toString(tempR));
 		var result = JSON::parse(cache).getProperty(Identifier("LoopFeatures"),0);
+//		DBG(JSON::toString(result));
 		int numLoops = result.getArray()->size();
 		if(numLoops==fileList.size())
 		{
