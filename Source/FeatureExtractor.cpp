@@ -86,7 +86,11 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 		{
 			// Check if blockSize, hopSize implementation is correct
 			fileReader->read(sampleBuffer,0,blockSize,j*hopSize,true,false);
+			float minVal;
+			float maxVal;
+			sampleBuffer->findMinMax(0,0,blockSize,minVal,maxVal);
 			
+			sampleBuffer->applyGain(1.0/maxVal);
 			//if(numChannels == 2)
 			//{
 			//	// Read the right channel into our second buffer
