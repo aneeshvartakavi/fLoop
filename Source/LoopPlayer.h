@@ -113,6 +113,8 @@ private:
     ScopedPointer<Slider> tempoSlider;
     ScopedPointer<Slider> rhythmSlider;
     ScopedPointer<Slider> zoomSlider;
+    ScopedPointer<Label> label2;
+    ScopedPointer<Label> label3;
 
 
     //==============================================================================
