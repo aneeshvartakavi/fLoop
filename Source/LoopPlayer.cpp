@@ -394,7 +394,7 @@ void LoopPlayer::selectionChanged()
 
 void LoopPlayer::fileClicked (const File&, const MouseEvent& mouseEvent)
 {
-	if(mouseEvent.getScreenX()>937)  // Lets pretend you did not see this code
+	if(mouseEvent.getScreenX()>640)  // Lets pretend you did not see this code
 	{
 		//DBG("Right Box!");
 		showRightFile(fileTreeComp2->getSelectedFile());
