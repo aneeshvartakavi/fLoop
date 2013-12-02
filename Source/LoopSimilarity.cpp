@@ -118,8 +118,8 @@ StringArray LoopSimilarity::returnSimilarRhythm(float sliderMax, float sliderMin
 	for(int k=0;k<tempFeature.cols();k++)
 	{
 		tempFeature.col(k) -=refVector;
-		distVector(k) = tempFeature.cwiseAbs2().sum();
-		
+		distVector(k) = tempFeature.col(k).norm();
+				
 	}
 
 	float maxVal = distVector.maxCoeff();

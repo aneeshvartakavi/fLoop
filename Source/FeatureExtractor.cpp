@@ -89,11 +89,11 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 		{
 			// Check if blockSize, hopSize implementation is correct
 			fileReader->read(sampleBuffer,0,blockSize,j*hopSize,true,false);
-			float minVal;
+			/*float minVal;
 			float maxVal;
 			sampleBuffer->findMinMax(0,0,blockSize,minVal,maxVal);
 			
-			sampleBuffer->applyGain(1.0/maxVal);
+			sampleBuffer->applyGain(1.0/maxVal);*/
 			//if(numChannels == 2)
 			//{
 			//	// Read the right channel into our second buffer
@@ -379,7 +379,7 @@ void FeatureExtractor::computeBeatSpectrum(const Eigen::MatrixXf &stft, var& tem
 		int firstBeatIndex = ceilf(((sampleRate*firstBeatTime) - blockSize/2)/hopSize);
 		
 		Eigen::Vector4f instBeat = Eigen::VectorXf::Zero(4,1);	
-		for (int k=0;k<=12;k+=4)
+		for (int k=0;k<=4;k+=4)
 		{
 			instBeat[0]+= beatSpectrum(((k * firstBeatIndex)+ 1));
 			instBeat[1]+= beatSpectrum((((k+1) * firstBeatIndex)+ 1));
