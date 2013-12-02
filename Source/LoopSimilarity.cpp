@@ -82,6 +82,75 @@ StringArray LoopSimilarity::returnSimilarTempo(int sliderMax, int sliderMin,cons
 
 }
 
+StringArray LoopSimilarity::returnSimilarRhythm(float sliderMax, float sliderMin, const File &referenceFile)
+{
+	String fileName = referenceFile.getFileNameWithoutExtension();
+	
+	StringArray similarFiles;
+	similarFiles.ensureStorageAllocated(20);
+
+	int referenceIndex = 0;
+	// Look for the file in the featurevector
+	for (int i=0;i<featureVector.size();i++)
+	{
+		var tempVar = featureVector.getUnchecked(i); 
+//		DBG(JSON::toString(tempVar));
+		if(fileName == tempVar[0].toString())
+		{
+			// Get the tempo
+			referenceIndex = i;
+			break;
+		}
+
+	}
+
+	// Select the index
+	Eigen::VectorXf refVector = features.col(referenceIndex);
+	
+	int numCols = features.cols();
+
+
+	// Create a copy of featureVector
+	Eigen::MatrixXf tempFeature = features;
+	//tempFeature.col(referenceIndex) *= 100; // Make the vector itself large, so it will not turn up in the results
+	Eigen::VectorXf distVector = Eigen::VectorXf::Zero(numCols);
+
+	for(int k=0;k<tempFeature.cols();k++)
+	{
+		tempFeature.col(k) -=refVector;
+		distVector(k) = tempFeature.cwiseAbs2().sum();
+		
+	}
+
+	float maxVal = distVector.maxCoeff();
+	// Normalizing distance to 1
+	distVector = distVector/maxVal;
+
+	//for(int k=0; k<distVector.rows();k++)
+	//{
+//		DBG(String(distVector(k)));
+//	}
+
+
+	for(int k=0; k<distVector.rows();k++)
+	{
+		//DBG(String(distVector(k)));
+		if(distVector(k)<=sliderMax && distVector(k)>=sliderMin)
+		{
+			var tempVar = featureVector.getUnchecked(k); 
+
+			//String tempName = tempVar[0].toString();
+			similarFiles.add(tempVar[0].toString());
+		}
+
+	}
+
+	
+	return similarFiles;
+
+}
+
+
 void LoopSimilarity::readCache(const File& pathToDirectory)
 {
 		// Always call this after a call to check if cache exists
@@ -90,9 +159,11 @@ void LoopSimilarity::readCache(const File& pathToDirectory)
 	
 	// Clear state
 	 var result = JSON::parse(cache).getProperty(Identifier("LoopFeatures"),0);
+	// DBG(JSON::toString(result));
 	 int numLoops = result.getArray()->size();
+	 features = Eigen::MatrixXf::Zero(10,numLoops); // Ten for now
 
-	 // Initialize the feature vector, do we need this
+	 // Initialize the feature vector, do we need this?
 	 featureVector.insertMultiple(0,var(),numLoops);
 
 	 for(int i=0;i<numLoops;i++)
@@ -105,13 +176,40 @@ void LoopSimilarity::readCache(const File& pathToDirectory)
 		 var& tempFeatures = featureVector.getReference(i);
 		 // Make sure the order is consistent
 		 tempFeatures.append(path);
-		 DBG(JSON::toString(tempFeatures));
-		 DBG(JSON::toString(featureVector));
+		// DBG(JSON::toString(tempFeatures));
+		 //DBG(JSON::toString(featureVector));
 		 tempFeatures.append(tempo);
-		 tempFeatures.append(beatSpec);
+		 // Add the beat spectrum features to the matrix
+		 for(int k=0;k<beatSpec.size();k++)
+		 {
+			 features(k,i) = beatSpec[k];
+		 }
+
+		 //tempFeatures.append(beatSpec);
 	 }
 
-	 DBG(JSON::toString(featureVector));
+	 // Normalize feature vectors
+	 DBG(String(features(0,0)));
+	 for(int i=0;i<features.rows();i++)
+	 {
+		 // Extract rows, set mean to 0
+		 Eigen::VectorXf rowVec = features.row(i);
+		 
+		 float meanVal = rowVec.mean();
+		 float stdVal=0.0;
+		 for (int k=0;k<rowVec.rows();++k)
+		 {
+			stdVal += pow((rowVec[k] - meanVal),2);
+		 }
+
+		 stdVal = sqrtf(stdVal/rowVec.rows());
+
+		 features.row(i) = (rowVec.array()-meanVal)/stdVal;
+
+	}
+	 DBG(String(features(0,0)));
+	 
+	 //DBG(JSON::toString(featureVector));
 
 }
 
