@@ -102,6 +102,21 @@ public:
 			
 	}
 
+	void updateTimbreFilters(const StringArray &validFiles_)
+	{
+		if(validTimbreFiles.size()==0)
+			validTimbreFiles.addArray(validFiles_);
+		else
+		{
+			validTimbreFiles.clear();
+			validTimbreFiles = validFiles_;
+		}
+		
+		// Check for similar loops in both
+		combine();
+			
+	}
+
 	void combine()
 	{
 		validFiles.clear();
@@ -113,23 +128,46 @@ public:
 
 		else
 		{
-		
-				// Search for the files that are present in both
-				for(int k=0;k<validTempoFiles.size();k++)
+			// Search for the files that are present in all three
+			for(int k=0;k<validTempoFiles.size();k++)
+			{
+				StringRef temp = validTempoFiles[k];
+				if(validRhythmFiles.contains(temp,true))
 				{
-					//String temp = validTempoFiles[k];
-					for(int k1=0;k1<validRhythmFiles.size();k1++)
+					if(validTimbreFiles.contains(temp,true))
 					{
-						if(validTempoFiles[k] == validRhythmFiles[k1])
-						{
-							validFiles.add(validTempoFiles[k]);
-						}
-				
+						validFiles.add(validTempoFiles[k]);
 					}
 
 				}
+			}
 		}
 	}
+
+
+				//for(int k1=0;k1<validRhythmFiles.size();k1++)
+				//{
+				//	for(int k2=0;k2<validTimbreFiles.size();k2++)
+				//	{
+				//		bool flag = false;
+				//		if(validTempoFiles[k] == validRhythmFiles[k1] && validRhythmFiles[k1] == validTimbreFiles[k2])
+				//		{
+				//			validFiles.add(validTempoFiles[k]);
+				//			flag = true;
+				//			break;
+				//		}
+				//		if(flag)
+				//		{
+				//			// Break out of inner for loop as well
+				//			break;
+				//		}
+
+				//	}
+
+				//}
+	//		}
+	//	}
+	//}
 
 
 	void clearFilters()
@@ -149,6 +187,8 @@ private:
 	StringArray validFiles;
 	StringArray validTempoFiles;
 	StringArray validRhythmFiles;
+	StringArray validTimbreFiles;
+
 };
 
 
