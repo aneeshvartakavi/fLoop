@@ -12,7 +12,17 @@
 #define FEATUREEXTRACTOR_H_INCLUDED
 
 #include "JuceHeader.h"
+
+#if JUCE_WINDOWS
 #include "Eigen\Dense.h"
+#include "Eigen\FFT.h"
+#endif
+
+#if JUCE_MAC
+#include "Dense.h"
+#include "FFT.h"
+#endif
+
 
 class FeatureExtractor
 {

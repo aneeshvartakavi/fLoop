@@ -11,9 +11,8 @@
 #include "FeatureExtractor.h"
 #define _USE_MATH_DEFINES
 #include <math.h>
-//#include <cmath>
-#include "Eigen\Dense.h"
-#include "Eigen\FFT.h"
+
+
 
 
 FeatureExtractor::FeatureExtractor(const Array<File> &audioLoops, int numFeatures_, int blockSize_, int hopSize_, int fftSizelog2):fftEngine(fftSizelog2)
