@@ -8,13 +8,11 @@
   ==============================================================================
 */
 
-#include "Eigen/Dense.h"
-#include "Eigen/FFT.h"
+#include "Dense.h"
+#include "FFT.h"
 #include "FeatureExtractor.h"
 #include <math.h>
 //#include <cmath>
-#include "Eigen\Dense.h"
-#include "Eigen\FFT.h"
 
 
 
@@ -201,7 +199,7 @@ float FeatureExtractor::calculateTempo(File loop)
     // Perform calculations
     len = fileReader->lengthInSamples;
     Fs = fileReader->sampleRate;
-    fbpm = (60*8*Fs)/len; // 60bpm * number of beats * fs /len
+    fbpm = (60*8*Fs)/len; // 60 sec/min * number of beats * fs /len
 	return adjustBPM(fbpm);
 //    // Get reference to the feature vector
 //    var& tempVar = featureVector.getReference(i);

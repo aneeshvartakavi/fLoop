@@ -9,7 +9,7 @@ features = zeros(16,1);
 % Not sure if KissFFT uses a window
 % W = diag(sparse(hann(blockSize)));
 
-[samples,Fs] = audioread(fileName);
+[samples,Fs] = wavread(fileName);
 samples = samples/max(abs(samples));
 blocks = buffer(samples,blockSize,blockSize-hopSize);
 
