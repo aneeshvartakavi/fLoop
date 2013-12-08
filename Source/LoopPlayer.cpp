@@ -87,6 +87,38 @@ LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDir
     zoomSlider->setTextBoxStyle (Slider::TextBoxLeft, false, 80, 20);
     zoomSlider->addListener (this);
 
+    addAndMakeVisible (label2 = new Label ("new label",
+                                           "Tempo Range"));
+    label2->setFont (Font (15.00f, Font::plain));
+    label2->setJustificationType (Justification::centredLeft);
+    label2->setEditable (false, false, false);
+    label2->setColour (TextEditor::textColourId, Colours::black);
+    label2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (label3 = new Label ("new label",
+                                           "Rhythmic\n"
+                                           "Distance"));
+    label3->setFont (Font (15.00f, Font::plain));
+    label3->setJustificationType (Justification::centredLeft);
+    label3->setEditable (false, false, false);
+    label3->setColour (TextEditor::textColourId, Colours::black);
+    label3->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    addAndMakeVisible (timbreSlider = new Slider ("new slider"));
+    timbreSlider->setRange (0, 1, 0);
+    timbreSlider->setSliderStyle (Slider::TwoValueVertical);
+    timbreSlider->setTextBoxStyle (Slider::NoTextBox, true, 80, 20);
+    timbreSlider->addListener (this);
+
+    addAndMakeVisible (label4 = new Label ("new label",
+                                           "Timbral\n"
+                                           "Distance"));
+    label4->setFont (Font (15.00f, Font::plain));
+    label4->setJustificationType (Justification::centredLeft);
+    label4->setEditable (false, false, false);
+    label4->setColour (TextEditor::textColourId, Colours::black);
+    label4->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
 
     //[UserPreSize]
     //[/UserPreSize]
@@ -135,6 +167,11 @@ LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDir
 	rhythmSlider->setMaxValue(0.25,NotificationType(0),false);
 	rhythmSlider->setMinValue(0,NotificationType(0),false);
 
+	timbreSlider->setChangeNotificationOnlyOnRelease(true);
+	timbreSlider->setPopupDisplayEnabled(true,this);
+	timbreSlider->setMaxValue(0.25,NotificationType(0),false);
+	timbreSlider->setMinValue(0,NotificationType(0),false);
+
 	customFileFilter1 = customFileFilter_;
 
     //[/Constructor]
@@ -172,6 +209,10 @@ LoopPlayer::~LoopPlayer()
     tempoSlider = nullptr;
     rhythmSlider = nullptr;
     zoomSlider = nullptr;
+    label2 = nullptr;
+    label3 = nullptr;
+    timbreSlider = nullptr;
+    label4 = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -202,9 +243,13 @@ void LoopPlayer::resized()
     fileTreeComp2->setBounds (640, 88, 288, 304);
     thumbnailComponent2->setBounds (576, 472, 400, 128);
     startStopButton2->setBounds (728, 648, 150, 24);
-    tempoSlider->setBounds (376, 112, 96, 144);
-    rhythmSlider->setBounds (488, 112, 96, 144);
+    tempoSlider->setBounds (360, 112, 56, 144);
+    rhythmSlider->setBounds (456, 112, 24, 144);
     zoomSlider->setBounds (416, 728, 150, 24);
+    label2->setBounds (352, 80, 88, 24);
+    label3->setBounds (448, 64, 72, 37);
+    timbreSlider->setBounds (544, 112, 50, 144);
+    label4->setBounds (536, 64, 72, 37);
     //[UserResized] Add your own custom resize handling here..
 
     //[/UserResized]
@@ -308,6 +353,28 @@ void LoopPlayer::sliderValueChanged (Slider* sliderThatWasMoved)
     {
         //[UserSliderCode_zoomSlider] -- add your slider handling code here..
         //[/UserSliderCode_zoomSlider]
+    }
+    else if (sliderThatWasMoved == timbreSlider)
+    {
+        //[UserSliderCode_timbreSlider] -- add your slider handling code here..
+		float timbreMin = timbreSlider->getMinValue();
+		float timbreMax = timbreSlider->getMaxValue();
+		File selectedFile = fileTreeComp->getSelectedFile();
+		//similarLoops = new StringArray();
+		//ScopedPointer<StringArray> similarLoops;
+		if(selectedFile.exists())
+		{
+			// Get similarFiles
+			similarLoops = loopSimilarity->returnSimilarTimbre(timbreMax,timbreMin,selectedFile);
+			// Update the custom filter
+
+			customFileFilter1->updateTimbreFilters(similarLoops);
+			// New function!
+			customDirectoryList.setFileFilter(customFileFilter1);
+			customDirectoryList.refresh();
+
+		}
+        //[/UserSliderCode_timbreSlider]
     }
 
     //[UsersliderValueChanged_Post]
@@ -463,17 +530,36 @@ BEGIN_JUCER_METADATA
               virtualName="" explicitFocusOrder="0" pos="728 648 150 24" buttonText="Start/Stop"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <SLIDER name="new slider" id="d8772d43f4c77a73" memberName="tempoSlider"
-          virtualName="" explicitFocusOrder="0" pos="376 112 96 144" min="-60"
+          virtualName="" explicitFocusOrder="0" pos="360 112 56 144" min="-60"
           max="60" int="5" style="TwoValueVertical" textBoxPos="NoTextBox"
           textBoxEditable="0" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="new slider" id="2cb69b5042155454" memberName="rhythmSlider"
-          virtualName="" explicitFocusOrder="0" pos="488 112 96 144" min="0"
+          virtualName="" explicitFocusOrder="0" pos="456 112 24 144" min="0"
           max="1" int="0" style="TwoValueVertical" textBoxPos="NoTextBox"
           textBoxEditable="0" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="new slider" id="d17484625563037c" memberName="zoomSlider"
           virtualName="" explicitFocusOrder="0" pos="416 728 150 24" min="0"
           max="10" int="0" style="LinearHorizontal" textBoxPos="TextBoxLeft"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
+  <LABEL name="new label" id="e488eb9e80f3c776" memberName="label2" virtualName=""
+         explicitFocusOrder="0" pos="352 80 88 24" edTextCol="ff000000"
+         edBkgCol="0" labelText="Tempo Range" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="15" bold="0" italic="0" justification="33"/>
+  <LABEL name="new label" id="1559670ec624693" memberName="label3" virtualName=""
+         explicitFocusOrder="0" pos="448 64 72 37" edTextCol="ff000000"
+         edBkgCol="0" labelText="Rhythmic&#10;Distance" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="15" bold="0" italic="0" justification="33"/>
+  <SLIDER name="new slider" id="327dfcfa53d4c0e6" memberName="timbreSlider"
+          virtualName="" explicitFocusOrder="0" pos="544 112 50 144" min="0"
+          max="1" int="0" style="TwoValueVertical" textBoxPos="NoTextBox"
+          textBoxEditable="0" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
+  <LABEL name="new label" id="df20ec66c2815053" memberName="label4" virtualName=""
+         explicitFocusOrder="0" pos="536 64 72 37" edTextCol="ff000000"
+         edBkgCol="0" labelText="Timbral&#10;Distance" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="15" bold="0" italic="0" justification="33"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

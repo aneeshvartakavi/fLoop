@@ -30,6 +30,7 @@ public:
 	void returnSimilar(int sliderIndex, int sliderMax, int sliderMin,const File &referenceFile);
 	StringArray returnSimilarTempo(int sliderMax, int sliderMin, const File &referenceFile);
 	StringArray returnSimilarRhythm(float sliderMax, float sliderMin, const File &referenceFile);
+	StringArray returnSimilarTimbre(float sliderMax, float sliderMin, const File &referenceFile);
 	// Previously, featureExtractor used to read the cache, and pass a large data structure
 	// over to loopSimilarity, which is kinda pointless. Migrating that function over here.
 	void readCache(const File &pathToDirectory);
@@ -43,7 +44,9 @@ private:
 	// Trying to pass by value to avoid errors
 	StringArray similarFiles;
 	void readFile(File* path);
-	Eigen::MatrixXf features;
+	Eigen::MatrixXf bsFeatures;
+	Eigen::MatrixXf mfccFeatures;
+
 
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LoopSimilarity);

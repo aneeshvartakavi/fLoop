@@ -115,6 +115,8 @@ private:
     ScopedPointer<Slider> zoomSlider;
     ScopedPointer<Label> label2;
     ScopedPointer<Label> label3;
+    ScopedPointer<Slider> timbreSlider;
+    ScopedPointer<Label> label4;
 
 
     //==============================================================================

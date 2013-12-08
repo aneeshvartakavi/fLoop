@@ -9,6 +9,7 @@
 */
 
 #include "FeatureExtractor.h"
+#define _USE_MATH_DEFINES
 #include <math.h>
 //#include <cmath>
 #include "Eigen\Dense.h"
@@ -168,6 +169,10 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 		element.append(var(tempo));
 	//	DBG(JSON::toString(element));
 			
+		var mfcc;
+		computeMFCC(stft,mfcc,numBlocks,tempo,sampleRate);
+		element.append(mfcc);
+
 		var beatSpec;
 		computeBeatSpectrum(stft,beatSpec,numBlocks,tempo,sampleRate);
 		//DBG(JSON::toString(beatSpec));
@@ -401,6 +406,154 @@ void FeatureExtractor::computeBeatSpectrum(const Eigen::MatrixXf &stft, var& tem
 	
 }
 
+void FeatureExtractor::computeMFCC(const Eigen::MatrixXf &spec, var& tempVar,int num_blocks,int tempo, int sampleRate)
+{
+	// Hardcoding all filters
+	Eigen::MatrixXf filters = Eigen::MatrixXf::Zero(26,513);
+	filters.block(0,5,1,5) << 0.3333 , 0.6667 , 1.0000 , 0.6667 , 0.3333;
+	filters.block(1,8,1,4) << 0.2500, 0.7500, 0.7500, 0.2500;
+	filters.block(2,10,1,5) <<  0.3333 , 0.6667 , 1.0000 , 0.6667 , 0.3333;
+	filters.block(3,12,1,5) << 0.3333,0.6667,1.0000,0.6667,0.3333;
+	filters.block(4,15,1,6) << 0.1667,0.5000,0.8333,0.8333,0.5000,0.1667;
+	filters.block(5,18,1,7) << 0.25,0.05,0.75,1,0.75,0.5,0.25;
+	filters.block(6,21,1,8) << 0.125,0.375,0.625,0.875,0.875,0.625,0.375,0.125;
+	filters.block(7,25,1,8) << 0.125,0.375,0.625,0.875,0.875,0.625,0.375,0.125;
+	filters.block(8,29,1,8) << 0.125,0.375,0.625,0.875,0.875,0.625,0.375,0.125;
+	filters.block(9,33,1,9) << 0.2,0.4,0.6,0.8,1.0,0.8,0.6,0.4,0.2;
+	filters.block(10,37,1,11) << 0.1667,0.333,0.5,0.6667,0.8333,1.0,0.8333,0.6667,0.5,0.333,0.1667;
+	filters.block(11,42,1,12) << 0.0833,0.25,0.4167,0.5833,0.7500,0.9167,0.9167,0.7500,0.5833,0.4167,0.25,0.0833;
+	filters.block(12,48,1,12) << 0.0833,0.25,0.4167,0.5833,0.7500,0.9167,0.9167,0.7500,0.5833,0.4167,0.25,0.0833;
+	filters.block(13,54,1,13) <<  0.1429,0.2857,0.4286,0.5714, 0.7143, 0.8571, 1.0000,0.8571,0.7143,0.5714,0.4286,0.2857,0.1429;
+	filters.block(14,60,1,15) <<  0.1250,0.2500,0.3750,0.5000,0.6250,0.7500,0.8750,1.0000,0.8750,0.7500,0.6250,0.5000,0.3750,0.2500,0.1250;
+	filters.block(15,67,1,16) <<  0.0625,0.1875,0.3125,0.4375,0.5625,0.6875,0.8125, 0.9375,0.9375,0.8125,0.6875,0.5625,0.4375,0.3125,0.1875,0.0625;
+	filters.block(16,75,1,17) <<  0.1111,0.2222,0.3333,0.4444,0.5556,0.6667,0.7778,0.8889,1.0000,0.8889,0.7778, 0.6667,0.5556,0.4444,0.3333,0.2222,0.1111;
+	filters.block(17,83,1,19) << 0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1;
+	filters.block(18,92,1,21) << 0.0909,0.1818, 0.2727,0.3636,0.4545,0.5455,0.6364,0.7273,0.8182,0.9091,1.0000,0.9091,0.8182,0.7273,0.6364,0.5455,0.4545,0.3636,0.2727,0.1818,0.0909;
+	filters.block(19,102,1,23) <<0.0833,0.1667,0.2500,0.3333,0.4167,0.5000,0.5833,0.6667,0.7500,0.8333,0.9167,1.0000,0.9167,0.8333,0.7500,0.6667,0.5833,0.5000,0.4167,0.3333,0.2500,0.1667,0.0833;
+	filters.block(20,113,1,25) <<0.0769,0.1538,0.2308,0.3077,0.3846,0.4615,0.5385,0.6154,0.6923,0.7692,0.8462,0.9231,1.0000,0.9231,0.8462,0.7692,0.6923,0.6154,0.5385,0.4615,0.3846,0.3077,0.2308,0.1538,0.0769;
+	filters.block(21,125,1,27) <<0.0714,0.1429,0.2143,0.2857,0.3571,0.4286,0.5000,0.5714,0.6429,0.7143,0.7857,0.8571,0.9286,1.0000,0.9286,0.8571,0.7857,0.7143,0.6429,0.5714,0.5000,0.4286,0.3571,0.2857,0.2143,0.1429,0.0714;
+	filters.block(22,138,1,30) << 0.0333,0.1000,0.1667,0.2333,0.3000,0.3667,0.4333,0.5000,0.5667,0.6333,0.7000,0.7667,0.8333, 0.9000, 0.9667,0.9667,0.9000, 0.8333,0.7667,0.7000,0.6333,0.5667,0.5000,0.4333,0.3667,0.3000,0.2333,0.1667,0.1000,0.0333;
+	filters.block(23,152,1,32) << 0.0313,0.0938,0.1563,0.2188,0.2813,0.3438,0.4063,0.4688,0.5313,0.5938,0.6563,0.7188,0.7813,0.8438,0.9063,0.9688,0.9688,0.9063,0.8438,0.7813,0.7188,0.6563,0.5938,0.5313,0.4688,0.4063,0.3438,0.2813,0.2188,0.1563,0.0938,0.0313;
+	filters.block(24,168,1,35) << 0.0556,0.1111,0.1667,0.2222,0.2778,0.3333,0.3889,0.4444,0.5000,0.5556,0.6111,0.6667,0.7222,0.7778,0.8333,0.8889,0.9444,1.0000,0.9444,0.8889,0.8333,0.7778,0.7222,0.6667,0.6111,0.5556,0.5000,0.4444,0.3889,0.3333,0.2778,0.2222,0.1667,0.1111,0.0556;
+	filters.block(25,185,1,38) << 0.0263,0.0789,0.1316,0.1842,0.2368,0.2895,0.3421,0.3947,0.4474,0.5000,0.5526,0.6053,0.6579,0.7105,0.7632,0.8158,0.8684,0.9211,0.9737,0.9737,0.9211,0.8684,0.8158,0.7632,0.7105,0.6579,0.6053,0.5526,0.5000,0.4474,0.3947,0.3421,0.2895,0.2368,0.1842,0.1316,0.0789,0.0263;
+
+	// Compute periodogram
+	Eigen::MatrixXf periodogram = spec.array() * spec.array();
+	periodogram = periodogram.array()/512; // 512 = size(periodogram,1)
+
+	// Find the products
+	Eigen::MatrixXf energy = filters*periodogram;
+	// Account for log(0) errors
+	energy = energy.array() + 1e-20;
+	//Take log
+	Eigen::MatrixXf logEnergy = energy.array().log();
+	
+	//DBG(String(logEnergy.rows()));
+	//DBG(String(logEnergy.cols()));
+	// Inverse DCT
+	// First stage, create symmetric matrix
+	Eigen::MatrixXf input = Eigen::MatrixXf::Zero(52,logEnergy.cols());
+	int n1 = logEnergy.rows();
+	
+	for(int k=0;k<n1;k++)
+	{
+		input.row(k) = logEnergy.row(k);
+		//DBG(String(n1+k+1) + String(" to ") +  String(n1-k-1));
+		input.row(n1+k) = logEnergy.row(n1-k-1);
+	}
+
+	// Take the 2*n1 dimensional fft per column
+	Eigen::FFT<float> mfcc_fft;
+	
+	Eigen::MatrixXcf dctc(input.rows(),input.cols());
+	Eigen::MatrixXf dct(input.rows()/2,input.cols());
+	//Eigen::MatrixXf stft(halfBlockSize,numBlocks);
+	for (int k=0;k<input.cols();++k)
+	{
+		dctc.col(k) = mfcc_fft.fwd(input.col(k),input.rows());
+	}
+
+	// Multiply by W -k,2N
+	std::complex<float> i1(0,-1);
+	for (int k=0;k<26;++k)
+	{
+		std::complex<float> t((M_1_PI*k)/(2*n1),0);
+		t = t*i1;
+		t = exp(t);
+		dctc.row(k) = dctc.row(k).array()*t;
+		dct.row(k)= dctc.row(k).real();
+	}
+	
+	//for(int k=0;k<dctc.rows();k++)
+	//{
+	//	DBG(String(dctc(k,0).real()) + " + " + String(dctc(k,0).imag()));
+	//}
+
+	/*for(int k=0;k<dct.rows();k++)
+	{
+		DBG(String(dct(k,0)));
+	}*/
+
+	// Extract 13 dimensional MFCC from 1-13
+	Eigen::MatrixXf mfcc(13,input.cols());
+	for (int k=0;k<13;++k)
+	{
+		mfcc.row(k) = dct.row(k);
+	}
+	
+	/*for (int k=0;k<13;++k)
+	{
+		DBG(String(mfcc(k,0)));
+	}*/
+
+	// Compute derivative
+	Eigen::MatrixXf mfcc_d = Eigen::MatrixXf::Zero(13,input.cols());
+		
+	for (int k=0;k<mfcc_d.cols()-1;++k)
+	{
+		mfcc_d.col(k) = mfcc.col(k+1) - mfcc.col(k);
+	}
+	
+	// Compute mean
+	Eigen::VectorXf mean = Eigen::VectorXf::Zero(13,1);
+	Eigen::VectorXf mean_d = Eigen::VectorXf::Zero(13,1);
+	Eigen::VectorXf std = Eigen::VectorXf::Zero(13,1);
+	Eigen::VectorXf std_d = Eigen::VectorXf::Zero(13,1);
+	
+	for (int k=0;k<13;++k)
+	{
+		mean(k) = mfcc.row(k).mean();
+		mean_d(k) = mfcc_d.row(k).mean();
+	
+		for (int t=0;t<mfcc.cols();++t)
+		{
+			std(k) += pow(mfcc(k,t) - mean(k),2);
+			std_d(k) += pow(mfcc_d(k,t) - mean_d(k),2);
+		}
+	}
+
+	// Append it to the var
+	for (int k = 0; k < 13; k++)
+	{
+		tempVar.append(mean(k));
+	}
+	
+	for (int k = 0; k < 13; k++)
+	{
+		tempVar.append(mean_d(k));
+	}
+	for (int k = 0; k < 13; k++)
+	{
+		tempVar.append(sqrtf(std(k)/mfcc.cols()));
+	}
+	for (int k = 0; k < 13; k++)
+	{
+		tempVar.append(sqrtf(std(k)/mfcc.cols()));
+	}
+	
+	//DBG(JSON::toString(tempVar));
+	
+}
 
 
 std::pair<float, float> FeatureExtractor::calculateSpectralCrestFactor(std::vector<float> fftData, int numBlocks){
@@ -463,7 +616,8 @@ void FeatureExtractor::writeCache(const File& pathToDirectory)
 		//DynamicObject* beatSpec = new DynamicObject();
 		//beatSpec->setProperty("Beat_spec",tempFeature[2]);
 		//loop->setProperty("Beat_Spectrum",beatSpec);
-		loop->setProperty("Beat_Spectrum",tempFeature[2]);
+		loop->setProperty("MFCC",tempFeature[2]);
+		loop->setProperty("Beat_Spectrum",tempFeature[3]);
 		loopFeatures.add(loop);
 		loop = nullptr;
 	}

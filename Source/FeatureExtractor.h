@@ -27,6 +27,7 @@ public:
     
 	void computeBeatSpectrum(const Eigen::MatrixXf &spec, var& tempVar,int num_blocks,int tempo, int sampleRate);
 	
+	void computeMFCC(const Eigen::MatrixXf &spec, var& tempVar,int num_blocks,int tempo, int sampleRate);
 	std::pair<float, float> calculateSpectralCrestFactor(std::vector<float> fftData, int length);
 	
     
