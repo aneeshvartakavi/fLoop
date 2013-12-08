@@ -95,7 +95,7 @@ Given the difficulty of navigating large loop libraries, the user interface of t
 
 
 \section{Evaluation}
-We propose two methods for evaluation rhythmic similarity functions implemented in the application. First, the authors developed a ground truth set by selecting manually 30 loops from the EarSketch library and separating them by ear into 5 distinct classes each with 6 loops. For each loop L, distances were calculated to the other 29 loops and ordered from the least distance to greatest. Then for each of the smallest K distances an accuracy was recorded as the number of loops matching the class of L divided by K. [FIGURE] shows the ordered distances and associated classes for one audio loop in the ground truth seen in the figure as the loop with a distance of zero.
+We propose two methods for evaluation rhythmic similarity functions implemented in the application. First, the authors developed a ground truth set by selecting manually 30 loops from the EarSketch library and separating them by ear into 5 distinct rhythmic classes each with 6 loops. For each loop L, distances were calculated to the other 29 loops and ordered from the least distance to greatest. Then for each of the smallest K distances an accuracy was recorded as the number of loops matching the class of L divided by K. [FIGURE] shows the ordered distances and associated classes for one audio loop in the ground truth seen in the figure as the loop with a distance of zero.
 
 \begin{figure}[h!]
   \centering
@@ -122,6 +122,10 @@ A second evaluation for tempo detection used the same 30 loops from the EarSketc
 
 
 \section{Discussion}
+
+The objective of providing a user a computational approach to navigating a loop library was reasonably successful. As seen in Table 1 the most highly recommended loop was of the same classes as the reference loop 80\% of the time. From the standpoint of the user, this significantly reduces the time spent looking for a similar loops that may complement one another compositionally.
+
+Similarly, the tempo detection method works quite well in testing as indicated by the 97\% accuracy in detecting the tempo on the ground truth. However, the assumption that any loop in a large library is a multiple of a power of 2 of a 4/4 measure may not always hold in real-world cases. The loop may be slightly longer or shorter, as is likely the case in the single incorrectly calculated tempo in the previous section, or in 3/4 time and small changes such as this make a large impact in selecting loops to form a composition. Since the user interface allows for a variable range in tempo, the user has significant flexibility in overcoming shortcomings such as this. Future implementations of tempo detection would likely benefit from a more robust system.
 
 % Below is an example of how to insert images. Delete the ``\vspace'' line,
 % uncomment the preceding line ``\centerline...'' and replace ``imageX.ps''
