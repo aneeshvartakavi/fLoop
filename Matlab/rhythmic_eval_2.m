@@ -1,10 +1,8 @@
-% Compute analysis for directory
-
 clear all; close all; clc;
 
-loopDir = '/Users/Cam/Desktop/loop_classes_all/';
+loopDir = '/Users/Cam/Desktop/floops_all/';
 
-classes = [1 1 1 1 1 1 2 2 2 2 2 2 3 3 3 3 3 3 4 4 4 4 4 4 5 5 5 5 5 5];
+classes = [1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8 9 9 10 10];
 
 names = dir(strcat(loopDir, '*.wav'));
 names = struct2cell(names);
@@ -29,9 +27,10 @@ for i=1:size(features, 1)
     
 end
 
+
 accuracies = [];
 for i=1:numNames    
-   dists = zeros(30, 1);
+   dists = zeros(20, 1);
    char(names(i))
 
     for j=1:numNames
@@ -45,12 +44,12 @@ for i=1:numNames
    
    dists = sortrows(dists, 1);
    
-   accuracies = [accuracies mean(dists(2:6, 2)==classes(i))];
+   accuracies = [accuracies mean(dists(2:2, 2)==classes(i))];
    
    figure;
     
-    gscatter(1:30, dists(:, 1), dists(:, 2))
-    title(strcat('Spectral Periodicity Feature Vector Distance: ', strrep(char(names(i)), 'A_', '')))
+    gscatter(1:20, dists(:, 1), dists(:, 2))
+    title(strcat('Spectral Periodicity Feature Vector Distance: ', char(names(i))))
     xlabel('Audio Loops')
     ylabel('Distance')
     legend('Location', 'NorthWest')
@@ -58,7 +57,4 @@ for i=1:numNames
 end
 
 mean(accuracies)
-
-
-
 
