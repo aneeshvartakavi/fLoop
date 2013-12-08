@@ -11,9 +11,17 @@
 #ifndef FEATUREEXTRACTOR_H_INCLUDED
 #define FEATUREEXTRACTOR_H_INCLUDED
 
-#include "Eigen/Dense.h"
 #include "JuceHeader.h"
-//#include "Eigen/Dense.h"
+
+#if JUCE_WINDOWS
+#include "Eigen\Dense.h"
+#include "Eigen\FFT.h"
+#endif
+
+#if JUCE_MAC
+#include "Dense.h"
+#include "FFT.h"
+#endif
 
 
 class FeatureExtractor
@@ -29,6 +37,7 @@ public:
     
 	void computeBeatSpectrum(const Eigen::MatrixXf &spec, var& tempVar,int num_blocks,int tempo, int sampleRate);
 	
+	void computeMFCC(const Eigen::MatrixXf &spec, var& tempVar,int num_blocks,int tempo, int sampleRate);
 	std::pair<float, float> calculateSpectralCrestFactor(std::vector<float> fftData, int length);
 	
     
