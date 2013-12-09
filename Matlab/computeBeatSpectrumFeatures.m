@@ -31,12 +31,12 @@ for i1=1:size(spec,2)
         colSums(i1) = sum(diag(distances,i1));
 end
 
-figure;
-plot(colSums)
-ylabel('Magnitude')
-xlabel('Lag')
-t=title(strcat('Spectral Periodicity Preprocessed: ', name));
-set(t,'Interpreter','none');
+% figure;
+% plot(colSums)
+% ylabel('Magnitude')
+% xlabel('Lag')
+% t=title(strcat('Spectral Periodicity Preprocessed: ', name));
+% set(t,'Interpreter','none');
   
 % Remove line of best fit in least squared sense
 x=1:length(colSums);
@@ -77,12 +77,12 @@ firstBeatTime = 60/firstBeat; % time in seconds
 
 index = ceil((Fs*firstBeatTime - blockSize/2)/hopSize);
 
-figure;
-plot(deTrend)
-ylabel('Magnitude')
-xlabel('Lag')
-t=title(strcat('Spectral Periodicity Post-processed: ', name));
-set(t,'Interpreter','none');
+% figure;
+% plot(deTrend)
+% ylabel('Magnitude')
+% xlabel('Lag')
+% t=title(strcat('Spectral Periodicity Post-processed: ', name));
+% set(t,'Interpreter','none');
 
 % Find BS values at the beat.
 instBeat = [ 0 0 0 0];
