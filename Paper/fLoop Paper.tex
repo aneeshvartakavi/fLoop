@@ -12,7 +12,7 @@
 
 % Title.
 % ------
-\title{AUTHOR GUIDELINES FOR ICASSP 2013 PROCEEDINGS MANUSCRIPTS}
+\title{A GPL Standalone Application for Audio Retrieval by Rhythmic and Timbral Similarity}
 %
 % Single address.
 % ---------------
@@ -44,7 +44,7 @@ audio similarity, audio retrieval, distance matrix, beat spectrum, tempo detecti
 
 With the advances in technology, large libraries of audio loops on a single hard drive have become commonplace. Navigating these libraries becomes increasingly difficult because knowledge about the files must be manually tagged or inspected by ear. A computational approach to audio retrieval via a similarity measure dramatically reduces the time spent navigating these libraries.
 
-In this paper, we detail an implementation of a standalone desktop application in C++ for retrieval of audio loops by rhythmic and timbral similarity. A common task is finding an audio sample to sound simultaneously or in succession with a particular reference sample. The application allows a user to filter loops outside an acceptable range of tempo along with rhythmic and timbral distance given a particular reference loop. The tempo detection uses a simple approach based on characteristics of audio loops and the rhythmic distance is based on features derived from spectral periodicity. The timbral measure is based on euclidean distance between features derived from the MFCC’s.
+In this paper, we detail an implementation of a standalone desktop application in C++ for retrieval of audio loops by rhythmic and timbral similarity. A common task is finding an audio sample to sound simultaneously or in succession with a particular reference sample. The application allows a user to filter loops outside an acceptable range of tempo along with rhythmic and timbral distance given a particular reference loop. The tempo detection uses a simple approach based on characteristics of audio loops and the rhythmic distance is based on features derived from spectral periodicity. The timbral measure is based on euclidean distance between features derived from the MFCCs.
 
 \section{Related Work}
 %\label{sec:format}
@@ -61,9 +61,11 @@ Several closed-source applications exist for determining audio similarity in lib
 
 \subsection{Rhythmic Similarity}
 
-The rhythmic similarity recommendation algorithm is composed of two primary components that can be applied together or independently in the application: tempo estimation and distance between feature vectors of the Beat Spectrum. For tempo estimation of an audio file, we use a simple method shown in [Equation 1] where T is the tempo, n is the number of expected beats in the loop, fs <format!> is the sampling frequency of the audio, and N is the number of samples. This method is based on an assumption that the length of the audio loops in beats will always be a power of 2 of a 4/4 measure - a group of 4 beats - which is generally true for many loop libraries. Additionally, we scale the tempo to a range of 50-160 beats per minute.
+The rhythmic similarity recommendation algorithm is composed of two primary components that can be applied together or independently in the application: tempo estimation and distance between feature vectors of the spectral periodicity. For tempo estimation of an audio file, we use a simple method shown in [Equation 1] where \(T\) is the tempo, \(n\) is the number of expected beats in the loop, \(f_s\) is the sampling frequency of the audio, and \(N\) is the number of samples. This method is based on an assumption that the length of the audio loops in beats will always be a power of 2 of a 4/4 measure - a group of 4 beats - which is generally true for many loop libraries. Additionally, we scale the tempo to a range of 50-160 beats per minute.
 
-Insert EQUATION
+\begin{equation}
+T = 60 * n * f_s * 1/N
+\end{equation}
 
 While there can be errors with this method when the assumptions do not hold, it worked consistently well for the real-world EarSketch [REF-EarSketch] loops used for evaluation. Improvements to the application could incorporate a more robust tempo estimate.
 
@@ -89,20 +91,29 @@ Prior to calculating features on spectral periodicity signal some preprocessing 
       \caption{}
 \end{figure}
 
-After the preprocessing steps, a feature vector was constructed to describe the signal and these features were standardize by removing the mean and dividing by the standard deviation of each feature. A list of these features are shown in [Table 1]. And lastly, the algorithm determines a rhythmic distance measure by calculating the euclidean distance between Beat Spectrum feature vectors of two audio files
+After the preprocessing steps, a feature vector was constructed to describe the signal and these features were standardize by removing the mean and dividing by the standard deviation of each feature. A list of these features are shown in [Table 1]. And lastly, the algorithm determines a rhythmic distance measure by calculating the euclidean distance between spectral periodicity feature vectors of two audio files.
 
 \begin{table}[h!]
   \begin{center}
-    \begin{tabular}{| c | c | c | c | c |}
+    \begin{tabular}{| p{7.0cm} |}
     \hline
-    LS Line Slope \\
+    Line Slope (LS) \\
+    \hline
 	LS y-intercept\\
+	    \hline
+
 	Instaneous values at beats (assuming 4/4) \\
+	    \hline
+
 	Standard Deviation \\
+	    \hline
 	Skewness \\
+	    \hline
 	Kurtosis \\
+	    \hline
 	Sum of absolute value of difference between LS line and signal \\
-	Number of changes in slope \\    \hline
+	    \hline
+	Number of changes in signal slope \\    \hline
     \end{tabular}
   \end{center}
   \caption{Features Derived from Spectral Periodicity}
@@ -115,10 +126,10 @@ The timbral distance measure was based on thirteen dimensional MFCC’s, which w
 
 \subsection{Implementation}
 
-Processing Beat Spectrum features on large libraries of files requires speed and this informed the application design decisions. We chose the C++ framework JUCE [REF] because C++ code can be optimized efficiently for time and memory and JUCE is highly regarded in the audio software development sphere for its user interface styling and audio utilities. Additionally, JUCE allows for multi-platform development and deployment, making greater the potential future dissemination of the application. We also use the Eigen Library, which provides optimized linear algebra routines and an FFT wrapper.
+Processing spectral periodicity features on large libraries of files requires speed and this informed the application design decisions. We chose the C++ framework JUCE [REF] because C++ code can be optimized efficiently for time and memory and JUCE is highly regarded in the audio software development sphere for its user interface styling and audio utilities. Additionally, JUCE allows for multi-platform development and deployment, making greater the potential future dissemination of the application. We also use the Eigen Library, which provides optimized linear algebra routines and an FFT wrapper.
 
 \subsection{User Interface}
-Given the difficulty of navigating large loop libraries, the user interface of the application seeks to assist the algorithm in making this process simple and fast. A user can select a reference file in a list box on the left on which to compare other files in the library and has the option of listening to that file. Next there are two range sliders available, one for tempo and one for beat spectrum feature vector distance, that filter all files outside of the specified range. Then Similar files are automatically shown or removed in a left list box according to the slider positions and those can also be played back by the user. A screenshot of the application is shown below in [FIGURE] The application also writes previously calculated features for a directory in a cache and allows the user to load and reuse that cache to avoid calculating features on the directory again.
+Given the difficulty of navigating large loop libraries, the user interface of the application seeks to assist the algorithm in making this process simple and fast. A user can select a reference file in a list box on the left on which to compare other files in the library and has the option of listening to that file. Next there are two range sliders available, one for tempo and one for spectral periodicity feature vector distance, that filter all files outside of the specified range. Then Similar files are automatically shown or removed in a left list box according to the slider positions and those can also be played back by the user. A screenshot of the application is shown below in [FIGURE] The application also writes previously calculated features for a directory in a cache and allows the user to load and reuse that cache to avoid calculating features on the directory again.
 
 \begin{figure}[h!]
   \centering
@@ -155,7 +166,7 @@ A second evaluation for tempo detection used the same 30 loops from the EarSketc
 
 \section{Discussion}
 
-The objective of providing a user a computational approach to and software application for navigating a loop library was fairly successful. As seen in Table 1 the most highly recommended loop was of the same classes as the reference loop 80\% of the time. From the standpoint of the user, this significantly reduces the time spent looking for a similar loops that may complement one another compositionally. Care must be taken though, because although the authors have significant musical training, biases or inaccuracies may exist in the ground truth data. A more comprehensive future evaluation might include multiple ground truths from different musicians and loop libraries.
+The objective of providing a user a computational approach to and software application for navigating a loop library was fairly successful. As seen in Table 1 the most highly recommended loop was of the same classes as the reference loop 80\% of the time. From the standpoint of the user, this significantly reduces the time spent looking for a similar loops that may complement one another compositionally. Care must be taken though, because although the authors have musical training, biases or inaccuracies may exist in the ground truth data. A more comprehensive future evaluation might include multiple ground truths from different musicians and loop libraries.
 
 The tempo detection method works quite well in testing as indicated by the 97\% accuracy in detecting the tempo on the ground truth. However, the assumption that any loop in a large library is a multiple of a power of 2 of a 4/4 measure may not always hold in real-world cases. The loop may be slightly longer or shorter, as is likely the case in the single incorrectly calculated tempo in the previous section, or in 3/4 time and small changes such as this make a large impact in selecting loops to form a composition. Since the user interface allows for a variable range in tempo, the user has significant flexibility in overcoming shortcomings such as this. Future implementations of tempo detection would likely benefit from a more robust system.
 
