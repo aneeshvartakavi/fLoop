@@ -1,8 +1,61 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
+
+\bibitem{scheirer1998tempo}
+Eric~D Scheirer,
+\newblock ``Tempo and beat analysis of acoustic musical signals,''
+\newblock {\em The Journal of the Acoustical Society of America}, vol. 103, pp.
+  588, 1998.
+
+\bibitem{wold1999classification}
+Erling Wold, Thom Blum, Douglas Keislar, and James Wheaton,
+\newblock {\em Classification, search and retrieval of audio}, vol.~10,
+\newblock chapter, 1999.
+
+\bibitem{foote2001beat}
+Jonathan Foote and Shingo Uchihashi,
+\newblock ``The beat spectrum: A new approach to rhythm analysis.,''
+\newblock in {\em ICME}, 2001.
+
+\bibitem{terasawa2005thirteen}
+Hiroko Terasawa, Malcolm Slaney, and Jonathan Berger,
+\newblock ``The thirteen colors of timbre,''
+\newblock in {\em Applications of Signal Processing to Audio and Acoustics,
+  2005. IEEE Workshop on}. IEEE, 2005, pp. 323--326.
+
+\bibitem{jensen2009quantitative}
+Jesper~H{\o}jvang Jensen, Mads~Gr{\ae}sb{\o}ll Christensen, Daniel~PW Ellis,
+  and S{\o}ren~Holdt Jensen,
+\newblock ``Quantitative analysis of a common audio similarity measure,''
+\newblock {\em Audio, Speech, and Language Processing, IEEE Transactions on},
+  vol. 17, no. 4, pp. 693--703, 2009.
+
+\bibitem{levy2006lightweight}
+Mark Levy and Mark Sandler,
+\newblock ``Lightweight measures for timbral similarity of musical audio,''
+\newblock in {\em Proceedings of the 1st ACM workshop on Audio and music
+  computing multimedia}. ACM, 2006, pp. 27--36.
+
+\bibitem{jensen2006evaluation}
+Jesper~H{\o}jvang Jensen, Mads~G Christensen, Manohar Murthi, and
+  S{\o}ren~Holdt Jensen,
+\newblock ``Evaluation of mfcc estimation techniques for music similarity,''
+\newblock 2006.
+
+\bibitem{similarityapp}
+GAR Software,
+\newblock ``Similarity,'' http://www.similarityapp.com/, Dec. 2013.
 
 \bibitem{audiocompare}
 Finger C. Er Z. Connel~C. Dang, A.,
 \newblock ``Audiocompare,'' https://github.com/charlesconnell/AudioCompare,
   December 7 2013.
+
+\bibitem{earsketch}
+Georgia Tech.~Research Corporation,
+\newblock ``Earsketch,'' http://earsketch.gatech.edu/, 2013.
+
+\bibitem{juce}
+Raw Material~Software Ltd,
+\newblock ``Juce,'' http://www.juce.com/, Dec. 2013.
 
 \end{thebibliography}
