@@ -13,12 +13,8 @@
 #include "FeatureExtractor.h"
 #define _USE_MATH_DEFINES
 #include <math.h>
-<<<<<<< HEAD
-//#include <cmath>
-=======
 
 
->>>>>>> master
 
 
 

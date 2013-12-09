@@ -114,15 +114,6 @@ StringArray LoopSimilarity::returnSimilarRhythm(float sliderMax, float sliderMin
 	Eigen::MatrixXf tempFeature = bsFeatures;
 	//tempFeature.col(referenceIndex) *= 100; // Make the vector itself large, so it will not turn up in the results
 	Eigen::VectorXf distVector = Eigen::VectorXf::Zero(numCols);
-<<<<<<< HEAD
-    
-    for(int k=0;k<tempFeature.cols();k++)
-    {
-        Eigen::VectorXf distVector1 = tempFeature.col(k) -refVector;
-        distVector(k) = distVector1.norm();
-        
-    }
-=======
 
 	for(int k=0;k<tempFeature.cols();k++)
 	{
@@ -130,7 +121,6 @@ StringArray LoopSimilarity::returnSimilarRhythm(float sliderMax, float sliderMin
 		distVector(k) = distVector1.norm();
 				
 	}
->>>>>>> master
 
 	float maxVal = distVector.maxCoeff();
 	// Normalizing distance to 1

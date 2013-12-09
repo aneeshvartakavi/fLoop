@@ -16,14 +16,11 @@
 
 #include "JuceHeader.h"
 #include "FeatureExtractor.h"
-<<<<<<< HEAD
 #include "Dense.h"
-=======
 
 #if JUCE_WINDOWS
 #include "Eigen\Dense.h"
 #endif
->>>>>>> master
 
 
 class LoopSimilarity

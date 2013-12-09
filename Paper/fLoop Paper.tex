@@ -36,7 +36,7 @@ This paper details the implementation of a standalone desktop application in C++
 \end{abstract}
 %
 \begin{keywords}
-One, two, three, four, five
+audio similarity, audio retrieval, distance matrix, beat spectrum, tempo detection, C++, JUCE
 \end{keywords}
 %
 \section{Introduction}
@@ -49,7 +49,7 @@ In this paper, we detail an implementation of a standalone desktop application i
 \section{Related Work}
 %\label{sec:format}
 
-Several studies exist on audio retrieval by rhythmic similarity using statistical features since this approach requires limited or no human input to operate. One successful instance uses correlated energy peaks across frequency sub-bands [REF-Scheirer]  while another uses a feature vector from a low frequency-weighted short-time fourier transform (STFT) [REF-Wold]. Another approach called the Beat Spectrum is utilized for rhythmic similarity in this application, because it is based on self-similarity of the audio, no particular features are required of the audio such as silence or periodic energy peaks [REF-Foote] - Only repetitive events are required, which are common in audio loops. We derive a periodicity measure from the similarity matrix similar to [REF - Foote] for our application.
+Several studies exist on audio retrieval by rhythmic similarity using statistical features since this approach requires limited or no human input to operate. One successful instance uses correlated energy peaks across frequency sub-bands [REF-Scheirer]  while another uses a feature vector from a low frequency-weighted short-time fourier transform (STFT) [REF-Wold]. Another approach using spectral periodicity called the Beat Spectrum is utilized for rhythmic similarity in this application, because it is based on self-similarity of the audio, no particular features are required of the audio such as silence or periodic energy peaks [REF-Foote] - Only repetitive events are required, which are common in audio loops. We derive a periodicity measure from the similarity matrix similar to [REF - Foote] for our application.
 
 Mel Frequency Cepstral Coefficient based timbre space has been found to be a good model for perceptual timber space (REF - Thirteen). MFCC’s have since been used to create similarity measures (REF - Quantitative Analysis) for genre recognition (REF -  lightweight measures), (REF - evaluation). We derived a simple timbral distance measure based on the euclidean distance between a feature vector derived from the MFCC's.
 
@@ -58,7 +58,6 @@ Several closed-source applications exist for determining audio similarity in lib
 
 \section{Methodology}
 %\label{sec:pagestyle}
-This section describes...
 
 \subsection{Rhythmic Similarity}
 
@@ -76,11 +75,27 @@ Insert EQUATION 2
 
 In the implementation in application, the spectral periodicity was calculated using a single similarity matrix with a length equal the number frames in the entire audio file. The audio file could alternatively be segmented and the spectral periodicity calculated on each segment as described by the Beat Spectrogram in [REF-Foote], but since audio loops are often taken as a single unit for the compositional use case, our approach seems more appropriate for the application. Future implementations might explore this alternative and compare the performance for similarity ranking.
 
-Prior to calculating features on Beat Spectrum some preprocessing steps were taken to increase robustness of the measure. First, since the Beat Spectrum is an autocorrelation and the number of elements summed decreases as the lag increases, a line was fit using least squares and subtracted from the signal. Next, the signal was inverted so that lags of lower distances had higher values by subtracting the signal from an equally long signal with every value a 1. Finally, a three point moving average filter was used on the Beat Spectrum for smoothing.
+Prior to calculating features on spectral periodicity signal some preprocessing steps were taken to increase robustness of the measure. First, since the spectral periodicity is an autocorrelation and the number of elements summed decreases as the lag increases, a line was fit using least squares and subtracted from the signal. Next, the signal was inverted so that lags of lower distances had higher values by subtracting the signal from an equally long signal with every value a 1. Finally, a three point moving average filter was used for smoothing.
 
-After the preprocessing steps, a feature vector was constructed to describe the Beat Spectrum signal. These features are shown in [Table 1]. And lastly, the algorithm determines a rhythmic distance measure by calculating the euclidean distance between Beat Spectrum feature vectors of two audio files
+After the preprocessing steps, a feature vector was constructed to describe the signal and these features were standardize by removing the mean and dividing by the standard deviation of each feature. A list of these features are shown in [Table 1]. And lastly, the algorithm determines a rhythmic distance measure by calculating the euclidean distance between Beat Spectrum feature vectors of two audio files
 
-<INSERT TABLE 1>
+\begin{table}[h!]
+  \begin{center}
+    \begin{tabular}{| c | c | c | c | c |}
+    \hline
+    LS Line Slope \\
+	LS y-intercept\\
+	Instaneous values at beats (assuming 4/4) \\
+	Standard Deviation \\
+	Skewness \\
+	Kurtosis \\
+	Sum of absolute value of difference between LS line and signal \\
+	Number of changes in slope \\    \hline
+    \end{tabular}
+  \end{center}
+  \caption{Features Derived from Spectral Periodicity}
+\end{table}
+    
 
 \subsection{Timbral Similarity}
 
@@ -95,7 +110,7 @@ Given the difficulty of navigating large loop libraries, the user interface of t
 
 
 \section{Evaluation}
-We propose two methods for evaluation rhythmic similarity functions implemented in the application. First, the authors developed a ground truth set by selecting manually 30 loops from the EarSketch library and separating them by ear into 5 distinct rhythmic classes each with 6 loops. For each loop L, distances were calculated to the other 29 loops and ordered from the least distance to greatest. Then for each of the smallest K distances an accuracy was recorded as the number of loops matching the class of L divided by K. [FIGURE] shows the ordered distances and associated classes for one audio loop in the ground truth seen in the figure as the loop with a distance of zero.
+We propose two methods for evaluation rhythmic similarity functions implemented in the application. First, since no accepted ground truth for rhythmic similarity exists the authors developed a ground truth set by selecting manually 30 loops from the EarSketch library and separating them by ear into 5 distinct rhythmic classes each with 6 loops. For each loop L, distances were calculated to the other 29 loops and ordered from the least distance to greatest. Then for each of the smallest K distances an accuracy was recorded as the number of loops matching the class of L divided by K. [FIGURE] shows the ordered distances and associated classes for one audio loop in the ground truth seen in the figure as the loop with a distance of zero.
 
 \begin{figure}[h!]
   \centering
@@ -103,7 +118,7 @@ We propose two methods for evaluation rhythmic similarity functions implemented 
       \caption{}
 \end{figure}
 
-Table 1 shows the average accuracy for all 30 loops for varying K. In other words, the top recommended loop was of the same class as the reference loop 80\% of the time.
+Table 2 shows the average accuracy for all 30 loops for varying K. In other words, the top recommended loop was of the same class as the reference loop 80\% of the time.
 
 \begin{table}[h!]
   \begin{center}
@@ -123,9 +138,13 @@ A second evaluation for tempo detection used the same 30 loops from the EarSketc
 
 \section{Discussion}
 
-The objective of providing a user a computational approach to navigating a loop library was reasonably successful. As seen in Table 1 the most highly recommended loop was of the same classes as the reference loop 80\% of the time. From the standpoint of the user, this significantly reduces the time spent looking for a similar loops that may complement one another compositionally.
+The objective of providing a user a computational approach to and software application for navigating a loop library was fairly successful. As seen in Table 1 the most highly recommended loop was of the same classes as the reference loop 80\% of the time. From the standpoint of the user, this significantly reduces the time spent looking for a similar loops that may complement one another compositionally. Care must be taken though, because although the authors have significant musical training, biases or inaccuracies may exist in the ground truth data. A more comprehensive future evaluation might include multiple ground truths from different musicians and loop libraries.
 
-Similarly, the tempo detection method works quite well in testing as indicated by the 97\% accuracy in detecting the tempo on the ground truth. However, the assumption that any loop in a large library is a multiple of a power of 2 of a 4/4 measure may not always hold in real-world cases. The loop may be slightly longer or shorter, as is likely the case in the single incorrectly calculated tempo in the previous section, or in 3/4 time and small changes such as this make a large impact in selecting loops to form a composition. Since the user interface allows for a variable range in tempo, the user has significant flexibility in overcoming shortcomings such as this. Future implementations of tempo detection would likely benefit from a more robust system.
+The tempo detection method works quite well in testing as indicated by the 97\% accuracy in detecting the tempo on the ground truth. However, the assumption that any loop in a large library is a multiple of a power of 2 of a 4/4 measure may not always hold in real-world cases. The loop may be slightly longer or shorter, as is likely the case in the single incorrectly calculated tempo in the previous section, or in 3/4 time and small changes such as this make a large impact in selecting loops to form a composition. Since the user interface allows for a variable range in tempo, the user has significant flexibility in overcoming shortcomings such as this. Future implementations of tempo detection would likely benefit from a more robust system.
+
+Future work could include several improvements to the existing algorithm and application. For example, additional features could be calculated and principal component analysis could be used to determine the most useful features. Additional similarity components could added such as chroma-based key detection since the knowledge of key would be quite useful for this use case. And other user interfaces such as self-organizing maps of the audio library may yield intuitive and creative ways for composers to select loops for a composition.
+
+
 
 % Below is an example of how to insert images. Delete the ``\vspace'' line,
 % uncomment the preceding line ``\centerline...'' and replace ``imageX.ps''
