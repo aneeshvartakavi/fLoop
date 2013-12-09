@@ -15,7 +15,7 @@ features = zeros(16,numNames);
 for i=1:numNames
     fileName = char(names(i)) 
     
-    features(:,i) = computeBeatSpectrumFeatures(strcat(loopDir, fileName));
+    features(:,i) = computeBeatSpectrumFeatures(strcat(loopDir, fileName), fileName);
 %     display(i);
 end
 

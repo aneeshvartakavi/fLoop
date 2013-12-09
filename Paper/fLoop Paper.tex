@@ -71,11 +71,23 @@ The second component of rhythmic similarity comes from a calculation of statisti
 
 Next each super diagonal of S is summed as in [Equation 2] to give a representation of the spectral periodicity in the lag domain, where l is lag and k is the block index. An example of the result is shown in [FIGURE 2], where the periodicity of events in the audio is evident. Alternatively, the spectral periodicity can be viewed as an autocorrelation of a vector of elements where each element is the STFT of a block of samples in the audio file.
 
+\begin{figure}[h!]
+  \centering
+    \includegraphics[width=0.5\textwidth]{bs_pre.png}
+      \caption{}
+\end{figure}
+
 Insert EQUATION 2
 
 In the implementation in application, the spectral periodicity was calculated using a single similarity matrix with a length equal the number frames in the entire audio file. The audio file could alternatively be segmented and the spectral periodicity calculated on each segment as described by the Beat Spectrogram in [REF-Foote], but since audio loops are often taken as a single unit for the compositional use case, our approach seems more appropriate for the application. Future implementations might explore this alternative and compare the performance for similarity ranking.
 
-Prior to calculating features on spectral periodicity signal some preprocessing steps were taken to increase robustness of the measure. First, since the spectral periodicity is an autocorrelation and the number of elements summed decreases as the lag increases, a line was fit using least squares and subtracted from the signal. Next, the signal was inverted so that lags of lower distances had higher values by subtracting the signal from an equally long signal with every value a 1. Finally, a three point moving average filter was used for smoothing.
+Prior to calculating features on spectral periodicity signal some preprocessing steps were taken to increase robustness of the measure. First, since the spectral periodicity is an autocorrelation and the number of elements summed decreases as the lag increases, a line was fit using least squares and subtracted from the signal. Next, the signal was inverted so that lags of lower distances had higher values by subtracting the signal from an equally long signal with every value a 1. Finally, a three point moving average filter was used for smoothing. [FIGURE] shows the post-processed signal.
+
+\begin{figure}[h!]
+  \centering
+    \includegraphics[width=0.5\textwidth]{bs_post.png}
+      \caption{}
+\end{figure}
 
 After the preprocessing steps, a feature vector was constructed to describe the signal and these features were standardize by removing the mean and dividing by the standard deviation of each feature. A list of these features are shown in [Table 1]. And lastly, the algorithm determines a rhythmic distance measure by calculating the euclidean distance between Beat Spectrum feature vectors of two audio files
 
@@ -106,8 +118,13 @@ The timbral distance measure was based on thirteen dimensional MFCC’s, which w
 Processing Beat Spectrum features on large libraries of files requires speed and this informed the application design decisions. We chose the C++ framework JUCE [REF] because C++ code can be optimized efficiently for time and memory and JUCE is highly regarded in the audio software development sphere for its user interface styling and audio utilities. Additionally, JUCE allows for multi-platform development and deployment, making greater the potential future dissemination of the application. We also use the Eigen Library, which provides optimized linear algebra routines and an FFT wrapper.
 
 \subsection{User Interface}
-Given the difficulty of navigating large loop libraries, the user interface of the application seeks to assist the algorithm in making this process simple and fast. A user can select a reference file in a list box on the left on which to compare other files in the library and has the option of listening to that file. Next there are two range sliders available, one for tempo and one for beat spectrum feature vector distance, that filter all files outside of the specified range. Then Similar files are automatically shown or removed in a left list box according to the slider positions and those can also be played back by the user. The application also writes previously calculated features for a directory in a cache and allows the user to load and reuse that cache to avoid calculating features on the directory again.
+Given the difficulty of navigating large loop libraries, the user interface of the application seeks to assist the algorithm in making this process simple and fast. A user can select a reference file in a list box on the left on which to compare other files in the library and has the option of listening to that file. Next there are two range sliders available, one for tempo and one for beat spectrum feature vector distance, that filter all files outside of the specified range. Then Similar files are automatically shown or removed in a left list box according to the slider positions and those can also be played back by the user. A screenshot of the application is shown below in [FIGURE] The application also writes previously calculated features for a directory in a cache and allows the user to load and reuse that cache to avoid calculating features on the directory again.
 
+\begin{figure}[h!]
+  \centering
+    \includegraphics[width=0.5\textwidth]{fLoop_gui.png}
+      \caption{Application GUI Screenshot}
+\end{figure}
 
 \section{Evaluation}
 We propose two methods for evaluation rhythmic similarity functions implemented in the application. First, since no accepted ground truth for rhythmic similarity exists the authors developed a ground truth set by selecting manually 30 loops from the EarSketch library and separating them by ear into 5 distinct rhythmic classes each with 6 loops. For each loop L, distances were calculated to the other 29 loops and ordered from the least distance to greatest. Then for each of the smallest K distances an accuracy was recorded as the number of loops matching the class of L divided by K. [FIGURE] shows the ordered distances and associated classes for one audio loop in the ground truth seen in the figure as the loop with a distance of zero.
