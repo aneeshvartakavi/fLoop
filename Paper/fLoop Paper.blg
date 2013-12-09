@@ -2,12 +2,4 @@ This is BibTeX, Version 0.99dThe top-level auxiliary file: fLoop Paper.aux
 The style file: IEEEbib.bst
 Database file #1: references.bib
 Warning--empty journal in jensen2006evaluation
-Too many commas in name 1 of "Dang, A., Finger C., Er, Z., Connel, C." for entry audiocompare
-while executing---line 1012 of file IEEEbib.bst
-Too many commas in name 1 of "Dang, A., Finger C., Er, Z., Connel, C." for entry audiocompare
-while executing---line 1012 of file IEEEbib.bst
-Too many commas in name 1 of "Dang, A., Finger C., Er, Z., Connel, C." for entry audiocompare
-while executing---line 1012 of file IEEEbib.bst
-Too many commas in name 1 of "Dang, A., Finger C., Er, Z., Connel, C." for entry audiocompare
-while executing---line 1012 of file IEEEbib.bst
-(There were 4 error messages)
+(There was 1 warning)

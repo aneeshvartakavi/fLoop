@@ -46,7 +46,7 @@ GAR Software,
 \newblock ``Similarity,'' http://www.similarityapp.com/, Dec. 2013.
 
 \bibitem{audiocompare}
-Finger C. Er Z. Connel~C. Dang, A.,
+Zheng Hui~Er An~Dang, Cory~Finger and Charles Connell,
 \newblock ``Audiocompare,'' https://github.com/charlesconnell/AudioCompare,
   December 7 2013.
 
@@ -58,5 +58,9 @@ Georgia Tech.~Research Corporation,
 Raw Material~Software Ltd,
 \newblock ``Juce : Jules' utility class extensions,'' http://www.juce.com/,
   Dec. 2013.
+
+\bibitem{eigenweb}
+Ga\"{e}l Guennebaud, Beno\^{i}t Jacob, et~al.,
+\newblock ``Eigen v3,'' http://eigen.tuxfamily.org, 2010.
 
 \end{thebibliography}
