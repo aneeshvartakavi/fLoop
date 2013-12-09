@@ -63,6 +63,13 @@ Several closed-source applications exist for determining audio similarity in lib
 %\label{sec:pagestyle}
 
 \subsection{Tempo Estimation}
+<<<<<<< HEAD
+=======
+WHAT DO YOU THINK ABOUT SEPARATING TEMPO ESTIMATION AND RHYTHMIC SIMILARITY?
+
+We were going to say that the rhythmic similarity is tempo invariant, so I think we should separate the two. I'm fine with whatever you decide in the end.
+
+>>>>>>> ad006a6... Small changes.
 
 The rhythmic similarity recommendation algorithm is composed of two primary components that can be applied together or independently in the application: tempo estimation and distance between feature vectors of the spectral periodicity. For tempo estimation of an audio file, we use a simple method shown in equation (\ref{eq:tp}) where \(T\) is the tempo in beats per minute (bmp), \(n\) is the number of expected beats in the loop, \(f_s\) is the sampling frequency of the audio, and \(N\) is the number of samples. This method is based on an assumption that the length of the audio loops in beats will always be a power of 2 of a 4/4 measure - a group of 4 beats - which is generally true for many loop libraries. Additionally, we scale the tempo to a range of 50-160 bmp when the expected number of beats was incorrect.
 
@@ -149,9 +156,15 @@ Given the difficulty of navigating large loop libraries, the user interface of t
 Since no accepted ground truth for rhythmic similarity exists the authors developed a ground truth data set by selecting manually 30 loops from the EarSketch library and separating them by ear into 5 distinct rhythmic classes each with 6 loops. For each loop L, distances were calculated to the other 29 loops and ordered from the least distance to greatest. Then for each of the smallest K distances an accuracy was recorded as the number of loops matching the class of L divided by K. Fig. \ref{fig:eval1_dist} shows the ordered distances and associated classes for one audio loop in the ground truth seen in the figure as the loop with a distance of zero. The first, second, fourth, eighth, and tenth recommended loops are of the matching class in this example.
 
 \begin{figure}[h!]
+<<<<<<< HEAD
   \captionsetup{justification=centering}
     \includegraphics[width=0.5\textwidth]{distance_graph_eval1.png}
       \caption{Example of Ordered Loop Classes and Distances of Spectral Periodicity}\label{fig:eval1_dist}
+=======
+  \centering
+   \centerline{\includegraphics[width=0.5\textwidth]{distance_graph_eval1.png}}
+      \caption{INSERT CAPTION}\label{fig:eval1_dist}
+>>>>>>> ad006a6... Small changes.
 \end{figure}
 
 Table \ref{tab:bs_eval} shows the average accuracy for all 30 loops for varying K. In other words, the top recommended loop was of the same class as the reference loop 80\% of the time.
