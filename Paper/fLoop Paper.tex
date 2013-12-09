@@ -47,12 +47,12 @@ audio similarity, audio retrieval, distance matrix, beat spectrum, tempo detecti
 
 With the advances in technology, large libraries of audio loops on a single hard drive have become commonplace. Navigating these libraries becomes increasingly difficult because knowledge about the files must be manually tagged or inspected by ear. A computational approach to audio retrieval via a similarity measure dramatically reduces the time spent navigating these libraries.
 
-In this paper, we detail an implementation of a standalone desktop application in C++ for retrieval of audio loops by rhythmic and timbral similarity. A common task is finding an audio sample to sound simultaneously or in succession with a particular reference sample. The application allows a user to filter loops outside an acceptable range of tempo along with rhythmic and timbral distance given a particular reference loop. The tempo detection uses a simple approach based on known characteristics of audio loops and the rhythmic distance is based on features derived from spectral periodicity. We provide an evaluation of these two measures in this paper. The timbral measure is based on euclidean distance between features derived from the MFCCs but we do not provide an evaluation of this measure at this time.
+In this paper, we detail an implementation of a standalone desktop application in C++ for retrieval of audio loops by rhythmic and timbral similarity. A common task is finding an audio sample to sound simultaneously or in succession with a particular reference sample. The application allows a user to filter loops outside an acceptable range of tempo along with rhythmic and timbral distance given a particular reference loop. The tempo detection uses a simple approach based on known characteristics of audio loops and the rhythmic distance is based on features derived from spectral periodicity. We provide an evaluation of these two measures in this paper. The timbral measure is based on euclidean distance between features derived from the Mel-Frequency Cepstrum Coefficients (MFCCs) but we do not provide a formal evaluation of this measure at this time.
 
 \section{Related Work}
 %\label{sec:format}
 
-Several studies exist on audio retrieval by rhythmic similarity using statistical features since this approach requires limited or no human input to operate. One successful instance uses correlated energy peaks across frequency sub-bands \cite{scheirer1998tempo}  while another uses a feature vector from a low frequency-weighted short-time fourier transform (STFT) \cite{wold1999classification}. Another approach using spectral periodicity called the Beat Spectrum \cite{foote2001beat} is utilized for rhythmic similarity in this application, because it is based on self-similarity of the audio, no particular features are required of the audio such as silence or periodic energy peaks - Only repetitive events are required, which are common in audio loops. We derive a periodicity measure from the similarity matrix similar to \cite{foote2001beat} for our application.
+Several studies exist on audio retrieval by rhythmic similarity using statistical features since this approach requires limited or no human input to operate. One successful instance uses correlated energy peaks across frequency sub-bands \cite{scheirer1998tempo}  while another uses a feature vector from a low frequency-weighted Short-Time Fourier Transform (STFT) \cite{wold1999classification}. Another approach using spectral periodicity called the Beat Spectrum \cite{foote2001beat} is utilized for rhythmic similarity in this application, because it is based on self-similarity of the audio, no particular features are required of the audio such as silence or periodic energy peaks - Only repetitive events are required, which are common in audio loops. We derive a periodicity measure from the similarity matrix similar to \cite{foote2001beat} for our application.
 
 Mel Frequency Cepstral Coefficient based timbre space has been found to be a good model for perceptual timber space \cite{terasawa2005thirteen}. MFCCs have since been used to create similarity measures \cite{jensen2009quantitative} for genre recognition \cite{levy2006lightweight}, \cite{jensen2006evaluation}. We derived a simple timbral distance measure based on the euclidean distance between a feature vector derived from the MFCC's.
 
@@ -83,7 +83,7 @@ Next each super diagonal of S is summed as in equation (\ref{eq:bs}) to give a r
 	
   \centering
     \includegraphics[width=0.5\textwidth]{bs_pre.png}
-      \caption{}\label{fig:bs1_pre}
+      \caption{Example Pre-processed Spectral Periodicity Signal}\label{fig:bs1_pre}
 \end{figure}
 
 \begin{equation}
@@ -98,7 +98,7 @@ Prior to calculating features on the spectral periodicity signal some preprocess
 \begin{figure}[h!]
   \centering
     \includegraphics[width=0.5\textwidth]{bs_post.png}
-      \caption{}	\label{fig:bs1_post}
+      \caption{Example Post-processed Spectral Periodicity Signal}	\label{fig:bs1_post}
 \end{figure}
 
 After the preprocessing steps, a feature vector was constructed to describe the signal and these features were standardize by removing the mean and dividing by the standard deviation of each feature. A list of these features are shown in Table \ref{tab:bs_feat}. And lastly, the algorithm determines a rhythmic distance measure by calculating the euclidean distance between spectral periodicity feature vectors of two audio files.
@@ -134,7 +134,7 @@ The timbral distance measure was based on thirteen dimensional MFCCs, which were
 
 \subsection{Implementation}
 
-Processing spectral periodicity features on large libraries of files requires speed and this informed the application design decisions. We chose the C++ framework JUCE \cite{juce} because C++ code can be optimized efficiently for time and memory and JUCE is highly regarded in the audio software development sphere for its user interface styling and audio utilities. Additionally, JUCE allows for multi-platform development and deployment, making greater the potential future dissemination of the application. We also use the Eigen Library, which provides optimized linear algebra routines and an FFT wrapper.
+Processing spectral periodicity features on large libraries of files requires speed and this informed the application design decisions. We chose the C++ framework JUCE \cite{juce} because C++ code can be optimized efficiently for time and memory and JUCE is highly regarded in the audio software development sphere for its user interface styling and audio utilities. Additionally, JUCE allows for multi-platform development and deployment, making greater the potential future dissemination of the application. We also use the Eigen Library \cite{eigenweb}, which provides optimized linear algebra routines and an FFT wrapper.
 
 \subsection{User Interface}
 Given the difficulty of navigating large loop libraries, the user interface of the application seeks to assist the algorithm in making this process simple and fast. A user can select a reference file in a list box on the left on which to compare other files in the library and has the option of listening to that file. Next there are two range sliders available, one for tempo and one for spectral periodicity feature vector distance, that filter all files outside of the specified range. Then similar files are automatically shown or removed in a left list box according to the slider positions and those can also be played back by the user. A screenshot of the application is shown below in Fig. \ref{fig:gui}. The application also writes previously calculated features for a directory in a cache and allows the user to load and reuse that cache to avoid calculating features on the directory again.
@@ -179,7 +179,7 @@ The objective of providing a user a computational approach to and software appli
 
 The tempo detection method works quite well in testing as indicated by the 97\% accuracy in detecting the tempo on the ground truth. However, the assumption that any loop in a large library is a multiple of a power of 2 of a 4/4 measure may not always hold in real-world cases. The loop may be slightly longer or shorter, as is likely the case in the single incorrectly calculated tempo in the previous section, or in 3/4 time and small changes such as this make a large impact in selecting loops to form a composition. Since the user interface allows for a variable range in tempo, the user has significant flexibility in overcoming shortcomings such as this. Future implementations of tempo detection would likely benefit from a more robust system.
 
-Future work could include several improvements to the existing algorithm and application. For example, additional features could be calculated and principal component analysis could be used to determine the most useful features. Additional similarity components could added such as chroma-based key detection since the knowledge of key would be quite useful for this use case. And other user interfaces such as self-organizing maps of the audio library may yield intuitive and creative ways for composers to select loops for a composition.
+Future work could include several improvements to the existing algorithm and application. For example, additional features could be calculated and principal component analysis could be used to determine the most useful features. Additional similarity components could be added such as chroma-based key detection since the knowledge of key would be quite useful for this use case. And other user interfaces such as self-organizing maps of the audio library may yield intuitive and creative ways for composers to select loops for a composition. And although we did not implement a formal evaluation of the timbral similarity measure due to time constraints, initial tests of the algorithm show promising results and for now this is included in the application.
 
 
 

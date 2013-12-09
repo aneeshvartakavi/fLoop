@@ -1,5 +1,48 @@
-This is BibTeX, Version 0.99dThe top-level auxiliary file: fLoop Paper.aux
+This is BibTeX, Version 0.99d (TeX Live 2012)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: fLoop Paper.aux
 The style file: IEEEbib.bst
 Database file #1: references.bib
 Warning--empty journal in jensen2006evaluation
+You've used 12 entries,
+            1838 wiz_defined-function locations,
+            519 strings with 5216 characters,
+and the built_in function-call counts, 2439 in all, are:
+= -- 215
+> -- 104
+< -- 3
++ -- 40
+- -- 28
+* -- 154
+:= -- 376
+add.period$ -- 14
+call.type$ -- 12
+change.case$ -- 11
+chr.to.int$ -- 0
+cite$ -- 13
+duplicate$ -- 110
+empty$ -- 264
+format.name$ -- 28
+if$ -- 568
+int.to.chr$ -- 0
+int.to.str$ -- 12
+missing$ -- 8
+newline$ -- 58
+num.names$ -- 12
+pop$ -- 61
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 0
+skip$ -- 59
+stack$ -- 0
+substring$ -- 90
+swap$ -- 31
+text.length$ -- 3
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 0
+warning$ -- 1
+while$ -- 21
+width$ -- 14
+write$ -- 128
 (There was 1 warning)
