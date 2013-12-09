@@ -32,7 +32,7 @@
 \maketitle
 %
 \begin{abstract}
-This paper details the implementation of a standalone desktop application in C++ for retrieval of audio files by rhythmic and timbral similarity, notable for being, to our knowledge, the only application of its type under the GNU General Public License (GPL). The implementation focuses on audio loops - short audio files intended to restart immediately upon completion for compositional purposes - to address the difficulty of navigating large loop libraries manually. The audio similarity measure utilizes tempo detection and statistical features of a spectral frame periodicity to provide a ranking of most similar audio files to a particular reference file. Although similarity measures are somewhat subjective and difficult to evaluate, we propose two evaluations: 1) A kNN classification with 63\% accuracy on a ground truth data set developed by the authors using real-world audio loops and 2) A synthetic ground truth data set developed by the authors using related beat patterns at different tempos that demonstrates tempo invariance in retrieving rhythmically similar audio. \cite{audiocompare}
+This paper details the implementation of a standalone desktop application in C++ for retrieval of audio files by rhythmic and timbral similarity, notable for being, to our knowledge, the only application of its type under the GNU General Public License (GPL). The implementation focuses on audio loops - short audio files intended to restart immediately upon completion for compositional purposes - to address the difficulty of navigating large loop libraries manually. The audio similarity measure utilizes tempo detection and statistical features of a spectral frame periodicity to provide a ranking of most similar audio files to a particular reference file. Although similarity measures are somewhat subjective and difficult to evaluate, we propose two evaluations: 1) a classification accuracy on a ground truth data set developed by the authors using real-world audio loops and 2) A synthetic ground truth data set developed by the authors using related beat patterns at different tempos that demonstrates tempo invariance in retrieving rhythmically similar audio. \cite{audiocompare}
 \end{abstract}
 %
 \begin{keywords}
@@ -61,37 +61,42 @@ Several closed-source applications exist for determining audio similarity in lib
 
 \subsection{Rhythmic Similarity}
 
-The rhythmic similarity recommendation algorithm is composed of two primary components that can be applied together or independently in the application: tempo estimation and distance between feature vectors of the spectral periodicity. For tempo estimation of an audio file, we use a simple method shown in [Equation 1] where \(T\) is the tempo, \(n\) is the number of expected beats in the loop, \(f_s\) is the sampling frequency of the audio, and \(N\) is the number of samples. This method is based on an assumption that the length of the audio loops in beats will always be a power of 2 of a 4/4 measure - a group of 4 beats - which is generally true for many loop libraries. Additionally, we scale the tempo to a range of 50-160 beats per minute.
+The rhythmic similarity recommendation algorithm is composed of two primary components that can be applied together or independently in the application: tempo estimation and distance between feature vectors of the spectral periodicity. For tempo estimation of an audio file, we use a simple method shown in equation (\ref{eq:tp}) where \(T\) is the tempo, \(n\) is the number of expected beats in the loop, \(f_s\) is the sampling frequency of the audio, and \(N\) is the number of samples. This method is based on an assumption that the length of the audio loops in beats will always be a power of 2 of a 4/4 measure - a group of 4 beats - which is generally true for many loop libraries. Additionally, we scale the tempo to a range of 50-160 beats per minute.
 
 \begin{equation}
+\label{eq:tp}
 T = 60 * n * f_s * 1/N
 \end{equation}
 
-While there can be errors with this method when the assumptions do not hold, it worked consistently well for the real-world EarSketch [REF-EarSketch] loops used for evaluation. Improvements to the application could incorporate a more robust tempo estimate.
+While there can be errors with this method when the assumptions do not hold, it worked consistently well for the real-world EarSketch [REF-EarSketch] loops used for evaluation.
 
-The second component of rhythmic similarity comes from a calculation of statistical features of spectral periodicity, called the Beat Spectrum by [REF-Foote] who provides a detailed overview. We calculate the spectral periodicity as described in [REF-Foote] and include some processing steps prior to computing features. The spectral periodicity of an audio file is derived from a similarity matrix S where Si,j <format!> is the cosine distance between the STFT of i-th and j-ith block of the audio file. An example of S is shown in [FIGURE 1]. A block size of 1024 and hop size of 512 were used for the STFT. At a typical sampling frequency of 44100Hz for the audio loops we tested, this provides resolution in time of 23ms, which is sufficient for detecting rhythms even at faster tempos that adequately describe the audio file. Variations on these values could be tested in future research to determine if optimization is possible.
+The second component of rhythmic similarity comes from a calculation of statistical features of spectral periodicity, called the Beat Spectrum by [REF-Foote] who provides a detailed overview. We calculate the spectral periodicity as described in [REF-Foote] and include some processing steps prior to computing features. The spectral periodicity of an audio file is derived from a similarity matrix S where \(S_{ij}\) is the cosine distance between the STFT of i-th and j-ith block of the audio file. A block size of 1024 and hop size of 512 were used for the STFT. At a typical sampling frequency of 44100Hz for the audio loops we tested, this provides resolution in time of 23ms, which is sufficient for detecting rhythms even at faster tempos that adequately describe the audio file. Variations on these values could be tested in future research to determine if optimization is possible.
 
-Next each super diagonal of S is summed as in [Equation 2] to give a representation of the spectral periodicity in the lag domain, where l is lag and k is the block index. An example of the result is shown in [FIGURE 2], where the periodicity of events in the audio is evident. Alternatively, the spectral periodicity can be viewed as an autocorrelation of a vector of elements where each element is the STFT of a block of samples in the audio file.
+Next each super diagonal of S is summed as in equation (\ref{eq:bs}) to give a representation of the spectral periodicity in the lag domain, where l is lag and k is the block index. An example of the result is shown in Fig. \ref{fig:bs1_pre}, where the periodicity of events in the audio is evident. Alternatively, the spectral periodicity can be viewed as an autocorrelation of a vector of elements where each element is the STFT of a block of samples in the audio file.
 
 \begin{figure}[h!]
+	
   \centering
     \includegraphics[width=0.5\textwidth]{bs_pre.png}
-      \caption{}
+      \caption{}\label{fig:bs1_pre}
 \end{figure}
 
-Insert EQUATION 2
+\begin{equation}
+\label{eq:bs}
+SP(l) = \sum(S(k, k+l)
+\end{equation}
 
 In the implementation in application, the spectral periodicity was calculated using a single similarity matrix with a length equal the number frames in the entire audio file. The audio file could alternatively be segmented and the spectral periodicity calculated on each segment as described by the Beat Spectrogram in [REF-Foote], but since audio loops are often taken as a single unit for the compositional use case, our approach seems more appropriate for the application. Future implementations might explore this alternative and compare the performance for similarity ranking.
 
-Prior to calculating features on spectral periodicity signal some preprocessing steps were taken to increase robustness of the measure. First, since the spectral periodicity is an autocorrelation and the number of elements summed decreases as the lag increases, a line was fit using least squares and subtracted from the signal. Next, the signal was inverted so that lags of lower distances had higher values by subtracting the signal from an equally long signal with every value a 1. Finally, a three point moving average filter was used for smoothing. [FIGURE] shows the post-processed signal.
+Prior to calculating features on spectral periodicity signal some preprocessing steps were taken to increase robustness of the measure. First, since the spectral periodicity is an autocorrelation and the number of elements summed decreases as the lag increases, a line was fit using least squares and subtracted from the signal. Next, the signal was inverted so that lags of lower distances had higher values by subtracting the signal from an equally long signal with every value a 1. Finally, a three point moving average filter was used for smoothing. Fig. \ref{fig:bs1_post} shows the post-processed signal.
 
 \begin{figure}[h!]
   \centering
     \includegraphics[width=0.5\textwidth]{bs_post.png}
-      \caption{}
+      \caption{}	\label{fig:bs1_post}
 \end{figure}
 
-After the preprocessing steps, a feature vector was constructed to describe the signal and these features were standardize by removing the mean and dividing by the standard deviation of each feature. A list of these features are shown in [Table 1]. And lastly, the algorithm determines a rhythmic distance measure by calculating the euclidean distance between spectral periodicity feature vectors of two audio files.
+After the preprocessing steps, a feature vector was constructed to describe the signal and these features were standardize by removing the mean and dividing by the standard deviation of each feature. A list of these features are shown in Table \ref{tab:bs_feat}. And lastly, the algorithm determines a rhythmic distance measure by calculating the euclidean distance between spectral periodicity feature vectors of two audio files.
 
 \begin{table}[h!]
   \begin{center}
@@ -116,7 +121,7 @@ After the preprocessing steps, a feature vector was constructed to describe the 
 	Number of changes in signal slope \\    \hline
     \end{tabular}
   \end{center}
-  \caption{Features Derived from Spectral Periodicity}
+  \caption{Features Derived from Spectral Periodicity}\label{tab:bs_feat}
 \end{table}
     
 
@@ -129,24 +134,24 @@ The timbral distance measure was based on thirteen dimensional MFCC’s, which w
 Processing spectral periodicity features on large libraries of files requires speed and this informed the application design decisions. We chose the C++ framework JUCE [REF] because C++ code can be optimized efficiently for time and memory and JUCE is highly regarded in the audio software development sphere for its user interface styling and audio utilities. Additionally, JUCE allows for multi-platform development and deployment, making greater the potential future dissemination of the application. We also use the Eigen Library, which provides optimized linear algebra routines and an FFT wrapper.
 
 \subsection{User Interface}
-Given the difficulty of navigating large loop libraries, the user interface of the application seeks to assist the algorithm in making this process simple and fast. A user can select a reference file in a list box on the left on which to compare other files in the library and has the option of listening to that file. Next there are two range sliders available, one for tempo and one for spectral periodicity feature vector distance, that filter all files outside of the specified range. Then Similar files are automatically shown or removed in a left list box according to the slider positions and those can also be played back by the user. A screenshot of the application is shown below in [FIGURE] The application also writes previously calculated features for a directory in a cache and allows the user to load and reuse that cache to avoid calculating features on the directory again.
+Given the difficulty of navigating large loop libraries, the user interface of the application seeks to assist the algorithm in making this process simple and fast. A user can select a reference file in a list box on the left on which to compare other files in the library and has the option of listening to that file. Next there are two range sliders available, one for tempo and one for spectral periodicity feature vector distance, that filter all files outside of the specified range. Then Similar files are automatically shown or removed in a left list box according to the slider positions and those can also be played back by the user. A screenshot of the application is shown below in Fig. \ref{fig:gui}. The application also writes previously calculated features for a directory in a cache and allows the user to load and reuse that cache to avoid calculating features on the directory again.
 
 \begin{figure}[h!]
   \centering
     \includegraphics[width=0.5\textwidth]{fLoop_gui.png}
-      \caption{Application GUI Screenshot}
+      \caption{Application GUI Screenshot}\label{fig:gui}
 \end{figure}
 
 \section{Evaluation}
-We propose two methods for evaluation rhythmic similarity functions implemented in the application. First, since no accepted ground truth for rhythmic similarity exists the authors developed a ground truth set by selecting manually 30 loops from the EarSketch library and separating them by ear into 5 distinct rhythmic classes each with 6 loops. For each loop L, distances were calculated to the other 29 loops and ordered from the least distance to greatest. Then for each of the smallest K distances an accuracy was recorded as the number of loops matching the class of L divided by K. [FIGURE] shows the ordered distances and associated classes for one audio loop in the ground truth seen in the figure as the loop with a distance of zero.
+We propose two methods for evaluation rhythmic similarity functions implemented in the application. First, since no accepted ground truth for rhythmic similarity exists the authors developed a ground truth set by selecting manually 30 loops from the EarSketch library and separating them by ear into 5 distinct rhythmic classes each with 6 loops. For each loop L, distances were calculated to the other 29 loops and ordered from the least distance to greatest. Then for each of the smallest K distances an accuracy was recorded as the number of loops matching the class of L divided by K. Fig. \ref{fig:eval1_dist} shows the ordered distances and associated classes for one audio loop in the ground truth seen in the figure as the loop with a distance of zero.
 
 \begin{figure}[h!]
   \centering
     \includegraphics[width=0.5\textwidth]{distance_graph_eval1.png}
-      \caption{}
+      \caption{}\label{fig:eval1_dist}
 \end{figure}
 
-Table 2 shows the average accuracy for all 30 loops for varying K. In other words, the top recommended loop was of the same class as the reference loop 80\% of the time.
+Table \ref{tab:bs_eval} shows the average accuracy for all 30 loops for varying K. In other words, the top recommended loop was of the same class as the reference loop 80\% of the time.
 
 \begin{table}[h!]
   \begin{center}
@@ -158,7 +163,7 @@ Table 2 shows the average accuracy for all 30 loops for varying K. In other word
     \hline
     \end{tabular}
   \end{center}
-  \caption{Average Class Accuracies}
+  \caption{Average Class Accuracies}\label{tab:bs_eval}
 \end{table}
 
 A second evaluation for tempo detection used the same 30 loops from the EarSketch library for which the loops had 7 unique tempos. The tempo detection accuracy for these 30 loops was 29 correct out of 30, or 97\%, and the single incorrectly calculated tempo was off by 1bmp.
