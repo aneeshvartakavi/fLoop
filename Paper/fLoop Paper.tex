@@ -12,7 +12,7 @@
 
 % Title.
 % ------
-\title{A GPL Standalone Application for Audio Retrieval by Rhythmic and Timbral Similarity}
+\title{A Cross-platform, Standalone Application for Audio Retrieval by Rhythmic and Timbral Similarity}
 %
 % Single address.
 % ---------------
@@ -32,7 +32,7 @@
 \maketitle
 %
 \begin{abstract}
-This paper details the implementation of a standalone desktop application in C++ for retrieval of audio files by rhythmic and timbral similarity, notable for being, to our knowledge, the only application of its type under the GNU General Public License (GPL). The implementation focuses on audio loops - short audio files intended to restart immediately upon completion for compositional purposes - to address the difficulty of navigating large loop libraries manually. The audio similarity measure utilizes tempo detection and statistical features of spectral frame periodicity to provide a ranking of most similar audio files to a particular reference file. Although similarity measures are somewhat subjective and difficult to evaluate, we propose two evaluations: 1) A classification accuracy on a ground truth data set developed by the authors using real-world audio loops and 2) A synthetic ground truth data set developed by the authors using related beat patterns at different tempos that demonstrates tempo invariance in retrieving rhythmically similar audio.
+This paper details the implementation of a standalone desktop application in C++ for retrieval of audio files by rhythmic and timbral similarity, notable for being, to our knowledge, the first application of its type under the GNU General Public License (GPL). The implementation focuses on audio loops - short audio files intended to restart immediately upon completion for compositional purposes - to address the difficulty of navigating large loop libraries manually. The audio similarity measure utilizes tempo detection and statistical features of spectral frame periodicity to provide a ranking of most similar audio files to a particular reference file. Although similarity measures are somewhat subjective and difficult to evaluate, we propose two evaluations: 1) A classification accuracy on a ground truth data set developed by the authors using real-world audio loops and 2) A synthetic ground truth data set developed by the authors using related beat patterns at different tempos that demonstrates tempo invariance in retrieving rhythmically similar audio. (HOW ABOUT ONE LINE HERE TALKING ABOUT THE FINAL OUTCOME?)
 \end{abstract}
 %
 \begin{keywords}
@@ -45,6 +45,8 @@ audio similarity, audio retrieval, distance matrix, beat spectrum, tempo detecti
 With the advances in technology, large libraries of audio loops on a single hard drive have become commonplace. Navigating these libraries becomes increasingly difficult because knowledge about the files must be manually tagged or inspected by ear. A computational approach to audio retrieval via a similarity measure dramatically reduces the time spent navigating these libraries.
 
 In this paper, we detail an implementation of a standalone desktop application in C++ for retrieval of audio loops by rhythmic and timbral similarity. A common task is finding an audio sample to sound simultaneously or in succession with a particular reference sample. The application allows a user to filter loops outside an acceptable range of tempo along with rhythmic and timbral distance given a particular reference loop. The tempo detection uses a simple approach based on characteristics of audio loops and the rhythmic distance is based on features derived from spectral periodicity. The timbral measure is based on euclidean distance between features derived from the MFCCs.
+
+Our software provides the user with an interface to query for similar loops using a slider interface to specify a range of tempo, timbral and rhythmic distances. We believe this application has the potential to significantly reduce the amount of time spent navigating large libraries of audio loops.
 
 \section{Related Work}
 %\label{sec:format}
