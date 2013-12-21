@@ -5,6 +5,7 @@
 \documentclass{article}
 \usepackage{spconf,amsmath,graphicx}
 \usepackage[margin=0.8in]{geometry}
+\usepackage{caption}
 
 % Example definitions.
 % --------------------
@@ -26,7 +27,7 @@
 %	Department\\
 %	Address}
 %
-\usepackage{caption}
+
 
 
 \begin{document}
@@ -65,9 +66,6 @@ Several closed-source applications exist for determining audio similarity in lib
 
 \subsection{Tempo Estimation}
 
-We were going to say that the rhythmic similarity is tempo invariant, so I think we should separate the two. I'm fine with whatever you decide in the end.
-
-
 The rhythmic similarity recommendation algorithm is composed of two primary components that can be applied together or independently in the application: tempo estimation and distance between feature vectors of the spectral periodicity. For tempo estimation of an audio file, we use a simple method shown in equation (\ref{eq:tp}) where \(T\) is the tempo in beats per minute (bmp), \(n\) is the number of expected beats in the loop, \(f_s\) is the sampling frequency of the audio, and \(N\) is the number of samples. This method is based on an assumption that the length of the audio loops in beats will always be a power of 2 of a 4/4 measure - a group of 4 beats - which is generally true for many loop libraries. Additionally, we scale the tempo to a range of 50-160 bmp when the expected number of beats was incorrect.
 
 \begin{equation}
@@ -97,7 +95,7 @@ SP(l) = \sum S(k, k+l)
 
 In the implementation in the application, the spectral periodicity was calculated using a single similarity matrix with a length equal the number frames in the entire audio file. The audio file could alternatively be segmented and the spectral periodicity calculated on each segment as described by the Beat Spectrogram in \cite{foote2001beat}, but since audio loops are often taken as a single unit for the compositional use case, our approach seems more appropriate for the application. Future implementations might explore this alternative and compare the performance for similarity ranking.
 
-Prior to calculating features on the spectral periodicity signal some preprocessing steps were taken to increase robustness of the measure. First, since the spectral periodicity is an autocorrelation and the number of elements summed decreases as the lag increases, a line was fit using least squares and subtracted from the signal. Next, the signal was normalized and inverted so that lags of lower distances had higher values by subtracting the signal from an equally long signal with every value a 1. Finally, a three point moving average filter was used for smoothing. Fig. \ref{fig:bs1_post} shows the post-processed signal.
+Prior to calculating features on the spectral periodicity signal some preprocessing steps were taken to increase robustness of the measure. First, since the similarity matrix is similar to autocorrelation and the number of elements summed decreases as the lag increases, a line was fit using least squares and subtracted from the signal. Next, the signal was normalized and inverted so that lags of lower distances had higher values by subtracting the signal from an equally long signal with every value a 1. Finally, a three point moving average filter was used for smoothing. Fig. \ref{fig:bs1_post} shows the post-processed signal.
 
 \begin{figure}[h!]
   \centering
@@ -153,9 +151,11 @@ Given the difficulty of navigating large loop libraries, the user interface of t
 Since no accepted ground truth for rhythmic similarity exists the authors developed a ground truth data set by selecting manually 30 loops from the EarSketch library and separating them by ear into 5 distinct rhythmic classes each with 6 loops. For each loop L, distances were calculated to the other 29 loops and ordered from the least distance to greatest. Then for each of the smallest K distances an accuracy was recorded as the number of loops matching the class of L divided by K. Fig. \ref{fig:eval1_dist} shows the ordered distances and associated classes for one audio loop in the ground truth seen in the figure as the loop with a distance of zero. The first, second, fourth, eighth, and tenth recommended loops are of the matching class in this example.
 
 \begin{figure}[h!]
+ 
   \captionsetup{justification=centering}
     \includegraphics[width=0.5\textwidth]{distance_graph_eval1.png}
-      \caption{Example of Ordered Loop Classes and Distances of Spectral Periodicity}\label{fig:eval1_dist}
+     \caption{Example of Ordered Loop Classes and Distances of Spectral Periodicity}   
+\label{fig:eval1_dist}
 
 \end{figure}
 
@@ -180,11 +180,11 @@ A second evaluation for tempo detection used the same 30 loops from the EarSketc
 
 \section{Discussion}
 
-The objective of providing a user a computational approach to and software application for navigating a loop library was fairly successful. As seen in Table 1 the most highly recommended loop was of the same classes as the reference loop 80\% of the time. From the standpoint of the user, this significantly reduces the time spent looking for a similar loops that may complement one another compositionally. Care must be taken though, because although the authors have musical training, biases or inaccuracies may exist in the ground truth data. A more comprehensive future evaluation might include multiple ground truths from different musicians and loop libraries.
+The objective of providing a user a computational approach to and software application for navigating a loop library was fairly successful. As seen in Table 1 the most highly recommended loop was of the same classes as the reference loop 80\% of the time. From the standpoint of the user, this significantly reduces the time spent looking for a similar loops that may complement one another musically. Care must be taken though, because although the authors have musical training, biases or inaccuracies may exist in the ground truth data. A more comprehensive future evaluation might include multiple ground truths from different musicians and loop libraries.
 
 The tempo detection method works quite well in testing as indicated by the 97\% accuracy in detecting the tempo on the ground truth. However, the assumption that any loop in a large library is a multiple of a power of 2 of a 4/4 measure may not always hold in real-world cases. The loop may be slightly longer or shorter, as is likely the case in the single incorrectly calculated tempo in the previous section, or in 3/4 time and small changes such as this make a large impact in selecting loops to form a composition. Since the user interface allows for a variable range in tempo, the user has significant flexibility in overcoming shortcomings such as this. Future implementations of tempo detection would likely benefit from a more robust system.
 
-Future work could include several improvements to the existing algorithm and application. For example, additional features could be calculated and principal component analysis could be used to determine the most useful features. Additional similarity components could be added such as chroma-based key detection since the knowledge of key would be quite useful for this use case. And other user interfaces such as self-organizing maps of the audio library may yield intuitive and creative ways for composers to select loops for a composition. And although we did not implement a formal evaluation of the timbral similarity measure due to time constraints, initial tests of the algorithm show promising results and for now this is included in the application.
+Future work could include several improvements to the existing algorithm and application. For example, additional features could be calculated and Principal Component Analysis could be explored. Additional similarity components could be added such as chroma-based key detection since the knowledge of key would be quite useful for this use case. And other user interfaces such as self-organizing maps of the audio library may yield intuitive and creative ways for composers to select loops for a composition. And although we did not implement a formal evaluation of the timbral similarity measure due to time constraints, initial tests of the algorithm show promising results and for now this is included in the application.
 
 
 

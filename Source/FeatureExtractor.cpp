@@ -7,9 +7,16 @@
 
   ==============================================================================
 */
-
+#if JUCE_MAC
 #include "Dense.h"
 #include "FFT.h"
+#endif
+
+#if JUCE_WINDOWS
+#include "Eigen\Dense.h"
+#include "Eigen\FFT.h"
+#endif
+
 #include "FeatureExtractor.h"
 #define _USE_MATH_DEFINES
 #include <math.h>

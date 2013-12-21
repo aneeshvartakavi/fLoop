@@ -16,7 +16,9 @@
 
 #include "JuceHeader.h"
 #include "FeatureExtractor.h"
+#if JUCE_MAC
 #include "Dense.h"
+#endif
 
 #if JUCE_WINDOWS
 #include "Eigen\Dense.h"
