@@ -9,6 +9,7 @@
 
   Created with Introjucer version: 3.1.0
 
+  Author:  Aneesh Vartakavi, Cameron Summers
   ------------------------------------------------------------------------------
 
   The Introjucer is part of the JUCE library - "Jules' Utility Class Extensions"

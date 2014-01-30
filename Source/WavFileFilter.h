@@ -3,8 +3,9 @@
 
     WavFileFilter.h
     Created: 16 Nov 2013 12:07:28pm
-    Author:  Aneesh, Cameron
+    Author:  Aneesh Vartakavi, Cameron Summers
 
+	An extension of the FileFilter class, to display only wav files
   ==============================================================================
 */
 

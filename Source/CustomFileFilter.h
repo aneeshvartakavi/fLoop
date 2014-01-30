@@ -3,7 +3,10 @@
 
     CustomFileFilter.h
     Created: 16 Nov 2013 6:23:55pm
-    Author:  Aneesh
+    Author:  Aneesh Vartakavi, Cameron Summers
+
+	This class is an extension of the JUCE FileFilter class, that checks for
+	files of similar rhythm and timbre.
 
   ==============================================================================
 */
@@ -43,7 +46,6 @@ public:
 		}
 		else
 		{
-			//String tempFileName = file.getFileNameWithoutExtension();
 			String tempName = file.getFileNameWithoutExtension();
 			
 			for(int k=0;k<validFiles.size();k++)
@@ -55,12 +57,6 @@ public:
 					break;
 				}
 			}
-
-			/*if(validFiles.contains(tempName)) // Something going wrong here, this is not working as it should.
-			{
-				returnVal = true;
-				
-			}*/
 
 		}
 
@@ -143,31 +139,6 @@ public:
 			}
 		}
 	}
-
-
-				//for(int k1=0;k1<validRhythmFiles.size();k1++)
-				//{
-				//	for(int k2=0;k2<validTimbreFiles.size();k2++)
-				//	{
-				//		bool flag = false;
-				//		if(validTempoFiles[k] == validRhythmFiles[k1] && validRhythmFiles[k1] == validTimbreFiles[k2])
-				//		{
-				//			validFiles.add(validTempoFiles[k]);
-				//			flag = true;
-				//			break;
-				//		}
-				//		if(flag)
-				//		{
-				//			// Break out of inner for loop as well
-				//			break;
-				//		}
-
-				//	}
-
-				//}
-	//		}
-	//	}
-	//}
 
 
 	void clearFilters()

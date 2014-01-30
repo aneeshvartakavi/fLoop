@@ -564,21 +564,18 @@
                        isDebug="0" optimisation="2" targetName="fLoop"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_video" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
-        <MODULEPATH id="juce_opengl" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
         <MODULEPATH id="juce_gui_extra" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
         <MODULEPATH id="juce_gui_basics" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
         <MODULEPATH id="juce_graphics" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
         <MODULEPATH id="juce_events" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
         <MODULEPATH id="juce_data_structures" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
-        <MODULEPATH id="juce_cryptography" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
         <MODULEPATH id="juce_core" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
         <MODULEPATH id="juce_audio_processors" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
         <MODULEPATH id="juce_audio_formats" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
         <MODULEPATH id="juce_audio_devices" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
         <MODULEPATH id="juce_audio_basics" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
         <MODULEPATH id="juce_audio_utils" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
-        <MODULEPATH id="dRowAudio" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
+        <MODULEPATH id="dRowAudio" path="../Visual Studio 2012/Projects/JUCE-master/modules"/>
       </MODULEPATHS>
     </VS2012>
     <XCODE_MAC targetFolder="Builds/MacOSX">
@@ -592,20 +589,17 @@
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_utils" path="\Users\Cam\Dev\JUCE\modules"/>
-        <MODULEPATH id="dRowAudio" path="\Users\Cam\Dev\JUCE\modules"/>
         <MODULEPATH id="juce_audio_processors" path="\Users\Cam\Dev\JUCE\modules"/>
         <MODULEPATH id="juce_audio_basics" path="\Users\Cam\Dev\JUCE\modules"/>
         <MODULEPATH id="juce_audio_devices" path="\Users\Cam\Dev\JUCE\modules"/>
         <MODULEPATH id="juce_audio_formats" path="\Users\Cam\Dev\JUCE\modules"/>
-        <MODULEPATH id="juce_cryptography" path="\Users\Cam\Dev\JUCE\modules"/>
-        <MODULEPATH id="juce_video" path="\Users\Cam\Dev\JUCE\modules"/>
-        <MODULEPATH id="juce_opengl" path="\Users\Cam\Dev\JUCE\modules"/>
         <MODULEPATH id="juce_data_structures" path="\Users\Cam\Dev\JUCE\modules"/>
         <MODULEPATH id="juce_gui_extra" path="\Users\Cam\Dev\JUCE\modules"/>
         <MODULEPATH id="juce_core" path="\Users\Cam\Dev\JUCE\modules"/>
         <MODULEPATH id="juce_events" path="\Users\Cam\Dev\JUCE\modules"/>
         <MODULEPATH id="juce_graphics" path="\Users\Cam\Dev\JUCE\modules"/>
         <MODULEPATH id="juce_gui_basics" path="\Users\Cam\Dev\JUCE\modules"/>
+        <MODULEPATH id="dRowAudio" path="../Visual Studio 2012/Projects/JUCE-master/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
   </EXPORTFORMATS>
@@ -617,14 +611,11 @@
     <MODULES id="juce_audio_processors" showAllCode="1" useLocalCopy="1"/>
     <MODULES id="juce_audio_utils" showAllCode="1" useLocalCopy="1"/>
     <MODULES id="juce_core" showAllCode="1" useLocalCopy="1"/>
-    <MODULES id="juce_cryptography" showAllCode="1" useLocalCopy="1"/>
     <MODULES id="juce_data_structures" showAllCode="1" useLocalCopy="1"/>
     <MODULES id="juce_events" showAllCode="1" useLocalCopy="1"/>
     <MODULES id="juce_graphics" showAllCode="1" useLocalCopy="1"/>
     <MODULES id="juce_gui_basics" showAllCode="1" useLocalCopy="1"/>
     <MODULES id="juce_gui_extra" showAllCode="1" useLocalCopy="1"/>
-    <MODULES id="juce_opengl" showAllCode="1" useLocalCopy="1"/>
-    <MODULES id="juce_video" showAllCode="1" useLocalCopy="1"/>
   </MODULES>
   <JUCEOPTIONS JUCE_USE_FLAC="disabled" JUCE_USE_OGGVORBIS="disabled" JUCE_USE_MP3AUDIOFORMAT="enabled"
                JUCE_USE_LAME_AUDIO_FORMAT="disabled" JUCE_USE_WINDOWS_MEDIA_FORMAT="disabled"

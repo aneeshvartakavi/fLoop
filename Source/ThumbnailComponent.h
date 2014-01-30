@@ -1,4 +1,10 @@
 
+/*
+A class to display audio thumbnails.
+
+Authors:  Aneesh Vartakavi, Cameron Summers
+*/
+
 #ifndef THUMBNAIL_COMPONENT
 #define THUMBNAIL_COMPONENT
 

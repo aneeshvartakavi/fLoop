@@ -3,7 +3,7 @@
 
     LoopSimilarity.cpp
     
-    Author:  Aneesh, Cameron
+    Authors:  Aneesh Vartakavi, Cameron Summers
 
   ==============================================================================
 */
@@ -16,37 +16,23 @@ LoopSimilarity::LoopSimilarity()
 	similarFiles.ensureStorageAllocated(100);
 }
 
-//LoopSimilarity::LoopSimilarity(Array<var> featureVector_)
-//{
-//	featureVector = featureVector_;
-//}
-
 LoopSimilarity::~LoopSimilarity()
 {
 	audioLoops = nullptr;
-	//similarFiles = nullptr;
 }
 
-void LoopSimilarity::returnSimilar(int sliderIndex, int sliderMax, int sliderMin,const File &referenceFile)
-{
-	// sliderIndex is a parameter to specify which slider was changed
-	
-}
 
 StringArray LoopSimilarity::returnSimilarTempo(int sliderMax, int sliderMin,const File &referenceFile)
 {
 	// Get filename
 	String fileName = referenceFile.getFileNameWithoutExtension();
 	
-	//similarFiles = new StringArray();
-	//similarFiles->ensureStorageAllocated(20);
 	int referenceIndex = 0;
 	int referenceTempo = 0;
 	// Look for the file in the featurevector
 	for (int i=0;i<featureVector.size();i++)
 	{
 		var tempVar = featureVector.getUnchecked(i); 
-//		DBG(JSON::toString(tempVar));
 		if(fileName == tempVar[0].toString())
 		{
 			// Get the tempo
@@ -61,15 +47,12 @@ StringArray LoopSimilarity::returnSimilarTempo(int sliderMax, int sliderMin,cons
 	for (int i=0;i<featureVector.size();i++)
 	{
 		var tempVar = featureVector.getUnchecked(i); 
-		//DBG(JSON::toString(tempVar));
 		if(tempVar.size()>0)
 		{
 			int currentTempo =  tempVar[1].toString().getIntValue();
 			if(currentTempo>=referenceTempo+sliderMin && currentTempo<= referenceTempo+sliderMax && i!= referenceIndex)
 			{
 				// If condition is satisfied, add the fileName into a stringArray
-				//DBG(tempVar[0].toString());
-				//similarFiles->add(tempVar[0].toString());
 				similarFiles.add(tempVar[0].toString());
 			}
 
@@ -94,7 +77,6 @@ StringArray LoopSimilarity::returnSimilarRhythm(float sliderMax, float sliderMin
 	for (int i=0;i<featureVector.size();i++)
 	{
 		var tempVar = featureVector.getUnchecked(i); 
-//		DBG(JSON::toString(tempVar));
 		if(fileName == tempVar[0].toString())
 		{
 			// Get the tempo
@@ -112,7 +94,6 @@ StringArray LoopSimilarity::returnSimilarRhythm(float sliderMax, float sliderMin
 
 	// Create a copy of featureVector
 	Eigen::MatrixXf tempFeature = bsFeatures;
-	//tempFeature.col(referenceIndex) *= 100; // Make the vector itself large, so it will not turn up in the results
 	Eigen::VectorXf distVector = Eigen::VectorXf::Zero(numCols);
 
 	for(int k=0;k<tempFeature.cols();k++)
@@ -123,23 +104,15 @@ StringArray LoopSimilarity::returnSimilarRhythm(float sliderMax, float sliderMin
 	}
 
 	float maxVal = distVector.maxCoeff();
-	// Normalizing distance to 1
+	// Normalizing distance
 	distVector = distVector/maxVal;
-
-	//for(int k=0; k<distVector.rows();k++)
-	//{
-//		DBG(String(distVector(k)));
-//	}
-
 
 	for(int k=0; k<distVector.rows();k++)
 	{
-		//DBG(String(distVector(k)));
+	
 		if(distVector(k)<=sliderMax && distVector(k)>=sliderMin)
 		{
 			var tempVar = featureVector.getUnchecked(k); 
-
-			//String tempName = tempVar[0].toString();
 			similarFiles.add(tempVar[0].toString());
 		}
 
@@ -179,7 +152,6 @@ StringArray LoopSimilarity::returnSimilarTimbre(float sliderMax, float sliderMin
 
 	// Create a copy of featureVector
 	Eigen::MatrixXf tempFeature = mfccFeatures;
-	//tempFeature.col(referenceIndex) *= 100; // Make the vector itself large, so it will not turn up in the results
 	Eigen::VectorXf distVector = Eigen::VectorXf::Zero(numCols);
 
 	for(int k=0;k<tempFeature.cols();k++)
@@ -206,8 +178,6 @@ StringArray LoopSimilarity::returnSimilarTimbre(float sliderMax, float sliderMin
 		if(distVector(k)<=sliderMax && distVector(k)>=sliderMin)
 		{
 			var tempVar = featureVector.getUnchecked(k); 
-
-			//String tempName = tempVar[0].toString();
 			similarFiles.add(tempVar[0].toString());
 		}
 
@@ -226,7 +196,6 @@ void LoopSimilarity::readCache(const File& pathToDirectory)
 	
 	// Clear state
 	 var result = JSON::parse(cache).getProperty(Identifier("LoopFeatures"),0);
-	// DBG(JSON::toString(result));
 	 int numLoops = result.getArray()->size();
 	 bsFeatures = Eigen::MatrixXf::Zero(10,numLoops); // Ten for now
 	 mfccFeatures = Eigen::MatrixXf::Zero(52,numLoops);
@@ -244,8 +213,6 @@ void LoopSimilarity::readCache(const File& pathToDirectory)
 		 var& tempFeatures = featureVector.getReference(i);
 		 // Make sure the order is consistent
 		 tempFeatures.append(path);
-		// DBG(JSON::toString(tempFeatures));
-		// DBG(JSON::toString(mfcc));
 		 tempFeatures.append(tempo);
 		 // Add the beat spectrum features to the matrix
 		 for(int k=0;k<beatSpec.size();k++)
@@ -257,7 +224,6 @@ void LoopSimilarity::readCache(const File& pathToDirectory)
 		 {
 			 mfccFeatures(k,i) = mfcc[k];
 		 }
-		 //tempFeatures.append(beatSpec);
 	 }
 
 	 // Normalize bsfeature vectors
@@ -298,8 +264,6 @@ void LoopSimilarity::readCache(const File& pathToDirectory)
 		 mfccFeatures.row(i) = (rowVec.array()-meanVal)/stdVal;
 
 	}
-
-	 //DBG(JSON::toString(featureVector));
 
 }
 

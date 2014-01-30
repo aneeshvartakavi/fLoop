@@ -33,9 +33,9 @@
 //==============================================================================
 /**
                                                                     //[Comments]
-    An auto-generated component, created by the Introjucer.
+   A minimilastic GUI for fLoop.
 
-    Describe your class and how it works here!
+   Authors:  Aneesh Vartakavi, Cameron Summers
                                                                     //[/Comments]
 */
 class MainComponent  : public Component,

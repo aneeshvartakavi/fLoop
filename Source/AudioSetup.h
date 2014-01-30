@@ -29,7 +29,10 @@
 //==============================================================================
 /**
                                                                     //[Comments]
-   Controls the Audio Device Setup for fLoop.
+   Controls the Audio Device Setup for fLoop, a window where the user can
+   select the input and output audio devices.
+
+   Authors:  Aneesh Vartakavi, Cameron Summers
                                                                     //[/Comments]
 */
 class AudioSetup  : public Component,

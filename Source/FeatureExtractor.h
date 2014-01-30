@@ -3,8 +3,9 @@
 
     FeatureExtractor.h
     Created: 10 Nov 2013 7:34:20pm
-    Author:  Aneesh, Cameron
+    Authors:  Aneesh Vartakavi, Cameron Summers
 
+	A class that computes MIR features from the audio files.
   ==============================================================================
 */
 
@@ -37,7 +38,7 @@ public:
     
 	void computeBeatSpectrum(const Eigen::MatrixXf &spec, var& tempVar,int num_blocks,int tempo, int sampleRate);
 	
-	void computeMFCC(const Eigen::MatrixXf &spec, var& tempVar,int num_blocks,int tempo, int sampleRate);
+	void computeMFCC(const Eigen::MatrixXf &spec, var& tempVar);
 	std::pair<float, float> calculateSpectralCrestFactor(std::vector<float> fftData, int length);
 	
     

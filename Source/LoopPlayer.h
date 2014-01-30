@@ -36,9 +36,9 @@ class ThumbnailComponent;
 //==============================================================================
 /**
                                                                     //[Comments]
-    An auto-generated component, created by the Introjucer.
-
-    Describe your class and how it works here!
+      The main GUI class, also handles audio playback and thumbnail display.
+	  
+	  Authors:  Aneesh Vartakavi, Cameron Summers
                                                                     //[/Comments]
 */
 class LoopPlayer  : public Component,

@@ -127,9 +127,7 @@ LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDir
 
 
     //[Constructor] You can add your own custom stuff here..
-
-
-
+	
 	formatManager.registerBasicFormats();
 
 	directoryList.setDirectory (pathtoDirectory, true, true);
@@ -145,9 +143,6 @@ LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDir
 	deviceManager.addAudioCallback (&rightAudioSourcePlayer);
     rightAudioSourcePlayer.setSource (&rightTransportSource);
 
-	// Initialize LoopSimilarity with feature vector
-	//loopSimilarity = new LoopSimilarity(featureVector);
-	// New code
 	loopSimilarity = new LoopSimilarity();
 	loopSimilarity->readCache(pathtoDirectory);
 
@@ -192,9 +187,6 @@ LoopPlayer::~LoopPlayer()
 	currentRightAudioFileSource = nullptr;
 	fileTreeComp2->removeListener (this);
 
-	//similarLoops = nullptr;
-	//customFileFilter1 = nullptr;
-
     //[/Destructor_pre]
 
     fileTreeComp = nullptr;
@@ -236,7 +228,7 @@ void LoopPlayer::resized()
 {
     fileTreeComp->setBounds (48, 88, 288, 304);
     thumbnailComponent->setBounds (16, 472, 400, 128);
-    explanation->setBounds (32, 16, 150, 24);
+    explanation->setBounds (32, 40, 150, 24);
     startStopButton->setBounds (144, 648, 150, 24);
     cpuMeter->setBounds (928, 26, 64, 24);
     label->setBounds (920, 2, 150, 24);
@@ -245,7 +237,7 @@ void LoopPlayer::resized()
     startStopButton2->setBounds (728, 648, 150, 24);
     tempoSlider->setBounds (360, 112, 56, 144);
     rhythmSlider->setBounds (456, 112, 24, 144);
-    zoomSlider->setBounds (416, 728, 150, 24);
+    zoomSlider->setBounds (416, 816, 150, 24);
     label2->setBounds (352, 80, 88, 24);
     label3->setBounds (448, 64, 72, 37);
     timbreSlider->setBounds (544, 112, 50, 144);
@@ -301,8 +293,8 @@ void LoopPlayer::sliderValueChanged (Slider* sliderThatWasMoved)
     if (sliderThatWasMoved == tempoSlider)
     {
         //[UserSliderCode_tempoSlider] -- add your slider handling code here..
-		int tempoMin = tempoSlider->getMinValue();
-		int tempoMax = tempoSlider->getMaxValue();
+		int tempoMin = static_cast<int>(tempoSlider->getMinValue());
+		int tempoMax = static_cast<int>(tempoSlider->getMaxValue());
 		File selectedFile = fileTreeComp->getSelectedFile();
 		//similarLoops = new StringArray();
 		//ScopedPointer<StringArray> similarLoops;
@@ -328,8 +320,8 @@ void LoopPlayer::sliderValueChanged (Slider* sliderThatWasMoved)
     else if (sliderThatWasMoved == rhythmSlider)
     {
         //[UserSliderCode_rhythmSlider] -- add your slider handling code here..
-		float rhythmMin = rhythmSlider->getMinValue();
-		float rhythmMax = rhythmSlider->getMaxValue();
+		float rhythmMin = static_cast<float>(rhythmSlider->getMinValue());
+		float rhythmMax = static_cast<float>(rhythmSlider->getMaxValue());
 		File selectedFile = fileTreeComp->getSelectedFile();
 		//similarLoops = new StringArray();
 		//ScopedPointer<StringArray> similarLoops;
@@ -357,8 +349,8 @@ void LoopPlayer::sliderValueChanged (Slider* sliderThatWasMoved)
     else if (sliderThatWasMoved == timbreSlider)
     {
         //[UserSliderCode_timbreSlider] -- add your slider handling code here..
-		float timbreMin = timbreSlider->getMinValue();
-		float timbreMax = timbreSlider->getMaxValue();
+		float timbreMin = static_cast<float>(timbreSlider->getMinValue());
+		float timbreMax = static_cast<float>(timbreSlider->getMaxValue());
 		File selectedFile = fileTreeComp->getSelectedFile();
 		//similarLoops = new StringArray();
 		//ScopedPointer<StringArray> similarLoops;
@@ -506,7 +498,7 @@ BEGIN_JUCER_METADATA
                     virtualName="" explicitFocusOrder="0" pos="16 472 400 128" class="ThumbnailComponent"
                     params="formatManager, leftTransportSource, *zoomSlider"/>
   <LABEL name="explanation" id="94523f3466d25467" memberName="explanation"
-         virtualName="" explicitFocusOrder="0" pos="32 16 150 24" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="32 40 150 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Select an Audio File to play!" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15" bold="0" italic="0" justification="33"/>
@@ -538,7 +530,7 @@ BEGIN_JUCER_METADATA
           max="1" int="0" style="TwoValueVertical" textBoxPos="NoTextBox"
           textBoxEditable="0" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <SLIDER name="new slider" id="d17484625563037c" memberName="zoomSlider"
-          virtualName="" explicitFocusOrder="0" pos="416 728 150 24" min="0"
+          virtualName="" explicitFocusOrder="0" pos="416 816 150 24" min="0"
           max="10" int="0" style="LinearHorizontal" textBoxPos="TextBoxLeft"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1"/>
   <LABEL name="new label" id="e488eb9e80f3c776" memberName="label2" virtualName=""

@@ -3,8 +3,9 @@
 
     FeatureExtractor.cpp
     Created: 10 Nov 2013 7:34:20pm
-    Author:  Aneesh, Cameron
-
+    Authors:  Aneesh Vartakavi, Cameron Summers
+	
+	A class that computes MIR features from the audio files.
   ==============================================================================
 */
 #if JUCE_MAC
@@ -56,11 +57,6 @@ FeatureExtractor::~FeatureExtractor()
 
 void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 {
-	// Will be rewritten
-    // Insert names as the first entry
-	
-	// First thing to do is write the filenames to var
-
 	// Iterate through all our loops
 	for(int i=0;i<audioLoops.size();i++)
 	{
@@ -68,9 +64,7 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 		
 		// Creating a reader for the file, depending on its format
 		ScopedPointer<AudioFormatReader> fileReader = formatManager.createReaderFor(loop);
-		// Redundant - Creating a source reader that reads from the fileReader
-		//ScopedPointer<AudioFormatReaderSource> sourceReader = new AudioFormatReaderSource(fileReader,true);
-		
+	
 		ScopedPointer<AudioSampleBuffer> sampleBuffer = new AudioSampleBuffer(1,blockSize);
 		sampleBuffer->clear();
 		// Declare another buffer to read stereo audio, will not use if loop is mono
@@ -89,31 +83,15 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 
 		// Define a matrix to hold all the audio
 		Eigen::MatrixXf audioBuffer(blockSize,numBlocks);
-
-		
+	
 		// For FFT
 		for (int j=0;j<numBlocks;j++)
 		{
 			// Check if blockSize, hopSize implementation is correct
 			fileReader->read(sampleBuffer,0,blockSize,j*hopSize,true,false);
-			/*float minVal;
-			float maxVal;
-			sampleBuffer->findMinMax(0,0,blockSize,minVal,maxVal);
-			
-			sampleBuffer->applyGain(1.0/maxVal);*/
-			//if(numChannels == 2)
-			//{
-			//	// Read the right channel into our second buffer
-			//	fileReader->read(sampleBuffer2,0,blockSize,0,false,true);
-			//	// Reducing gain so there is no clipping 		
-			//	sampleBuffer->applyGain(0.5);
-			//	sampleBuffer2->applyGain(0.5);
-			//	// Adding the samples to the final buffer
-			//	sampleBuffer->addFrom(0,0,*sampleBuffer2,0,0,blockSize);
-			//}
-			
+
 			// sampleBuffer now has the audio samples, do something with them
-			 
+		 
 			float* sampleData = sampleBuffer->getSampleData(0);
 			
 			for(int k=0;k<blockSize;k++)
@@ -139,34 +117,6 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 		
 		}
 
-	/*	if(stftc.allFinite())
-		{
-
-		}
-		else
-		{*/
-			//("NAN found");
-			//for(int k1=0;k1<stft.rows();k1++)
-			//{
-			//	for(int k2=0;k2<stft.cols();k2++)
-			//	{
-			//		if(stft(k1,k2)!=stft(k1,k2))
-			//		{
-			//			stft(k1,k2) = 0;
-			//		}
-
-			//	}
-
-			//}
-
-		//}
-
-
-		//stft = stft.array().log();
-		// Compute beat spectrum
-		
-		//DBG(JSON::toString(beatSpec));
-
 		// Add features to featureVector for this file
         var& element = featureVector.getReference(i);
 		// File name
@@ -174,26 +124,16 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 		element.append(fName);
         
         // Tempo
-		int tempo = calculateTempo(loop);
+		int tempo = static_cast<int>(calculateTempo(loop));
 		element.append(var(tempo));
-	//	DBG(JSON::toString(element));
-			
+		
 		var mfcc;
-		computeMFCC(stft,mfcc,numBlocks,tempo,sampleRate);
+		computeMFCC(stft,mfcc);
 		element.append(mfcc);
 
 		var beatSpec;
 		computeBeatSpectrum(stft,beatSpec,numBlocks,tempo,sampleRate);
-		//DBG(JSON::toString(beatSpec));
 		element.append(beatSpec);
-
-	//	DBG(JSON::toString(element));
-		      
-  //      // Spectral Crest Factor
-  //      //std::pair<float, float> scfDistr = calculateSpectralCrestFactor(fftData, numBlocks-1);
-  //      //element.append(scfDistr.first); // mean
-  //      //element.append(scfDistr.second); // std
-  //      
 	}
 }
 
@@ -210,14 +150,10 @@ float FeatureExtractor::calculateTempo(File loop)
     ScopedPointer<AudioFormatReader> fileReader = formatManager.createReaderFor(loop);
 
     // Perform calculations
-    len = fileReader->lengthInSamples;
-    Fs = fileReader->sampleRate;
-    fbpm = (60*8*Fs)/len; // 60 sec/min * number of beats * fs /len
+    len = static_cast<int>(fileReader->lengthInSamples);
+    Fs = static_cast<int>(fileReader->sampleRate);
+    fbpm = static_cast<float>((60*8*Fs))/len; // 60 sec/min * number of beats * fs /len
 	return adjustBPM(fbpm);
-//    // Get reference to the feature vector
-//    var& tempVar = featureVector.getReference(i);
-//    // Append the tempo
-//    tempVar.append(adjustBPM(fbpm));
 }
 
 void FeatureExtractor::computeBeatSpectrum(const Eigen::MatrixXf &stft, var& tempVar,int numBlocks, int tempo, int sampleRate)
@@ -249,8 +185,6 @@ void FeatureExtractor::computeBeatSpectrum(const Eigen::MatrixXf &stft, var& tem
 		for (int k=0;k<numBlocks;++k)
 			{
 				colSums(k) = similarityMatrix.diagonal(-k).sum();
-				//DBG(String(colSums(k)));
-				//tempVar.append(diagSums(k));
 			}
 
 		// Preprocessing
@@ -259,7 +193,7 @@ void FeatureExtractor::computeBeatSpectrum(const Eigen::MatrixXf &stft, var& tem
 		Eigen::VectorXf timeSq = Eigen::VectorXf::Zero(numBlocks,1);
 		for(int k=0; k<numBlocks; k++)
 		{
-			time[k] = k;
+			time[k] = static_cast<float>(k);
 			//timeSq[k] = k*k;
 		}
 
@@ -296,10 +230,7 @@ void FeatureExtractor::computeBeatSpectrum(const Eigen::MatrixXf &stft, var& tem
 		tempVar.append(slope);
 		tempVar.append(yIntercept);
 		
-		// For now, let the features go here, and append to tempVar
-		// To do, combine the for loops to one, should improve performance
 		// Mean
-		
 		
 		float meanBeatSpectrum = beatSpectrum.mean();
 		//tempVar.append(meanBeatSpectrum);
@@ -332,32 +263,6 @@ void FeatureExtractor::computeBeatSpectrum(const Eigen::MatrixXf &stft, var& tem
 		kurtosisBeatSpectrum = ((kurtosisBeatSpectrum/numBlocks)/pow(stdBeatSpectrum,4)-3);
 		tempVar.append(kurtosisBeatSpectrum);
 		
-		// Amplitude of first peak to second peak
-		//float ppRatio = 0.0;
-		//for (int k=1;k<numBlocks;++k)
-		//{
-		//	float slope = beatSpectrum(k) - beatSpectrum(k-1);
-
-		//	if(slope>0)
-		//	{
-		//		// Find the max value in the remaining vector
-		//		maxVal = beatSpectrum(k);
-		//		for(int t=k+1;t<numBlocks; ++t)
-		//		{
-		//			if(beatSpectrum(t)>maxVal)
-		//				maxVal = beatSpectrum(t);
-		//		}
-
-		//		// Fill this in
-		//		ppRatio = beatSpectrum(0)/maxVal;
-
-		//	}
-
-		//}
-
-		//tempVar.append(ppRatio);
-		//tempVar.append();
-
 		// Cumulative difference between BS and straight line through signal
 		float lineSlope = (beatSpectrum(numBlocks-1) - beatSpectrum(0))/numBlocks;
 		float cumulativeDifference = 0.0;
@@ -386,7 +291,7 @@ void FeatureExtractor::computeBeatSpectrum(const Eigen::MatrixXf &stft, var& tem
 		}
 
 		// Instantaneous energy per beat
-		float firstBeatTime = 60.0/tempo;
+		float firstBeatTime = 60.0f/tempo;
 		int firstBeatIndex = ceilf(((sampleRate*firstBeatTime) - blockSize/2)/hopSize);
 		
 		Eigen::Vector4f instBeat = Eigen::VectorXf::Zero(4,1);	
@@ -409,42 +314,38 @@ void FeatureExtractor::computeBeatSpectrum(const Eigen::MatrixXf &stft, var& tem
 		// Energy per beat
 		Eigen::Vector4f enBeat = Eigen::VectorXf::Zero(4,1);	
 
-
-
-		//DBG(JSON::toString(tempVar));
-	
 }
 
-void FeatureExtractor::computeMFCC(const Eigen::MatrixXf &spec, var& tempVar,int num_blocks,int tempo, int sampleRate)
+void FeatureExtractor::computeMFCC(const Eigen::MatrixXf &spec, var& tempVar)
 {
 	// Hardcoding all filters
 	Eigen::MatrixXf filters = Eigen::MatrixXf::Zero(26,513);
-	filters.block(0,5,1,5) << 0.3333 , 0.6667 , 1.0000 , 0.6667 , 0.3333;
-	filters.block(1,8,1,4) << 0.2500, 0.7500, 0.7500, 0.2500;
-	filters.block(2,10,1,5) <<  0.3333 , 0.6667 , 1.0000 , 0.6667 , 0.3333;
-	filters.block(3,12,1,5) << 0.3333,0.6667,1.0000,0.6667,0.3333;
-	filters.block(4,15,1,6) << 0.1667,0.5000,0.8333,0.8333,0.5000,0.1667;
-	filters.block(5,18,1,7) << 0.25,0.05,0.75,1,0.75,0.5,0.25;
-	filters.block(6,21,1,8) << 0.125,0.375,0.625,0.875,0.875,0.625,0.375,0.125;
-	filters.block(7,25,1,8) << 0.125,0.375,0.625,0.875,0.875,0.625,0.375,0.125;
-	filters.block(8,29,1,8) << 0.125,0.375,0.625,0.875,0.875,0.625,0.375,0.125;
-	filters.block(9,33,1,9) << 0.2,0.4,0.6,0.8,1.0,0.8,0.6,0.4,0.2;
-	filters.block(10,37,1,11) << 0.1667,0.333,0.5,0.6667,0.8333,1.0,0.8333,0.6667,0.5,0.333,0.1667;
-	filters.block(11,42,1,12) << 0.0833,0.25,0.4167,0.5833,0.7500,0.9167,0.9167,0.7500,0.5833,0.4167,0.25,0.0833;
-	filters.block(12,48,1,12) << 0.0833,0.25,0.4167,0.5833,0.7500,0.9167,0.9167,0.7500,0.5833,0.4167,0.25,0.0833;
-	filters.block(13,54,1,13) <<  0.1429,0.2857,0.4286,0.5714, 0.7143, 0.8571, 1.0000,0.8571,0.7143,0.5714,0.4286,0.2857,0.1429;
-	filters.block(14,60,1,15) <<  0.1250,0.2500,0.3750,0.5000,0.6250,0.7500,0.8750,1.0000,0.8750,0.7500,0.6250,0.5000,0.3750,0.2500,0.1250;
-	filters.block(15,67,1,16) <<  0.0625,0.1875,0.3125,0.4375,0.5625,0.6875,0.8125, 0.9375,0.9375,0.8125,0.6875,0.5625,0.4375,0.3125,0.1875,0.0625;
-	filters.block(16,75,1,17) <<  0.1111,0.2222,0.3333,0.4444,0.5556,0.6667,0.7778,0.8889,1.0000,0.8889,0.7778, 0.6667,0.5556,0.4444,0.3333,0.2222,0.1111;
-	filters.block(17,83,1,19) << 0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1;
-	filters.block(18,92,1,21) << 0.0909,0.1818, 0.2727,0.3636,0.4545,0.5455,0.6364,0.7273,0.8182,0.9091,1.0000,0.9091,0.8182,0.7273,0.6364,0.5455,0.4545,0.3636,0.2727,0.1818,0.0909;
-	filters.block(19,102,1,23) <<0.0833,0.1667,0.2500,0.3333,0.4167,0.5000,0.5833,0.6667,0.7500,0.8333,0.9167,1.0000,0.9167,0.8333,0.7500,0.6667,0.5833,0.5000,0.4167,0.3333,0.2500,0.1667,0.0833;
-	filters.block(20,113,1,25) <<0.0769,0.1538,0.2308,0.3077,0.3846,0.4615,0.5385,0.6154,0.6923,0.7692,0.8462,0.9231,1.0000,0.9231,0.8462,0.7692,0.6923,0.6154,0.5385,0.4615,0.3846,0.3077,0.2308,0.1538,0.0769;
-	filters.block(21,125,1,27) <<0.0714,0.1429,0.2143,0.2857,0.3571,0.4286,0.5000,0.5714,0.6429,0.7143,0.7857,0.8571,0.9286,1.0000,0.9286,0.8571,0.7857,0.7143,0.6429,0.5714,0.5000,0.4286,0.3571,0.2857,0.2143,0.1429,0.0714;
-	filters.block(22,138,1,30) << 0.0333,0.1000,0.1667,0.2333,0.3000,0.3667,0.4333,0.5000,0.5667,0.6333,0.7000,0.7667,0.8333, 0.9000, 0.9667,0.9667,0.9000, 0.8333,0.7667,0.7000,0.6333,0.5667,0.5000,0.4333,0.3667,0.3000,0.2333,0.1667,0.1000,0.0333;
-	filters.block(23,152,1,32) << 0.0313,0.0938,0.1563,0.2188,0.2813,0.3438,0.4063,0.4688,0.5313,0.5938,0.6563,0.7188,0.7813,0.8438,0.9063,0.9688,0.9688,0.9063,0.8438,0.7813,0.7188,0.6563,0.5938,0.5313,0.4688,0.4063,0.3438,0.2813,0.2188,0.1563,0.0938,0.0313;
-	filters.block(24,168,1,35) << 0.0556,0.1111,0.1667,0.2222,0.2778,0.3333,0.3889,0.4444,0.5000,0.5556,0.6111,0.6667,0.7222,0.7778,0.8333,0.8889,0.9444,1.0000,0.9444,0.8889,0.8333,0.7778,0.7222,0.6667,0.6111,0.5556,0.5000,0.4444,0.3889,0.3333,0.2778,0.2222,0.1667,0.1111,0.0556;
-	filters.block(25,185,1,38) << 0.0263,0.0789,0.1316,0.1842,0.2368,0.2895,0.3421,0.3947,0.4474,0.5000,0.5526,0.6053,0.6579,0.7105,0.7632,0.8158,0.8684,0.9211,0.9737,0.9737,0.9211,0.8684,0.8158,0.7632,0.7105,0.6579,0.6053,0.5526,0.5000,0.4474,0.3947,0.3421,0.2895,0.2368,0.1842,0.1316,0.0789,0.0263;
+	filters.block(0,5,1,5) << 0.3333f , 0.6667f , 1.0000f , 0.6667f , 0.3333f;
+	filters.block(1,8,1,4) << 0.2500f, 0.7500f, 0.7500f, 0.2500f;
+	filters.block(2,10,1,5) <<  0.3333f , 0.6667f , 1.0000f , 0.6667f , 0.3333f;
+	filters.block(3,12,1,5) << 0.3333f,0.6667f,1.0000f,0.6667f,0.3333f;
+	filters.block(4,15,1,6) << 0.1667f,0.5000f,0.8333f,0.8333f,0.5000f,0.1667f;
+	filters.block(5,18,1,7) << 0.25f,0.05f,0.75f,1,0.75f,0.5f,0.25f;
+	filters.block(6,21,1,8) << 0.125f,0.375f,0.625f,0.875f,0.875f,0.625f,0.375f,0.125f;
+	filters.block(7,25,1,8) << 0.125,0.375,0.625f,0.875f,0.875f,0.625f,0.375f,0.125f;
+	filters.block(8,29,1,8) << 0.125f,0.375f,0.625f,0.875f,0.875f,0.625f,0.375f,0.125f;
+	filters.block(9,33,1,9) << 0.2f,0.4f,0.6f,0.8f,1.0f,0.8f,0.6f,0.4f,0.2f;
+	filters.block(10,37,1,11) << 0.1667f,0.333f,0.5f,0.6667f,0.8333f,1.0f,0.8333f,0.6667f,0.5f,0.333f,0.1667f;
+	filters.block(11,42,1,12) << 0.0833f,0.25f,0.4167f,0.5833f,0.7500f,0.9167f,0.9167f,0.7500f,0.5833f,0.4167f,0.25f,0.0833f;
+	filters.block(12,48,1,12) << 0.0833f,0.25f,0.4167f,0.5833f,0.7500f,0.9167f,0.9167f,0.7500f,0.5833f,0.4167f,0.25f,0.0833f;
+	filters.block(13,54,1,13) <<  0.1429f,0.2857f,0.4286f,0.5714f, 0.7143f, 0.8571f, 1.0000f,0.8571f,0.7143f,0.5714f,0.4286f,0.2857f,0.1429f;
+	filters.block(14,60,1,15) <<  0.1250f,0.2500f,0.3750f,0.5000f,0.6250f,0.7500f,0.8750f,1.0000f,0.8750f,0.7500f,0.6250f,0.5000f,0.3750f,0.2500f,0.1250f;
+	filters.block(15,67,1,16) <<  0.0625f,0.1875f,0.3125f,0.4375f,0.5625f,0.6875f,0.8125f, 0.9375f,0.9375f,0.8125f,0.6875f,0.5625f,0.4375f,0.3125f,0.1875f,0.0625f;
+	filters.block(16,75,1,17) <<  0.1111f,0.2222f,0.3333f,0.4444f,0.5556f,0.6667f,0.7778f,0.8889f,1.0000f,0.8889f,0.7778f, 0.6667f,0.5556f,0.4444f,0.3333f,0.2222f,0.1111f;
+	filters.block(17,83,1,19) << 0.1f,0.2f,0.3f,0.4f,0.5f,0.6f,0.7f,0.8f,0.9f,1.0f,0.9f,0.8f,0.7f,0.6f,0.5f,0.4f,0.3f,0.2f,0.1f;
+	filters.block(18,92,1,21) << 0.0909f,0.1818f, 0.2727f,0.3636f,0.4545f,0.5455f,0.6364f,0.7273f,0.8182f,0.9091f,1.0000f,0.9091f,0.8182f,0.7273f,0.6364f,0.5455f,0.4545f,0.3636f,0.2727f,0.1818f,0.0909f;
+	filters.block(19,102,1,23) <<0.0833f,0.1667f,0.2500f,0.3333f,0.4167f,0.5000f,0.5833f,0.6667f,0.7500f,0.8333f,0.9167f,1.0000f,0.9167f,0.8333f,0.7500f,0.6667f,0.5833f,0.5000f,0.4167f,0.3333f,0.2500f,0.1667f,0.0833f;
+	filters.block(20,113,1,25) <<0.0769f,0.1538f,0.2308f,0.3077f,0.3846f,0.4615f,0.5385f,0.6154f,0.6923f,0.7692f,0.8462f,0.9231f,1.0000f,0.9231f,0.8462f,0.7692f,0.6923f,0.6154f,0.5385f,0.4615f,0.3846f,0.3077f,0.2308f,0.1538f,0.0769f;
+	filters.block(21,125,1,27) <<0.0714f,0.1429f,0.2143f,0.2857f,0.3571f,0.4286f,0.5000f,0.5714f,0.6429f,0.7143f,0.7857f,0.8571f,0.9286f,1.0000f,0.9286f,0.8571f,0.7857f,0.7143f,0.6429f,0.5714f,0.5000f,0.4286f,0.3571f,0.2857f,0.2143f,0.1429f,0.0714f;
+	filters.block(22,138,1,30) << 0.0333f,0.1000f,0.1667f,0.2333f,0.3000f,0.3667f,0.4333f,0.5000f,0.5667f,0.6333f,0.7000f,0.7667f,0.8333f, 0.9000f, 0.9667f,0.9667f,0.9000f, 0.8333f,0.7667f,0.7000f,0.6333f,0.5667f,0.5000f,0.4333f,0.3667f,0.3000f,0.2333f,0.1667f,0.1000f,0.0333f;
+	filters.block(23,152,1,32) << 0.0313f,0.0938f,0.1563f,0.2188f,0.2813f,0.3438f,0.4063f,0.4688f,0.5313f,0.5938f,0.6563f,0.7188f,0.7813f,0.8438f,0.9063f,0.9688f,0.9688f,0.9063f,0.8438f,0.7813f,0.7188f,0.6563f,0.5938f,0.5313f,0.4688f,0.4063f,0.3438f,0.2813f,0.2188f,0.1563f,0.0938f,0.0313f;
+	filters.block(24,168,1,35) << 0.0556f,0.1111f,0.1667f,0.2222f,0.2778f,0.3333f,0.3889f,0.4444f,0.5000f,0.5556f,0.6111f,0.6667f,0.7222f,0.7778f,0.8333f,0.8889f,0.9444f,1.0000f,0.9444f,0.8889f,0.8333f,0.7778f,0.7222f,0.6667f,0.6111f,0.5556f,0.5000f,0.4444f,0.3889f,0.3333f,0.2778f,0.2222f,0.1667f,0.1111f,0.0556f;
+	filters.block(25,185,1,38) << 0.0263f,0.0789f,0.1316f,0.1842f,0.2368f,0.2895f,0.3421f,0.3947f,0.4474f,0.5000f,0.5526f,0.6053f,0.6579f,0.7105f,0.7632f,0.8158f,0.8684f,0.9211f,0.9737f,0.9737f,0.9211f,0.8684f,0.8158f,0.7632f,0.7105f,0.6579f,0.6053f,0.5526f,0.5000f,0.4474f,0.3947f,0.3421f,0.2895f,0.2368f,0.1842f,0.1316f,0.0789f,0.0263f;
 
 	// Compute periodogram
 	Eigen::MatrixXf periodogram = spec.array() * spec.array();
@@ -453,12 +354,10 @@ void FeatureExtractor::computeMFCC(const Eigen::MatrixXf &spec, var& tempVar,int
 	// Find the products
 	Eigen::MatrixXf energy = filters*periodogram;
 	// Account for log(0) errors
-	energy = energy.array() + 1e-20;
+	energy = energy.array() + 1e-20f;
 	//Take log
 	Eigen::MatrixXf logEnergy = energy.array().log();
 	
-	//DBG(String(logEnergy.rows()));
-	//DBG(String(logEnergy.cols()));
 	// Inverse DCT
 	// First stage, create symmetric matrix
 	Eigen::MatrixXf input = Eigen::MatrixXf::Zero(52,logEnergy.cols());
@@ -467,7 +366,6 @@ void FeatureExtractor::computeMFCC(const Eigen::MatrixXf &spec, var& tempVar,int
 	for(int k=0;k<n1;k++)
 	{
 		input.row(k) = logEnergy.row(k);
-		//DBG(String(n1+k+1) + String(" to ") +  String(n1-k-1));
 		input.row(n1+k) = logEnergy.row(n1-k-1);
 	}
 
@@ -493,16 +391,6 @@ void FeatureExtractor::computeMFCC(const Eigen::MatrixXf &spec, var& tempVar,int
 		dct.row(k)= dctc.row(k).real();
 	}
 	
-	//for(int k=0;k<dctc.rows();k++)
-	//{
-	//	DBG(String(dctc(k,0).real()) + " + " + String(dctc(k,0).imag()));
-	//}
-
-	/*for(int k=0;k<dct.rows();k++)
-	{
-		DBG(String(dct(k,0)));
-	}*/
-
 	// Extract 13 dimensional MFCC from 1-13
 	Eigen::MatrixXf mfcc(13,input.cols());
 	for (int k=0;k<13;++k)
@@ -510,11 +398,6 @@ void FeatureExtractor::computeMFCC(const Eigen::MatrixXf &spec, var& tempVar,int
 		mfcc.row(k) = dct.row(k);
 	}
 	
-	/*for (int k=0;k<13;++k)
-	{
-		DBG(String(mfcc(k,0)));
-	}*/
-
 	// Compute derivative
 	Eigen::MatrixXf mfcc_d = Eigen::MatrixXf::Zero(13,input.cols());
 		
@@ -560,7 +443,6 @@ void FeatureExtractor::computeMFCC(const Eigen::MatrixXf &spec, var& tempVar,int
 		tempVar.append(sqrtf(std(k)/mfcc.cols()));
 	}
 	
-	//DBG(JSON::toString(tempVar));
 	
 }
 
@@ -621,10 +503,6 @@ void FeatureExtractor::writeCache(const File& pathToDirectory)
 		// Add all the properties
 		loop->setProperty("Path",tempFeature[0]);
 		loop->setProperty("Tempo",tempFeature[1]);
-		//DBG(JSON::toString(tempFeature[2]));
-		//DynamicObject* beatSpec = new DynamicObject();
-		//beatSpec->setProperty("Beat_spec",tempFeature[2]);
-		//loop->setProperty("Beat_Spectrum",beatSpec);
 		loop->setProperty("MFCC",tempFeature[2]);
 		loop->setProperty("Beat_Spectrum",tempFeature[3]);
 		loopFeatures.add(loop);
@@ -634,8 +512,7 @@ void FeatureExtractor::writeCache(const File& pathToDirectory)
 
 	// Extract a path
 	String tempPath = pathToDirectory.getFullPathName() + String("\\floop_cache.txt");
-	//tempPath = tempPath ;
-	
+		
 	// Create a new cache file
 	File cache(tempPath);
 	
@@ -657,9 +534,7 @@ bool FeatureExtractor::cacheExists(const File& pathToDirectory)
 	if(cache.existsAsFile())
 	{
 		var tempR = JSON::parse(cache);
-	//	DBG(JSON::toString(tempR));
 		var result = JSON::parse(cache).getProperty(Identifier("LoopFeatures"),0);
-//		DBG(JSON::toString(result));
 		int numLoops = result.getArray()->size();
 		if(numLoops==fileList.size())
 		{
@@ -692,9 +567,6 @@ void FeatureExtractor::readCache(const File& pathToDirectory)
 	// Clear state
 	 var result = JSON::parse(cache).getProperty(Identifier("LoopFeatures"),0);
 	 int numLoops = result.getArray()->size();
-
-	 // Initialize the feature vector, do we need this
-	 //featureVector.insertMultiple(0,var(),length);
 
 	 for(int i=0;i<numLoops;i++)
 	 {
