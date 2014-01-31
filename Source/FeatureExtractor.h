@@ -29,7 +29,7 @@ class FeatureExtractor
 {
 
 public:
-	FeatureExtractor(const Array<File> &audioLoops, int numFeatures, int blockSize_,int hopSize_, int fftSizeLog2);
+	FeatureExtractor(const Array<File> &audioLoops, int numFeatures, int blockSize_,int hopSize_);
 	~FeatureExtractor();
 	void computeFeatures(const Array<File> &audioLoops);
 	
@@ -73,7 +73,7 @@ private:
 	int hopSize;
 	int numFeatures;
 	int halfBlockSize;
-	drow::FFTEngine fftEngine;
+//	drow::FFTEngine fftEngine;
 	
 	// Returns adjusted BPM
 	inline int adjustBPM(float fbpm)

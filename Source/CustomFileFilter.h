@@ -26,8 +26,12 @@ public:
 
 	~CustomFileFilter()
 	{
+		validFiles.clear();
+		validRhythmFiles.clear();
+		validTempoFiles.clear();
+		validTimbreFiles.clear();
 		clearFilters();
-		// Nothing here yet
+		
 	}
 
 	CustomFileFilter(const String& filterDescription,CustomFileFilter* filterToCopyFrom):FileFilter(filterDescription)
@@ -66,8 +70,10 @@ public:
 
 	bool isDirectorySuitable(const File &file) const
 	{
-		// For now, all directories are valid
-		return true;
+		if(file.exists())
+			return true;
+		else
+			return false;
 	}
 
 	void updateTempoFilters(const StringArray &validFiles_)

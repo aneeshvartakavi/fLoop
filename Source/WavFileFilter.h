@@ -22,7 +22,7 @@ public:
 	{
 
 	}
-//	CustomFileFilter(const String& filterDescription);
+
 	~WavFileFilter()
 	{
 
@@ -41,8 +41,10 @@ public:
 
 	bool isDirectorySuitable(const File &file) const
 	{
-		// For now, all directories are valid
-		return true;
+		if(file.exists())
+			return true;
+		else
+			return false;
 	}
 
 };

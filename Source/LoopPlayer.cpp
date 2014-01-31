@@ -37,7 +37,7 @@ LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDir
     thumbnailComponent->setName ("thumbnail");
 
     addAndMakeVisible (explanation = new Label ("explanation",
-                                                "Select an Audio File to play!"));
+                                                TRANS("Select an Audio File to play!")));
     explanation->setFont (Font (15.00f, Font::plain));
     explanation->setJustificationType (Justification::centredLeft);
     explanation->setEditable (false, false, false);
@@ -45,19 +45,8 @@ LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDir
     explanation->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (startStopButton = new TextButton ("startStopButton"));
-    startStopButton->setButtonText ("Start/Stop");
+    startStopButton->setButtonText (TRANS("Start/Stop"));
     startStopButton->addListener (this);
-
-    addAndMakeVisible (cpuMeter = new drow::CpuMeter (&deviceManager));
-    cpuMeter->setName ("cpuMeter");
-
-    addAndMakeVisible (label = new Label ("new label",
-                                          "CPU Usage"));
-    label->setFont (Font (15.00f, Font::plain));
-    label->setJustificationType (Justification::centredLeft);
-    label->setEditable (false, false, false);
-    label->setColour (TextEditor::textColourId, Colours::black);
-    label->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (fileTreeComp2 = new FileTreeComponent (customDirectoryList));
     fileTreeComp2->setName ("FileTreeComp");
@@ -66,7 +55,7 @@ LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDir
     thumbnailComponent2->setName ("thumbnail");
 
     addAndMakeVisible (startStopButton2 = new TextButton ("startStopButton"));
-    startStopButton2->setButtonText ("Start/Stop");
+    startStopButton2->setButtonText (TRANS("Start/Stop"));
     startStopButton2->addListener (this);
 
     addAndMakeVisible (tempoSlider = new Slider ("new slider"));
@@ -88,7 +77,7 @@ LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDir
     zoomSlider->addListener (this);
 
     addAndMakeVisible (label2 = new Label ("new label",
-                                           "Tempo Range"));
+                                           TRANS("Tempo Range")));
     label2->setFont (Font (15.00f, Font::plain));
     label2->setJustificationType (Justification::centredLeft);
     label2->setEditable (false, false, false);
@@ -96,8 +85,8 @@ LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDir
     label2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     addAndMakeVisible (label3 = new Label ("new label",
-                                           "Rhythmic\n"
-                                           "Distance"));
+                                           TRANS("Rhythmic\n"
+                                           "Distance")));
     label3->setFont (Font (15.00f, Font::plain));
     label3->setJustificationType (Justification::centredLeft);
     label3->setEditable (false, false, false);
@@ -111,8 +100,8 @@ LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDir
     timbreSlider->addListener (this);
 
     addAndMakeVisible (label4 = new Label ("new label",
-                                           "Timbral\n"
-                                           "Distance"));
+                                           TRANS("Timbral\n"
+                                           "Distance")));
     label4->setFont (Font (15.00f, Font::plain));
     label4->setJustificationType (Justification::centredLeft);
     label4->setEditable (false, false, false);
@@ -127,7 +116,7 @@ LoopPlayer::LoopPlayer (AudioDeviceManager& deviceManager, const File& pathtoDir
 
 
     //[Constructor] You can add your own custom stuff here..
-	
+
 	formatManager.registerBasicFormats();
 
 	directoryList.setDirectory (pathtoDirectory, true, true);
@@ -186,15 +175,15 @@ LoopPlayer::~LoopPlayer()
 	currentLeftAudioFileSource = nullptr;
 	currentRightAudioFileSource = nullptr;
 	fileTreeComp2->removeListener (this);
-
-    //[/Destructor_pre]
+	customFileFilter1 = nullptr;
+	loopSimilarity = nullptr;
+	similarLoops.clear();
+	//[/Destructor_pre]
 
     fileTreeComp = nullptr;
     thumbnailComponent = nullptr;
     explanation = nullptr;
     startStopButton = nullptr;
-    cpuMeter = nullptr;
-    label = nullptr;
     fileTreeComp2 = nullptr;
     thumbnailComponent2 = nullptr;
     startStopButton2 = nullptr;
@@ -230,8 +219,6 @@ void LoopPlayer::resized()
     thumbnailComponent->setBounds (16, 472, 400, 128);
     explanation->setBounds (32, 40, 150, 24);
     startStopButton->setBounds (144, 648, 150, 24);
-    cpuMeter->setBounds (928, 26, 64, 24);
-    label->setBounds (920, 2, 150, 24);
     fileTreeComp2->setBounds (640, 88, 288, 304);
     thumbnailComponent2->setBounds (576, 472, 400, 128);
     startStopButton2->setBounds (728, 648, 150, 24);
@@ -505,13 +492,6 @@ BEGIN_JUCER_METADATA
   <TEXTBUTTON name="startStopButton" id="60a0719e5a96e44c" memberName="startStopButton"
               virtualName="" explicitFocusOrder="0" pos="144 648 150 24" buttonText="Start/Stop"
               connectedEdges="0" needsCallback="1" radioGroupId="0"/>
-  <GENERICCOMPONENT name="cpuMeter" id="47442aafe0aa91da" memberName="cpuMeter" virtualName="drow::CpuMeter"
-                    explicitFocusOrder="0" pos="928 26 64 24" class="Component" params="&amp;deviceManager"/>
-  <LABEL name="new label" id="1a1155b3b685297c" memberName="label" virtualName=""
-         explicitFocusOrder="0" pos="920 2 150 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="CPU Usage" editableSingleClick="0" editableDoubleClick="0"
-         focusDiscardsChanges="0" fontname="Default font" fontsize="15"
-         bold="0" italic="0" justification="33"/>
   <GENERICCOMPONENT name="FileTreeComp" id="c2172d74b9138c92" memberName="fileTreeComp2"
                     virtualName="" explicitFocusOrder="0" pos="640 88 288 304" class="FileTreeComponent"
                     params="customDirectoryList"/>

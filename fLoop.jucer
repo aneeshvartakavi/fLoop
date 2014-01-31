@@ -575,7 +575,6 @@
         <MODULEPATH id="juce_audio_devices" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
         <MODULEPATH id="juce_audio_basics" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
         <MODULEPATH id="juce_audio_utils" path="..\Visual Studio 2012\Projects\JUCE-master\modules"/>
-        <MODULEPATH id="dRowAudio" path="../Visual Studio 2012/Projects/JUCE-master/modules"/>
       </MODULEPATHS>
     </VS2012>
     <XCODE_MAC targetFolder="Builds/MacOSX">
@@ -599,12 +598,10 @@
         <MODULEPATH id="juce_events" path="\Users\Cam\Dev\JUCE\modules"/>
         <MODULEPATH id="juce_graphics" path="\Users\Cam\Dev\JUCE\modules"/>
         <MODULEPATH id="juce_gui_basics" path="\Users\Cam\Dev\JUCE\modules"/>
-        <MODULEPATH id="dRowAudio" path="../Visual Studio 2012/Projects/JUCE-master/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
   </EXPORTFORMATS>
   <MODULES>
-    <MODULES id="dRowAudio" showAllCode="1" useLocalCopy="1"/>
     <MODULES id="juce_audio_basics" showAllCode="1" useLocalCopy="1"/>
     <MODULES id="juce_audio_devices" showAllCode="1" useLocalCopy="1"/>
     <MODULES id="juce_audio_formats" showAllCode="1" useLocalCopy="1"/>

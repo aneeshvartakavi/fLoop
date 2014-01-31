@@ -37,7 +37,7 @@ class ThumbnailComponent;
 /**
                                                                     //[Comments]
       The main GUI class, also handles audio playback and thumbnail display.
-	  
+
 	  Authors:  Aneesh Vartakavi, Cameron Summers
                                                                     //[/Comments]
 */
@@ -105,8 +105,6 @@ private:
     ScopedPointer<ThumbnailComponent> thumbnailComponent;
     ScopedPointer<Label> explanation;
     ScopedPointer<TextButton> startStopButton;
-    ScopedPointer<drow::CpuMeter> cpuMeter;
-    ScopedPointer<Label> label;
     ScopedPointer<FileTreeComponent> fileTreeComp2;
     ScopedPointer<ThumbnailComponent> thumbnailComponent2;
     ScopedPointer<TextButton> startStopButton2;

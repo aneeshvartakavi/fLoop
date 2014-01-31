@@ -26,7 +26,7 @@
 
 
 
-FeatureExtractor::FeatureExtractor(const Array<File> &audioLoops, int numFeatures_, int blockSize_, int hopSize_, int fftSizelog2):fftEngine(fftSizelog2)
+FeatureExtractor::FeatureExtractor(const Array<File> &audioLoops, int numFeatures_, int blockSize_, int hopSize_)
 {
 	
 	// Create an empty var to hold each feature
@@ -52,7 +52,7 @@ FeatureExtractor::FeatureExtractor(const Array<File> &audioLoops, int numFeature
 FeatureExtractor::~FeatureExtractor()
 {
 	//fileList = nullptr;
-
+		
 }
 
 void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
@@ -71,8 +71,10 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 		ScopedPointer<AudioSampleBuffer> sampleBuffer2 = new AudioSampleBuffer(1,blockSize);
 		sampleBuffer2->clear();
 
+		// Should mix stereo to mono
 		int numChannels = fileReader->numChannels;
-		int sampleRate = fileReader->sampleRate;
+		
+		int sampleRate = static_cast<int>(fileReader->sampleRate);
 		int64 numSamples = fileReader->lengthInSamples;
 		int64 numBlocks= numSamples%hopSize;
 		
@@ -132,7 +134,7 @@ void FeatureExtractor::computeFeatures(const Array<File> &audioLoops)
 		element.append(mfcc);
 
 		var beatSpec;
-		computeBeatSpectrum(stft,beatSpec,numBlocks,tempo,sampleRate);
+		computeBeatSpectrum(stft,beatSpec,static_cast<int>(numBlocks),tempo,sampleRate);
 		element.append(beatSpec);
 	}
 }
@@ -153,7 +155,7 @@ float FeatureExtractor::calculateTempo(File loop)
     len = static_cast<int>(fileReader->lengthInSamples);
     Fs = static_cast<int>(fileReader->sampleRate);
     fbpm = static_cast<float>((60*8*Fs))/len; // 60 sec/min * number of beats * fs /len
-	return adjustBPM(fbpm);
+	return static_cast<float>(adjustBPM(fbpm));
 }
 
 void FeatureExtractor::computeBeatSpectrum(const Eigen::MatrixXf &stft, var& tempVar,int numBlocks, int tempo, int sampleRate)
@@ -292,7 +294,7 @@ void FeatureExtractor::computeBeatSpectrum(const Eigen::MatrixXf &stft, var& tem
 
 		// Instantaneous energy per beat
 		float firstBeatTime = 60.0f/tempo;
-		int firstBeatIndex = ceilf(((sampleRate*firstBeatTime) - blockSize/2)/hopSize);
+		int firstBeatIndex = static_cast<int>(ceilf(((firstBeatTime*sampleRate) - blockSize/2)/hopSize));
 		
 		Eigen::Vector4f instBeat = Eigen::VectorXf::Zero(4,1);	
 		for (int k=0;k<=4;k+=4)

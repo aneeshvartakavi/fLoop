@@ -125,7 +125,7 @@ void MainComponent::buttonClicked (Button* buttonThatWasClicked)
 		readDirectory();
 		if(pathToDirectory.exists())
 		{
-			featureExtractor = new FeatureExtractor(audioLoops,1,1024,512,10);
+			featureExtractor = new FeatureExtractor(audioLoops,1,1024,512);
 			
 			if(featureExtractor->cacheExists(pathToDirectory))
 			{
