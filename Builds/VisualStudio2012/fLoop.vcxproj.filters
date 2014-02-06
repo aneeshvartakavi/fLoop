@@ -2517,7 +2517,7 @@
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_basics\synthesisers\juce_Synthesiser.h">
       <Filter>Juce Modules\juce_audio_basics\synthesisers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_audio_basics\juce_audio_basics.h">
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_basics\juce_audio_basics.h">
       <Filter>Juce Modules\juce_audio_basics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_devices\audio_io\juce_AudioDeviceManager.h">
@@ -2556,7 +2556,7 @@
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_devices\native\juce_MidiDataConcatenator.h">
       <Filter>Juce Modules\juce_audio_devices\native</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_audio_devices\juce_audio_devices.h">
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_devices\juce_audio_devices.h">
       <Filter>Juce Modules\juce_audio_devices</Filter>
     </ClInclude>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_formats\format\juce_AudioFormat.h">
@@ -2613,7 +2613,7 @@
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_formats\sampler\juce_Sampler.h">
       <Filter>Juce Modules\juce_audio_formats\sampler</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_audio_formats\juce_audio_formats.h">
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_formats\juce_audio_formats.h">
       <Filter>Juce Modules\juce_audio_formats</Filter>
     </ClInclude>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_processors\processors\juce_AudioPlayHead.h">
@@ -2670,7 +2670,7 @@
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_processors\scanning\juce_PluginListComponent.h">
       <Filter>Juce Modules\juce_audio_processors\scanning</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_audio_processors\juce_audio_processors.h">
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_processors\juce_audio_processors.h">
       <Filter>Juce Modules\juce_audio_processors</Filter>
     </ClInclude>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_utils\gui\juce_AudioDeviceSelectorComponent.h">
@@ -2691,7 +2691,7 @@
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_utils\players\juce_AudioProcessorPlayer.h">
       <Filter>Juce Modules\juce_audio_utils\players</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_audio_utils\juce_audio_utils.h">
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_audio_utils\juce_audio_utils.h">
       <Filter>Juce Modules\juce_audio_utils</Filter>
     </ClInclude>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_core\text\juce_CharacterFunctions.h">
@@ -3015,7 +3015,7 @@
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_core\native\juce_win32_ComSmartPtr.h">
       <Filter>Juce Modules\juce_core\native</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_core\juce_core.h">
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_core\juce_core.h">
       <Filter>Juce Modules\juce_core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_data_structures\values\juce_Value.h">
@@ -3036,7 +3036,7 @@
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_data_structures\app_properties\juce_PropertiesFile.h">
       <Filter>Juce Modules\juce_data_structures\app_properties</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_data_structures\juce_data_structures.h">
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_data_structures\juce_data_structures.h">
       <Filter>Juce Modules\juce_data_structures</Filter>
     </ClInclude>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_events\messages\juce_ApplicationBase.h">
@@ -3102,7 +3102,7 @@
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_events\native\juce_win32_HiddenMessageWindow.h">
       <Filter>Juce Modules\juce_events\native</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_events\juce_events.h">
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_events\juce_events.h">
       <Filter>Juce Modules\juce_events</Filter>
     </ClInclude>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_graphics\colour\juce_Colour.h">
@@ -3216,7 +3216,7 @@
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_graphics\native\juce_RenderingHelpers.h">
       <Filter>Juce Modules\juce_graphics\native</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_graphics\juce_graphics.h">
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_graphics\juce_graphics.h">
       <Filter>Juce Modules\juce_graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_gui_basics\components\juce_CachedComponentImage.h">
@@ -3606,7 +3606,7 @@
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_gui_basics\native\juce_MultiTouchMapper.h">
       <Filter>Juce Modules\juce_gui_basics\native</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_gui_basics\juce_gui_basics.h">
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_gui_basics\juce_gui_basics.h">
       <Filter>Juce Modules\juce_gui_basics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_gui_extra\code_editor\juce_CodeDocument.h">
@@ -3675,7 +3675,7 @@
     <ClInclude Include="..\..\JuceLibraryCode\modules\juce_gui_extra\native\juce_mac_CarbonViewWrapperComponent.h">
       <Filter>Juce Modules\juce_gui_extra\native</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_gui_extra\juce_gui_extra.h">
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_gui_extra\juce_gui_extra.h">
       <Filter>Juce Modules\juce_gui_extra</Filter>
     </ClInclude>
     <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h">
@@ -3806,37 +3806,37 @@
     <None Include="..\..\Source\Eigen\src\UmfPackSupport\CMakeLists.txt">
       <Filter>fLoop\Source\Eigen\src\UmfPackSupport</Filter>
     </None>
-    <None Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_audio_basics\juce_module_info">
+    <None Include="..\..\JuceLibraryCode\modules\juce_audio_basics\juce_module_info">
       <Filter>Juce Modules\juce_audio_basics</Filter>
     </None>
-    <None Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_audio_devices\juce_module_info">
+    <None Include="..\..\JuceLibraryCode\modules\juce_audio_devices\juce_module_info">
       <Filter>Juce Modules\juce_audio_devices</Filter>
     </None>
-    <None Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_audio_formats\juce_module_info">
+    <None Include="..\..\JuceLibraryCode\modules\juce_audio_formats\juce_module_info">
       <Filter>Juce Modules\juce_audio_formats</Filter>
     </None>
-    <None Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_audio_processors\juce_module_info">
+    <None Include="..\..\JuceLibraryCode\modules\juce_audio_processors\juce_module_info">
       <Filter>Juce Modules\juce_audio_processors</Filter>
     </None>
-    <None Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_audio_utils\juce_module_info">
+    <None Include="..\..\JuceLibraryCode\modules\juce_audio_utils\juce_module_info">
       <Filter>Juce Modules\juce_audio_utils</Filter>
     </None>
-    <None Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_core\juce_module_info">
+    <None Include="..\..\JuceLibraryCode\modules\juce_core\juce_module_info">
       <Filter>Juce Modules\juce_core</Filter>
     </None>
-    <None Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_data_structures\juce_module_info">
+    <None Include="..\..\JuceLibraryCode\modules\juce_data_structures\juce_module_info">
       <Filter>Juce Modules\juce_data_structures</Filter>
     </None>
-    <None Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_events\juce_module_info">
+    <None Include="..\..\JuceLibraryCode\modules\juce_events\juce_module_info">
       <Filter>Juce Modules\juce_events</Filter>
     </None>
-    <None Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_graphics\juce_module_info">
+    <None Include="..\..\JuceLibraryCode\modules\juce_graphics\juce_module_info">
       <Filter>Juce Modules\juce_graphics</Filter>
     </None>
-    <None Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_gui_basics\juce_module_info">
+    <None Include="..\..\JuceLibraryCode\modules\juce_gui_basics\juce_module_info">
       <Filter>Juce Modules\juce_gui_basics</Filter>
     </None>
-    <None Include="..\..\..\Visual Studio 2012\Projects\JUCE-master\modules\juce_gui_extra\juce_module_info">
+    <None Include="..\..\JuceLibraryCode\modules\juce_gui_extra\juce_module_info">
       <Filter>Juce Modules\juce_gui_extra</Filter>
     </None>
   </ItemGroup>

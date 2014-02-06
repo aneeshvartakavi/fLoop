@@ -580,24 +580,24 @@
     <XCODE_MAC targetFolder="Builds/MacOSX">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" osxSDK="default" osxCompatibility="default" osxArchitecture="default"
-                       isDebug="1" optimisation="1" targetName="fLoop" headerPath="/Users/Cam/Dev/GaTech/fLoop/Source/Eigen/"
-                       libraryPath="/Users/Cam/Dev/GaTech/fLoop/Source/Eigen/"/>
+                       isDebug="1" optimisation="1" targetName="fLoop" headerPath="./Source/Eigen"
+                       libraryPath="./Source/Eigen"/>
         <CONFIGURATION name="Release" osxSDK="default" osxCompatibility="default" osxArchitecture="default"
-                       isDebug="0" optimisation="2" targetName="fLoop" headerPath="/Users/Cam/Dev/GaTech/fLoop/Source/Eigen/"
-                       libraryPath="/Users/Cam/Dev/GaTech/fLoop/Source/Eigen/"/>
+                       isDebug="0" optimisation="2" targetName="fLoop" headerPath="./Source/Eigen"
+                       libraryPath="./Source/Eigen"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_audio_utils" path="\Users\Cam\Dev\JUCE\modules"/>
-        <MODULEPATH id="juce_audio_processors" path="\Users\Cam\Dev\JUCE\modules"/>
-        <MODULEPATH id="juce_audio_basics" path="\Users\Cam\Dev\JUCE\modules"/>
-        <MODULEPATH id="juce_audio_devices" path="\Users\Cam\Dev\JUCE\modules"/>
-        <MODULEPATH id="juce_audio_formats" path="\Users\Cam\Dev\JUCE\modules"/>
-        <MODULEPATH id="juce_data_structures" path="\Users\Cam\Dev\JUCE\modules"/>
-        <MODULEPATH id="juce_gui_extra" path="\Users\Cam\Dev\JUCE\modules"/>
-        <MODULEPATH id="juce_core" path="\Users\Cam\Dev\JUCE\modules"/>
-        <MODULEPATH id="juce_events" path="\Users\Cam\Dev\JUCE\modules"/>
-        <MODULEPATH id="juce_graphics" path="\Users\Cam\Dev\JUCE\modules"/>
-        <MODULEPATH id="juce_gui_basics" path="\Users\Cam\Dev\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_utils" path="./JuceLibraryCode/modules/"/>
+        <MODULEPATH id="juce_audio_processors" path="./JuceLibraryCode/modules/"/>
+        <MODULEPATH id="juce_audio_basics" path="./JuceLibraryCode/modules/"/>
+        <MODULEPATH id="juce_audio_devices" path="./JuceLibraryCode/modules/"/>
+        <MODULEPATH id="juce_audio_formats" path="./JuceLibraryCode/modules/"/>
+        <MODULEPATH id="juce_data_structures" path="./JuceLibraryCode/modules/"/>
+        <MODULEPATH id="juce_gui_extra" path="./JuceLibraryCode/modules/"/>
+        <MODULEPATH id="juce_core" path="./JuceLibraryCode/modules/"/>
+        <MODULEPATH id="juce_events" path="./JuceLibraryCode/modules/"/>
+        <MODULEPATH id="juce_graphics" path="./JuceLibraryCode/modules/"/>
+        <MODULEPATH id="juce_gui_basics" path="./JuceLibraryCode/modules/"/>
       </MODULEPATHS>
     </XCODE_MAC>
   </EXPORTFORMATS>
