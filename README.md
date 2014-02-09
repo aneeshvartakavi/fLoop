@@ -10,5 +10,20 @@ Build Instructions
 -> Check the paths to the modules, in the config tab.
 -> Save and open in your editor of choice!
 
+Usage
+=====
+
+Upon launch, there is a simple interface for setuping up your audio or selecting a folder for audio loop comparison.
+
+To analyze a directory for audio loop comparison, select "Browse" and use the dialogue box to select the directory containing the audio files (Note: currently the folder is not searched recursively). Depending on how many files are in the directory, this process could take a while, but once a folder has been analyzed the analysis is cached for quick retrieval in the future.
+
+After analysis is compete, the application will display two list boxes and several controls. The list box on the left holds all the audio files analyzed. The get a recommendation, select a reference loop in the left list box and adjust the slide controls. For tempo, the slider provides a range in which the recommended files will be and for rhythm and timbre, a full slider range allows all files through and a narrow range toward the bottom will allow only the most similar files through.
+
+
+Troubleshooting
+===============
+
+No files showing up for recommendation: In this case make sure to adjust all the sliders to some position. If this does not solve it, then try less narrow filtering on one or more sliders.
+
 
 Aneesh Vartakavi and Cameron Summers
