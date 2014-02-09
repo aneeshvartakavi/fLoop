@@ -19,6 +19,8 @@ To analyze a directory for audio loop comparison, select "Browse" and use the di
 
 After analysis is compete, the application will display two list boxes and several controls. The list box on the left holds all the audio files analyzed. The get a recommendation, select a reference loop in the left list box and adjust the slide controls. For tempo, the slider provides a range in which the recommended files will be and for rhythm and timbre, a full slider range allows all files through and a narrow range toward the bottom will allow only the most similar files through.
 
+Selecting a file in either list box will populate the preview tool where you can play the audio file.
+
 
 Troubleshooting
 ===============
