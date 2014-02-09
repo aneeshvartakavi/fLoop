@@ -10,6 +10,13 @@ Build Instructions
 -> Check the paths to the modules, in the config tab.
 -> Save and open in your editor of choice!
 
+Mac:
+
+Open the Xcode project in Builds/MacOSX/fLoop.xcodeproject
+Build and run the project
+
+If you are unable to build, see the above instructions to generate a new Xcode project in JUCE.
+
 Usage
 =====
 
